@@ -1,0 +1,41 @@
+name: Deploy Portfolio Site
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'projects/portfolio-site/**'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        working-directory: projects/portfolio-site
+        run: npm install
+
+      - name: Build HTML
+        working-directory: projects/portfolio-site
+        run: chmod +x build.sh && ./build.sh
+
+      - name: Build CSS
+        working-directory: projects/portfolio-site
+        run: npm run build:css
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: projects/portfolio-site/src
+          publish_branch: gh-pages
