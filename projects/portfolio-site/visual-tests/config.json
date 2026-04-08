@@ -1,0 +1,18 @@
+{
+  "page": "index.html",
+  "viewport": {
+    "width": 1440,
+    "height": 2200
+  },
+  "target_similarity": 0.92,
+  "max_iterations": 6,
+  "priority_order": [
+    "layout",
+    "spacing",
+    "typography",
+    "hierarchy",
+    "radius",
+    "shadow",
+    "color"
+  ]
+}

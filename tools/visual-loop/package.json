@@ -1,0 +1,15 @@
+{
+  "name": "visual-loop",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "capture": "node capture.js",
+    "compare": "node compare.js",
+    "loop": "node run-loop.js"
+  },
+  "dependencies": {
+    "pixelmatch": "^5.3.0",
+    "pngjs": "^7.0.0",
+    "playwright": "^1.52.0"
+  }
+}

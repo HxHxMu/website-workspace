@@ -1,0 +1,56 @@
+
+  <!-- ═══════════════════════════════════════════════
+       SCRIPTS
+  ═══════════════════════════════════════════════ -->
+  <script>
+    // ── Nav: glass on scroll ──
+    const nav = document.getElementById('nav');
+    function updateNav() {
+      if (window.scrollY > 40) {
+        nav.style.backdropFilter = 'blur(18px)';
+        nav.style.webkitBackdropFilter = 'blur(18px)';
+        nav.style.backgroundColor = 'rgba(10,10,10,0.85)';
+        nav.style.borderBottom = '1px solid rgba(242,240,235,0.07)';
+      } else {
+        nav.style.backdropFilter = '';
+        nav.style.webkitBackdropFilter = '';
+        nav.style.backgroundColor = '';
+        nav.style.borderBottom = '';
+      }
+    }
+    window.addEventListener('scroll', updateNav, { passive: true });
+
+    // ── Hero: parallax + cinematic fade ──
+    const heroBg   = document.getElementById('hero-parallax');
+    const heroFade = document.getElementById('hero-fade');
+    const heroEl   = document.getElementById('hero');
+
+    function updateHero() {
+      const sy = window.scrollY;
+      const hh = heroEl.offsetHeight;
+      heroBg.style.transform = `translateY(${sy * 0.28}px)`;
+      const p = Math.min(Math.max((sy - hh * 0.35) / (hh * 0.50), 0), 1);
+      heroFade.style.opacity = (p * 0.88).toFixed(3);
+    }
+    window.addEventListener('scroll', updateHero, { passive: true });
+
+    // ── Scroll reveals ──
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -32px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Trigger hero reveals on load
+    document.querySelectorAll('#hero .reveal').forEach((el, i) => {
+      setTimeout(() => el.classList.add('visible'), 60 + i * 110);
+    });
+  </script>
+
+</body>
+</html>
