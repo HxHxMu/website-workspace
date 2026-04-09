@@ -4,24 +4,15 @@
   ═══════════════════════════════════════════════ -->
   <section id="hero" class="grain relative min-h-screen hero-gradient flex flex-col justify-center overflow-hidden">
 
-    <!-- Parallax atmospheric layer -->
+    <!-- Parallax atmospheric layer (JS transforms the wrapper, gradient is CSS) -->
     <div id="hero-parallax" class="absolute inset-0 pointer-events-none will-change-transform">
-      <div class="absolute inset-0"
-           style="background:
-             radial-gradient(ellipse 65% 52% at 78% 64%, rgba(224,92,40,0.34) 0%, transparent 50%),
-             radial-gradient(ellipse 38% 32% at 94% 88%, rgba(165,52,18,0.20) 0%, transparent 46%),
-             radial-gradient(ellipse 50% 40% at 12% 88%, rgba(95,38,12,0.10) 0%, transparent 52%);"></div>
+      <div class="absolute inset-0 atmo-hero"></div>
     </div>
 
     <!-- Dot grid — faint structural texture -->
-    <div class="absolute inset-0 pointer-events-none" style="
-      background-image: radial-gradient(circle, rgba(242,240,235,0.07) 1px, transparent 1px);
-      background-size: 38px 38px;
-      mask-image: radial-gradient(ellipse 80% 80% at 70% 50%, rgba(0,0,0,0.5) 0%, transparent 70%);
-      -webkit-mask-image: radial-gradient(ellipse 80% 80% at 70% 50%, rgba(0,0,0,0.5) 0%, transparent 70%);
-    "></div>
+    <div class="absolute inset-0 pointer-events-none hero-dot-grid"></div>
 
-    <!-- Scroll-fade overlay -->
+    <!-- Scroll-fade overlay (JS-driven opacity) -->
     <div id="hero-fade" class="absolute inset-0 bg-ink pointer-events-none" style="opacity: 0;"></div>
 
     <!-- Nav spacer -->
@@ -37,12 +28,11 @@
             Creative Technologist / Product Design / AI Workflows
           </p>
 
-          <h1 class="font-bold text-warm-white leading-[0.88] reveal reveal-delay-1"
-              style="font-size: clamp(64px, 11vw, 148px); letter-spacing: -0.035em;">
+          <h1 class="heading-hero font-bold text-warm-white reveal reveal-delay-1">
             Luis E.<br>Bonilla.
           </h1>
 
-          <p class="mt-10 max-w-md text-base md:text-lg leading-relaxed text-warm-muted font-light reveal reveal-delay-2" style="letter-spacing: 0.005em;">
+          <p class="mt-10 max-w-md text-base md:text-lg leading-relaxed text-warm-muted reveal reveal-delay-2">
             Designing interfaces, systems, and AI-driven experiences with clarity, craft, and intent.
           </p>
 
@@ -64,43 +54,30 @@
         </div>
 
         <!-- RIGHT: Layered image fragments -->
-        <div class="md:col-span-6 lg:col-span-7 relative hidden md:block" style="min-height: 520px;">
+        <div class="md:col-span-6 lg:col-span-7 relative hidden md:block min-h-[520px]">
 
           <!-- Fragment 1: LFA Dashboard — large, back layer -->
           <img src="../assets/img/placeholders/lfa-dashboard.png" alt="LFA Dashboard"
-               class="absolute float-slow rounded-lg object-cover"
-               style="width: 320px; height: 220px; top: 0; right: 0; z-index: 1; opacity: 0.9;">
+               class="absolute hero-frag-1 float-slow rounded-lg object-cover">
 
           <!-- Fragment 2: Disney Player UI — medium, overlapping -->
           <img src="../assets/img/placeholders/disney-player-ui.png" alt="Disney Player UI"
-               class="absolute float-medium float-delay-1 rounded-lg object-cover"
-               style="width: 260px; height: 180px; top: 80px; right: 200px; z-index: 3; opacity: 0.95;">
+               class="absolute hero-frag-2 float-medium float-delay-1 rounded-lg object-cover">
 
           <!-- Fragment 3: Txai Ti Output — small accent -->
           <img src="../assets/img/placeholders/txai-ti-output.png" alt="Txai Ti Visual"
-               class="absolute float-slow float-delay-2 rounded-lg object-cover"
-               style="width: 200px; height: 240px; top: 200px; right: 40px; z-index: 2; opacity: 0.85;">
+               class="absolute hero-frag-3 float-slow float-delay-2 rounded-lg object-cover">
 
           <!-- Fragment 4: Motion Still — small -->
           <img src="../assets/img/placeholders/motion-prototype.png" alt="Motion Still"
-               class="absolute float-medium float-delay-3 rounded-lg object-cover"
-               style="width: 180px; height: 120px; top: 320px; right: 280px; z-index: 4; opacity: 0.8;">
+               class="absolute hero-frag-4 float-medium float-delay-3 rounded-lg object-cover">
 
           <!-- Fragment 5: Figma Fragment — tiny accent -->
           <img src="../assets/img/placeholders/figma-flow.png" alt="Figma Fragment"
-               class="absolute float-slow float-delay-1 rounded-lg object-cover"
-               style="width: 150px; height: 100px; top: 400px; right: 100px; z-index: 2; opacity: 0.7;">
+               class="absolute hero-frag-5 float-slow float-delay-1 rounded-lg object-cover">
 
           <!-- Depth blur layer behind fragments -->
-          <div class="absolute pointer-events-none" style="
-            top: 10%;
-            right: 5%;
-            width: 80%;
-            height: 80%;
-            background: radial-gradient(ellipse at center, rgba(224,92,40,0.08) 0%, transparent 70%);
-            filter: blur(60px);
-            z-index: 0;
-          "></div>
+          <div class="absolute pointer-events-none hero-depth-blur"></div>
         </div>
       </div>
     </div>

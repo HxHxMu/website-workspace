@@ -2,18 +2,15 @@
   <!-- ═══════════════════════════════════════════════
        ARTIFACTS
   ═══════════════════════════════════════════════ -->
-  <section class="grain relative overflow-hidden py-32 md:py-48" style="background: #0e0e0e;">
+  <section class="grain section-artifacts relative overflow-hidden py-32 md:py-48">
     <!-- Warm atmospheric glow -->
-    <div class="absolute inset-0 pointer-events-none"
-         style="background:
-           radial-gradient(ellipse 60% 50% at 20% 40%, rgba(224,92,40,0.06) 0%, transparent 60%),
-           radial-gradient(ellipse 40% 50% at 80% 70%, rgba(80,110,210,0.04) 0%, transparent 60%);"></div>
+    <div class="absolute inset-0 pointer-events-none atmo-artifacts"></div>
 
     <div class="relative z-10 mx-auto max-w-7xl px-6 md:px-10">
 
       <div class="mb-14 reveal">
         <p class="text-xs uppercase tracking-label text-warm-dim mb-5">Artifacts</p>
-        <h2 class="text-3xl md:text-5xl font-bold text-warm-white mb-5" style="letter-spacing: -0.032em;">
+        <h2 class="heading-section text-3xl md:text-5xl font-bold text-warm-white mb-5">
           Fragments of interface, system, and visual exploration.
         </h2>
         <p class="max-w-xl text-warm-muted text-sm md:text-base leading-relaxed">
@@ -25,59 +22,49 @@
       <div class="grid grid-cols-2 md:grid-cols-4 gap-3 reveal reveal-delay-1">
 
         <!-- Row 1 -->
-        <!-- Landscape wide -->
-        <div class="artifact-tile relative col-span-2 rounded-lg overflow-hidden group" style="aspect-ratio: 16/9;">
+        <div class="artifact-tile col-span-2 aspect-video group">
           <img src="../assets/img/placeholders/lfa-dashboard.png" alt="LFA Dashboard Crop" class="w-full h-full object-cover">
-          <div class="artifact-label absolute bottom-3 left-3 text-warm-white/0 text-xs uppercase tracking-label" style="opacity: 0; transform: translateY(4px);">LFA / Dashboard</div>
+          <div class="artifact-label absolute bottom-3 left-3 text-warm-white text-xs uppercase tracking-label">LFA / Dashboard</div>
         </div>
-        <!-- Portrait -->
-        <div class="artifact-tile relative rounded-lg overflow-hidden group" style="aspect-ratio: 3/4;">
+        <div class="artifact-tile aspect-[3/4] group">
           <img src="../assets/img/placeholders/disney-player-ui.png" alt="Disney Player Screen" class="w-full h-full object-cover">
-          <div class="artifact-label absolute bottom-3 left-3 text-warm-white/0 text-xs uppercase tracking-label" style="opacity: 0; transform: translateY(4px);">Disney / Player</div>
+          <div class="artifact-label absolute bottom-3 left-3 text-warm-white text-xs uppercase tracking-label">Disney / Player</div>
         </div>
-        <!-- Square -->
-        <div class="artifact-tile relative rounded-lg overflow-hidden group" style="aspect-ratio: 1/1;">
+        <div class="artifact-tile aspect-square group">
           <img src="../assets/img/placeholders/txai-ti-prompt.png" alt="Txai Ti Prompt Iteration" class="w-full h-full object-cover">
-          <div class="artifact-label absolute bottom-3 left-3 text-warm-white/0 text-xs uppercase tracking-label" style="opacity: 0; transform: translateY(4px);">Txai Ti</div>
+          <div class="artifact-label absolute bottom-3 left-3 text-warm-white text-xs uppercase tracking-label">Txai Ti</div>
         </div>
 
         <!-- Row 2 -->
-        <!-- Square -->
-        <div class="artifact-tile relative rounded-lg overflow-hidden group" style="aspect-ratio: 1/1;">
+        <div class="artifact-tile aspect-square group">
           <img src="../assets/img/placeholders/lebe-campaign.png" alt="LEBE Campaign Visual" class="w-full h-full object-cover">
-          <div class="artifact-label absolute bottom-3 left-3 text-warm-white/0 text-xs uppercase tracking-label" style="opacity: 0; transform: translateY(4px);">LEBE</div>
+          <div class="artifact-label absolute bottom-3 left-3 text-warm-white text-xs uppercase tracking-label">LEBE</div>
         </div>
-        <!-- Landscape -->
-        <div class="artifact-tile relative rounded-lg overflow-hidden group" style="aspect-ratio: 4/3;">
+        <div class="artifact-tile aspect-[4/3] group">
           <img src="../assets/img/placeholders/lfa-onboarding.png" alt="LFA Onboarding Flow" class="w-full h-full object-cover">
-          <div class="artifact-label absolute bottom-3 left-3 text-warm-white/0 text-xs uppercase tracking-label" style="opacity: 0; transform: translateY(4px);">LFA / Onboarding</div>
+          <div class="artifact-label absolute bottom-3 left-3 text-warm-white text-xs uppercase tracking-label">LFA / Onboarding</div>
         </div>
-        <!-- Mobile ratio -->
-        <div class="artifact-tile relative rounded-lg overflow-hidden group" style="aspect-ratio: 9/16;">
+        <div class="artifact-tile aspect-[9/16] group">
           <img src="../assets/img/placeholders/disney-a11y-annotation.png" alt="Disney A11y Annotation" class="w-full h-full object-cover">
-          <div class="artifact-label absolute bottom-3 left-3 text-warm-white/0 text-xs uppercase tracking-label" style="opacity: 0; transform: translateY(4px);">Disney / A11y</div>
+          <div class="artifact-label absolute bottom-3 left-3 text-warm-white text-xs uppercase tracking-label">Disney / A11y</div>
         </div>
-        <!-- Landscape -->
-        <div class="artifact-tile relative rounded-lg overflow-hidden group" style="aspect-ratio: 4/3;">
+        <div class="artifact-tile aspect-[4/3] group">
           <img src="../assets/img/placeholders/motion-prototype.png" alt="Motion Prototype Still" class="w-full h-full object-cover">
-          <div class="artifact-label absolute bottom-3 left-3 text-warm-white/0 text-xs uppercase tracking-label" style="opacity: 0; transform: translateY(4px);">Motion</div>
+          <div class="artifact-label absolute bottom-3 left-3 text-warm-white text-xs uppercase tracking-label">Motion</div>
         </div>
 
         <!-- Row 3 -->
-        <!-- Wide strip -->
-        <div class="artifact-tile relative col-span-2 md:col-span-1 rounded-lg overflow-hidden group" style="aspect-ratio: 16/9;">
+        <div class="artifact-tile col-span-2 md:col-span-1 aspect-video group">
           <img src="../assets/img/placeholders/txai-ti-output.png" alt="Txai Ti Final Output" class="w-full h-full object-cover">
-          <div class="artifact-label absolute bottom-3 left-3 text-warm-white/0 text-xs uppercase tracking-label" style="opacity: 0; transform: translateY(4px);">Txai Ti / Output</div>
+          <div class="artifact-label absolute bottom-3 left-3 text-warm-white text-xs uppercase tracking-label">Txai Ti / Output</div>
         </div>
-        <!-- Wide strip -->
-        <div class="artifact-tile relative col-span-2 md:col-span-1 rounded-lg overflow-hidden group" style="aspect-ratio: 16/9;">
+        <div class="artifact-tile col-span-2 md:col-span-1 aspect-video group">
           <img src="../assets/img/placeholders/figma-flow.png" alt="Figma Flow Fragment" class="w-full h-full object-cover">
-          <div class="artifact-label absolute bottom-3 left-3 text-warm-white/0 text-xs uppercase tracking-label" style="opacity: 0; transform: translateY(4px);">Figma</div>
+          <div class="artifact-label absolute bottom-3 left-3 text-warm-white text-xs uppercase tracking-label">Figma</div>
         </div>
-        <!-- Wide -->
-        <div class="artifact-tile relative col-span-2 rounded-lg overflow-hidden group" style="aspect-ratio: 21/9;">
+        <div class="artifact-tile col-span-2 aspect-[21/9] group">
           <img src="../assets/img/placeholders/design-system-components.png" alt="Design System Component Crop" class="w-full h-full object-cover">
-          <div class="artifact-label absolute bottom-3 left-3 text-warm-white/0 text-xs uppercase tracking-label" style="opacity: 0; transform: translateY(4px);">Design System</div>
+          <div class="artifact-label absolute bottom-3 left-3 text-warm-white text-xs uppercase tracking-label">Design System</div>
         </div>
 
       </div>

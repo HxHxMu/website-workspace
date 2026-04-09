@@ -1,0 +1,14 @@
+@layer base {
+  html {
+    background-color: #0a0a0a;
+    color: #f2f0eb;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  * { box-sizing: border-box; }
+  body { overflow-x: hidden; }
+  ::selection {
+    background: rgba(224, 92, 40, 0.28);
+    color: #f2f0eb;
+  }
+}
