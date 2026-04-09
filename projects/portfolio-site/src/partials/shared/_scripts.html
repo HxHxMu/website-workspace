@@ -50,6 +50,22 @@
     document.querySelectorAll('#hero .reveal').forEach((el, i) => {
       setTimeout(() => el.classList.add('visible'), 60 + i * 110);
     });
+
+    // ── Artifact tile hover: label reveal ──
+    document.querySelectorAll('.artifact-tile').forEach(tile => {
+      const label = tile.querySelector('.artifact-label');
+      if (!label) return;
+      tile.addEventListener('mouseenter', () => {
+        label.style.opacity = '1';
+        label.style.transform = 'translateY(0)';
+        label.style.color = 'rgba(242,240,235,0.6)';
+      });
+      tile.addEventListener('mouseleave', () => {
+        label.style.opacity = '0';
+        label.style.transform = 'translateY(4px)';
+        label.style.color = 'rgba(242,240,235,0)';
+      });
+    });
   </script>
 
 </body>

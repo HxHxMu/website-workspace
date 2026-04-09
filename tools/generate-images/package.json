@@ -1,0 +1,13 @@
+{
+  "name": "generate-images",
+  "version": "1.0.0",
+  "description": "Generate realistic placeholder images via Gemini Imagen API",
+  "type": "module",
+  "scripts": {
+    "generate": "node generate.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "dotenv": "^16.4.7"
+  }
+}

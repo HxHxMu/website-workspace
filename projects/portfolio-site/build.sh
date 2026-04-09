@@ -14,11 +14,12 @@ cat \
   "$S/_head.html" \
   "$S/_nav.html" \
   "$H/_hero.html" \
-  "$H/_manifesto.html" \
+  "$H/_perspective.html" \
   "$H/_work.html" \
-  "$H/_interrupt.html" \
-  "$H/_discipline.html" \
-  "$H/_experience.html" \
+  "$H/_artifacts.html" \
+  "$H/_practice.html" \
+  "$H/_environments.html" \
+  "$H/_thesis.html" \
   "$H/_cta.html" \
   "$S/_footer.html" \
   "$S/_scripts.html" \

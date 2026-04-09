@@ -1,0 +1,7 @@
+[
+  {
+    "id": "example-dashboard",
+    "prompt": "A dark-themed SaaS dashboard with analytics cards, a chart, and sidebar navigation. Modern, clean, premium feel.",
+    "output": "src/assets/img/placeholders/example-dashboard.png"
+  }
+]
