@@ -13,14 +13,13 @@ C="src/partials/case-study"
 cat \
   "$S/_head.html" \
   "$S/_nav.html" \
+  "$S/_sidebar.html" \
   "$H/_hero.html" \
-  "$H/_perspective.html" \
-  "$H/_work.html" \
-  "$H/_artifacts.html" \
+  "$H/_grid.html" \
   "$H/_practice.html" \
-  "$H/_environments.html" \
-  "$H/_thesis.html" \
-  "$H/_cta.html" \
+  "$H/_work.html" \
+  "$H/_experience.html" \
+  "$H/_contact.html" \
   "$S/_footer.html" \
   "$S/_scripts.html" \
   > src/index.html

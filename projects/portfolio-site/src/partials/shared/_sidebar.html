@@ -1,0 +1,49 @@
+
+  <!-- ═══════════════════════════════════════════════
+       SIDEBAR NAV (desktop)
+  ═══════════════════════════════════════════════ -->
+  <nav id="sidebar" aria-label="Page sections" class="sidebar-nav hidden lg:flex flex-col gap-2">
+    <a href="#hero"         class="sidebar-link sidebar-link--active" data-section="hero">Intro</a>
+    <a href="#work-grid"    class="sidebar-link" data-section="work-grid">Work</a>
+    <a href="#practice"     class="sidebar-link" data-section="practice">Practice</a>
+    <a href="#work"         class="sidebar-link" data-section="work">Cases</a>
+    <a href="#experience"   class="sidebar-link" data-section="experience">Experience</a>
+    <a href="#contact"      class="sidebar-link" data-section="contact">Contact</a>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════
+       HAMBURGER BUTTON (mobile / tablet)
+  ═══════════════════════════════════════════════ -->
+  <button id="menu-btn" class="menu-btn" aria-label="Open menu" aria-expanded="false">
+    <span class="menu-bar"></span>
+    <span class="menu-bar"></span>
+  </button>
+
+  <!-- ═══════════════════════════════════════════════
+       FULL-SCREEN OVERLAY MENU
+  ═══════════════════════════════════════════════ -->
+  <div id="menu-overlay" class="menu-overlay" aria-hidden="true">
+
+    <!-- Close button -->
+    <button id="menu-close" class="menu-close" aria-label="Close menu">
+      <span class="menu-bar menu-bar--close-a"></span>
+      <span class="menu-bar menu-bar--close-b"></span>
+    </button>
+
+    <!-- Nav links — large editorial -->
+    <nav class="menu-overlay-nav" aria-label="Site navigation">
+      <a href="#hero"         class="overlay-link" data-index="0">Intro</a>
+      <a href="#work-grid"    class="overlay-link" data-index="1">Work</a>
+      <a href="#practice"     class="overlay-link" data-index="2">Practice</a>
+      <a href="#work"         class="overlay-link" data-index="3">Cases</a>
+      <a href="#experience"   class="overlay-link" data-index="4">Experience</a>
+      <a href="#contact"      class="overlay-link" data-index="5">Contact</a>
+    </nav>
+
+    <!-- Bottom meta -->
+    <div class="menu-overlay-meta">
+      <span>hello@luisbonilla.com</span>
+    </div>
+
+  </div>
+

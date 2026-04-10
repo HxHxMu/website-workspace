@@ -5,47 +5,8 @@
   ══════════════════════════════════════════════ */
 
   .hero-gradient {
-    background:
-      radial-gradient(ellipse 80% 60% at 75% 68%, rgba(224,92,40,0.30) 0%, transparent 52%),
-      radial-gradient(ellipse 48% 38% at 92% 90%, rgba(160,50,15,0.18) 0%, transparent 48%),
-      radial-gradient(ellipse 38% 28% at 15% 82%, rgba(80,30,10,0.10) 0%, transparent 58%),
-      #0a0a0a;
+    background: #0a0a0a;
   }
-
-  /* Hero parallax atmospheric gradient (static, inside the JS-transformed wrapper) */
-  .atmo-hero {
-    background:
-      radial-gradient(ellipse 65% 52% at 78% 64%, rgba(224,92,40,0.34) 0%, transparent 50%),
-      radial-gradient(ellipse 38% 32% at 94% 88%, rgba(165,52,18,0.20) 0%, transparent 46%),
-      radial-gradient(ellipse 50% 40% at 12% 88%, rgba(95,38,12,0.10) 0%, transparent 52%);
-  }
-
-  /* Faint dot grid over hero right column */
-  .hero-dot-grid {
-    background-image: radial-gradient(circle, rgba(242,240,235,0.07) 1px, transparent 1px);
-    background-size: 38px 38px;
-    mask-image: radial-gradient(ellipse 80% 80% at 70% 50%, rgba(0,0,0,0.5) 0%, transparent 70%);
-    -webkit-mask-image: radial-gradient(ellipse 80% 80% at 70% 50%, rgba(0,0,0,0.5) 0%, transparent 70%);
-  }
-
-  /* Warm radial depth blur behind floating fragments */
-  .hero-depth-blur {
-    top: 10%;
-    right: 5%;
-    width: 80%;
-    height: 80%;
-    background: radial-gradient(ellipse at center, rgba(224,92,40,0.08) 0%, transparent 70%);
-    filter: blur(60px);
-    z-index: 0;
-  }
-
-  /* Hero floating image fragment positions */
-  .hero-frag-1 { width: 320px; height: 220px; top: 0;     right: 0;    z-index: 1; opacity: 0.90; }
-  .hero-frag-2 { width: 260px; height: 180px; top: 80px;  right: 200px; z-index: 3; opacity: 0.95; }
-  .hero-frag-3 { width: 200px; height: 240px; top: 200px; right: 40px;  z-index: 2; opacity: 0.85; }
-  .hero-frag-4 { width: 180px; height: 120px; top: 320px; right: 280px; z-index: 4; opacity: 0.80; }
-  .hero-frag-5 { width: 150px; height: 100px; top: 400px; right: 100px; z-index: 2; opacity: 0.70; }
-
 
   /* ══════════════════════════════════════════════
      SECTION BACKGROUNDS
@@ -57,12 +18,12 @@
 
   .section-environments {
     background: #0d0d0d;
-    border-top:    1px solid rgba(242,240,235,0.06);
-    border-bottom: 1px solid rgba(242,240,235,0.06);
+    border-top:    1px solid rgba(var(--ww),0.06);
+    border-bottom: 1px solid rgba(var(--ww),0.06);
   }
 
   .site-footer {
-    border-top: 1px solid rgba(242,240,235,0.07);
+    border-top: 1px solid rgba(var(--ww),0.07);
   }
 
 
@@ -154,12 +115,6 @@
     background: linear-gradient(to bottom, transparent, rgba(14,11,6,0.72));
   }
 
-  /* LFA right visual column */
-  .card-visual-col {
-    width: 340px;
-    flex-shrink: 0;
-  }
-
   /* Card lift hover */
   .card-lift {
     transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.55s cubic-bezier(0.22, 1, 0.36, 1);
@@ -167,76 +122,6 @@
   .card-lift:hover {
     transform: translateY(-4px);
     box-shadow: 0 32px 80px rgba(0,0,0,0.28);
-  }
-
-
-  /* ══════════════════════════════════════════════
-     PLACEHOLDER MODULES
-  ══════════════════════════════════════════════ */
-
-  .placeholder-module {
-    position: relative;
-    overflow: hidden;
-    border: 1px solid rgba(242,240,235,0.08);
-    border-radius: 0.75rem;
-    background:
-      radial-gradient(ellipse 80% 60% at 50% 50%, rgba(242,240,235,0.03) 0%, transparent 70%),
-      #111111;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .placeholder-module::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.04;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-    background-repeat: repeat;
-    background-size: 180px 180px;
-  }
-  .placeholder-module::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    border-radius: 0.75rem;
-    box-shadow: inset 0 1px 0 rgba(242,240,235,0.06), inset 0 -1px 0 rgba(0,0,0,0.3);
-  }
-  .placeholder-label {
-    font-size: 0.6rem;
-    text-transform: uppercase;
-    letter-spacing: 0.18em;
-    color: rgba(242,240,235,0.22);
-    position: relative;
-    z-index: 2;
-    text-align: center;
-    line-height: 1.6;
-  }
-  .placeholder-module--blue {
-    background:
-      radial-gradient(ellipse 80% 60% at 50% 50%, rgba(80,110,210,0.08) 0%, transparent 70%),
-      #0c0d14;
-    border-color: rgba(80,110,210,0.12);
-  }
-  .placeholder-module--amber {
-    background:
-      radial-gradient(ellipse 80% 60% at 50% 50%, rgba(205,155,55,0.08) 0%, transparent 70%),
-      #100e08;
-    border-color: rgba(205,155,55,0.12);
-  }
-  .placeholder-module--teal {
-    background:
-      radial-gradient(ellipse 80% 60% at 50% 50%, rgba(45,185,165,0.08) 0%, transparent 70%),
-      #080e0d;
-    border-color: rgba(45,185,165,0.12);
-  }
-  .placeholder-module--warm {
-    background:
-      radial-gradient(ellipse 80% 60% at 50% 50%, rgba(224,92,40,0.06) 0%, transparent 70%),
-      #0e0c0a;
-    border-color: rgba(224,92,40,0.10);
   }
 
 
@@ -273,7 +158,7 @@
     transition: background-color 0.4s ease;
   }
   .env-row:hover {
-    background-color: rgba(242,240,235,0.02);
+    background-color: rgb(var(--ww) / 0.02);
   }
   /* Initial hidden state — no inline style needed */
   .env-preview {
@@ -293,12 +178,6 @@
      DECORATIVE IMAGES
   ══════════════════════════════════════════════ */
 
-  /* Environment row hover previews */
-  .env-preview-img {
-    width: 160px;
-    height: 100px;
-  }
-
   /* CTA background artifact */
   .img-cta-artifact {
     width: 200px;
@@ -306,10 +185,4 @@
     opacity: 0.25;
   }
 
-  /* Perspective section edge fragment */
-  .img-perspective-fragment {
-    width: 140px;
-    height: 200px;
-    opacity: 0.4;
-  }
 }

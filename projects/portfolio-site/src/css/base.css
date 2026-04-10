@@ -1,4 +1,7 @@
 @layer base {
+  :root {
+    --ww: 242 240 235;  /* warm-white RGB channels — use as rgba(var(--ww), <alpha>) */
+  }
   html {
     background-color: #0a0a0a;
     color: #f2f0eb;
@@ -7,6 +10,19 @@
   }
   * { box-sizing: border-box; }
   body { overflow-x: hidden; }
+
+  /* Push content clear of fixed sidebar at desktop */
+  @media (min-width: 1024px) {
+    body {
+      padding-left: 7rem;
+    }
+  }
+  /* Give the sidebar itself breathing room from the pushed body */
+  @media (min-width: 1280px) {
+    body {
+      padding-left: 8rem;
+    }
+  }
   ::selection {
     background: rgba(224, 92, 40, 0.28);
     color: #f2f0eb;

@@ -1,19 +1,19 @@
 # Visual Comparison Report
 
 ## Similarity
-100.00%
+3.39%
 
 ## Mismatch Ratio
-0.00%
+96.61%
 
 ## Major
-- None
+- Large visual mismatch. Layout and spacing likely differ significantly.
 
 ## Medium
 - None
 
 ## Minor
-- Mostly close. Remaining differences are likely polish and spacing details.
+- None
 
 ## Files
 - Reference: tools/visual-loop/output/reference/reference.png
