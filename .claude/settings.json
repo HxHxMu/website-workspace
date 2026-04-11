@@ -6,7 +6,8 @@
       "Bash(sed -i '' 's/<section class=\"mx-auto max-w-7xl px-6 md:px-10 py-24 md:py-36\">/<section id=\"experience\" class=\"mx-auto max-w-7xl px-6 md:px-10 py-24 md:py-36\">/' /Volumes/lebe/website-workspace/projects/portfolio-site/src/partials/home/_experience.html)",
       "Bash(sed -i '' 's/<section class=\"section-environments\">/<section id=\"environments\" class=\"section-environments\">/' /Volumes/lebe/website-workspace/projects/portfolio-site/src/partials/home/_environments.html)",
       "Bash(sed -i '' 's/<section class=\"grain bg-ink relative overflow-hidden py-36 md:py-56\">/<section id=\"contact\" class=\"grain bg-ink relative overflow-hidden py-36 md:py-56\">/' /Volumes/lebe/website-workspace/projects/portfolio-site/src/partials/home/_contact.html)",
-      "Bash(curl -s http://localhost:8080/index.html)"
+      "Bash(curl -s http://localhost:8080/index.html)",
+      "Bash(grep \"heading-hero\" src/css/*.css)"
     ],
     "additionalDirectories": [
       "/private/tmp"

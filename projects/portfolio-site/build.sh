@@ -17,7 +17,8 @@ cat \
   "$S/_intro.html" \
   "$H/_hero.html" \
   "$H/_grid.html" \
-  "$H/_practice.html" \
+  "$H/_values.html" \
+  "$H/_background.html" \
   "$H/_work.html" \
   "$H/_experience.html" \
   "$H/_contact.html" \

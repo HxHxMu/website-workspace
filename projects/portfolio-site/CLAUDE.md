@@ -16,7 +16,6 @@ Build a polished portfolio and case study website for Luis E. Bonilla that feels
 ## Source of Truth
 - docs/architecture.md
 - docs/sitemap.md
-- docs/design-system.md
 - docs/decisions.md
 - docs/content-model.md
 - content/
@@ -29,50 +28,26 @@ Build a polished portfolio and case study website for Luis E. Bonilla that feels
 - easy content updates
 - identity files are relevant here
 
-## Design System
-This project uses a custom Editorial Product Portfolio design system.
+## Design System & Visual Direction
+This project uses a custom **Editorial Product Portfolio** design system. Do NOT use Material Design or generic SaaS dashboard UI.
+The visual language should feel premium, modern, editorial, thoughtful, and high-signal/low-clutter. It must read as "a product designer with elite visual taste and strong systems thinking." 
 
-Do NOT use Material Design for this project.
+**Layout & Component Principles**: 
+- Prefer strong spacing, large clean sections, and readable content width.
+- Components should feel clean, lightweight, and refined. Avoid overbuilt UI chrome or app-like heaviness.
+- Do not let Tailwind dictate the visual identity; the design system leads.
 
-The visual language should feel:
-- premium
-- modern
-- editorial
-- product-minded
-- minimal but expressive
-- visually intentional
-- polished for recruiters, hiring managers, and creative/product teams
+**Typography Principles**: Typography leads the system. Prioritize strong headline hierarchy, clear section rhythm, and elegant contrast between large and small text. San-serif modern (Inter) dominates.
 
-The portfolio should communicate:
-- strong product thinking
-- refined visual taste
-- storytelling ability
-- systems clarity
-
-See: docs/design-system.md
+**Color System & Flowbite Mapping**:
+- Primary (Accent): `#e05c28` (color-accent, maps to Flowbite `primary-500`)
+- Secondary (Warm Accent): `#b8b0a8` (color-warm-muted, secondary-300), `#504e4b` (color-warm-dim, secondary-500)
+- Backgrounds: `#0a0a0a` (bg-dark/gray-900), `#111111` (gray-800), `#1e1e1e` (gray-700)
+- Text: `#f2f0eb` (text-primary), `#b8b0a8` (text-secondary), `#504e4b` (text-tertiary)
 
 ## Motion
-This project should include tasteful motion and micro-interactions where useful.
-
-Preferred motion style:
-- subtle
-- elegant
-- smooth
-- premium-feeling
-- not distracting
-
-Good use cases:
-- hover states
-- reveal transitions
-- CTA polish
-- section transitions
-- card interaction
-- navigation feedback
-
-Avoid:
-- gimmicky motion
-- excessive movement
-- motion that slows clarity
+Follow standard website motion defaults (subtle, fast, purpose-driven).
+Key focus areas for this project: hover states, reveal transitions, and interactive visual feedback.
 
 ## Identity Loading
 Yes. Load identity files for portfolio, About, case studies, and personal positioning.
@@ -151,61 +126,7 @@ Periodically audit for unused patterns:
 ❌ **Do NOT use inline `style="..."` attributes in HTML**
 ✓ Use CSS classes for all visual styles (ref: `/Users/luisbonilla/.claude/projects/-Volumes-lebe-website-workspace/memory/feedback_no_inline_styles.md`)
 
-## Codex Delegation
-When a task requires working with the real repo, delegate it to Codex instead of doing it inline.
 
-Keep Claude focused on:
-- strategy
-- UX critique
-- architecture
-- writing
-- synthesis
-- decision-making
-
-Delegate to Codex for:
-- searching the codebase
-- reading multiple files for implementation context
-- editing code
-- refactoring
-- debugging
-- running tests, lint, or builds
-- checking diffs
-- verifying what changed in the repo
-
-When delegating, provide:
-- the specific task
-- only the necessary context
-- relevant files or paths
-- any constraints
-
-Ask Codex to return only:
-1. what changed
-2. issues or tradeoffs
-3. verification performed
-4. a short summary to paste back into Claude
-
-If there are meaningful product or architecture tradeoffs, Codex should surface them before making a major decision.
-
-## Recent Optimizations (2026-04-09)
-
-**Completed:**
-- ✅ Architecture audit & cleanup (158 lines of dead CSS removed, -2.7kb minified output)
-- ✅ CSS tokenization: `--ww` custom property for warm-white across 41 occurrences
-- ✅ Extracted inline JS to external file (`src/js/main.js`, 241 lines)
-- ✅ Removed empty `tokens.css` file
-- ✅ Cleaned 50+ macOS resource fork files (`._*`), added to `.gitignore`
-- ✅ Enhanced navigation hover states with trendy animations (gradient underline, glowing borders, elastic scale)
-- ✅ Fixed hamburger menu visibility (removed conflicting `lg:hidden` Tailwind class)
-
-**Files changed:**
-- `src/css/components.css` (-62 lines)
-- `src/css/animations.css` (-23 lines)
-- `src/css/utilities.css` (-41 lines, +animation rules, +tokenization)
-- `src/input.css` (-1 line, removed tokens.css import)
-- `src/partials/shared/_scripts.html` (refactored to external script tag)
-- `src/js/main.js` (new, 241 lines)
-- `src/partials/shared/_sidebar.html` (fixed hamburger class)
-- `.gitignore` (added `._*` pattern)
 
 ## Pending Tasks
 

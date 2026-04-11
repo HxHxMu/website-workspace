@@ -67,6 +67,86 @@
     will-change: transform;
   }
 
+  /* ── Values section ── */
+  @keyframes values-reveal {
+    0% {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .values-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .values-row {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 1em;
+    line-height: 1;
+    margin-bottom: 0;
+  }
+
+  .values-word {
+    font-weight: 700;
+    color: rgba(242, 240, 235, 1);
+    white-space: nowrap;
+    font-size: clamp(56px, 6.5vw, 72px);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  .values-arrow {
+    color: rgba(242, 240, 235, 1);
+    font-weight: 400;
+    font-size: 1.4em;
+    margin: 0 0.15em;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: opacity 900ms ease-out, transform 900ms ease-out;
+  }
+
+  .values-support {
+    font-weight: 400;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: opacity 900ms ease-out, transform 900ms ease-out;
+    white-space: nowrap;
+  }
+
+  /* Color variants for supporting text */
+  .values-row[data-color="blue"] .values-support {
+    color: rgba(80, 120, 240, 0.9);
+  }
+
+  .values-row[data-color="teal"] .values-support {
+    color: rgba(45, 200, 178, 0.9);
+  }
+
+  .values-row[data-color="warm"] .values-support {
+    color: rgba(224, 92, 40, 0.9);
+  }
+
+  .values-row[data-color="violet"] .values-support {
+    color: rgba(139, 108, 247, 0.9);
+  }
+
+  .values-row.visible .values-arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .values-row.visible .values-support {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
   /* ── Grain texture overlay ── */
   .grain::after {
     content: '';
@@ -436,41 +516,7 @@
     box-shadow: inset 0 0 0 1px rgba(var(--ww),0.25), 0 0 16px 0 rgba(224,92,40,0.25);
   }
 
-  /* ── Values section ── */
-  .values-word {
-    font-size: clamp(1.25rem, 2.5vw, 2rem);
-    font-weight: 600;
-    line-height: 1.2;
-    letter-spacing: -0.02em;
-  }
 
-  /* ── Experience logo / icon ── */
-  .exp-logo {
-    width: 96px;
-    height: 96px;
-    flex-shrink: 0;
-  }
-  .exp-logo svg {
-    width: 100%;
-    height: 100%;
-  }
-
-  /* ── Experience role title ── */
-  .exp-title {
-    font-size: clamp(2rem, 3.5vw, 3rem);
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    line-height: 1.1;
-  }
-
-  /* ── Contact photo ── */
-  .contact-photo {
-    aspect-ratio: 4 / 5;
-    max-height: 560px;
-  }
-  .contact-photo-overlay {
-    background: linear-gradient(to top, rgba(10,10,10,0.4) 0%, transparent 50%);
-  }
 
 }
 

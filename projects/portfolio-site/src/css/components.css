@@ -185,4 +185,25 @@
     opacity: 0.25;
   }
 
+  /* ══════════════════════════════════════════════
+     EXPERIENCE
+  ══════════════════════════════════════════════ */
+
+  .exp-logo {
+    flex-shrink: 0;
+    width: 80px;
+    height: 80px;
+  }
+  .exp-logo svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .exp-title {
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+  }
+
 }
