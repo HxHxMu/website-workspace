@@ -1,3 +1,44 @@
+// ── Intro overlay sequence (once per session) ──
+(function () {
+  const introOverlay = document.getElementById('intro-overlay');
+  if (!introOverlay) return;
+
+  // Check if intro has already played this session
+  const introShown = sessionStorage.getItem('intro-shown');
+
+  // Get all main content
+  const mainContent = document.querySelectorAll('nav, #sidebar, #hero, #work-grid, #practice, #work, #experience, #contact, footer');
+
+  if (introShown) {
+    // Skip intro, show content immediately
+    introOverlay.style.display = 'none';
+    mainContent.forEach(el => {
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    });
+  } else {
+    // Play intro for first time this session
+    // Hide all main content initially
+    mainContent.forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(40px)';
+    });
+
+    // After intro animation completes (2050ms), fade in main content
+    setTimeout(() => {
+      introOverlay.style.display = 'none';
+      introOverlay.style.pointerEvents = 'none';
+      mainContent.forEach(el => {
+        el.style.transition = 'opacity 800ms ease, transform 800ms cubic-bezier(0.16, 1, 0.3, 1)';
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      });
+      // Mark intro as shown for this session
+      sessionStorage.setItem('intro-shown', 'true');
+    }, 2050);
+  }
+}());
+
 // ── Hero orb physics — deep space float ──
 (function () {
   const hero   = document.getElementById('hero');
@@ -28,6 +69,19 @@
   }
 
   const orbs = orbEls.map(initOrb);
+
+  // Reinitialize orb positions on window resize
+  window.addEventListener('resize', () => {
+    orbEls.forEach((el, i) => {
+      const newOrb = initOrb(el, i);
+      orbs[i].x = newOrb.x;
+      orbs[i].y = newOrb.y;
+      orbs[i].ox = newOrb.ox;
+      orbs[i].oy = newOrb.oy;
+      orbs[i].vx = 0;
+      orbs[i].vy = 0;
+    });
+  }, { passive: true });
 
   let mouse = { x: -9999, y: -9999, inside: false };
   hero.addEventListener('mousemove', e => {
@@ -307,8 +361,8 @@
     });
   }
 
-  // Initialize with warm colors
-  updateOrbColors('warm');
+  // Initialize with blue colors (first tab)
+  updateOrbColors('blue');
 
   let hoveredTab = null;
   let convergenceDone = false;

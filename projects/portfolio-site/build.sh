@@ -14,6 +14,7 @@ cat \
   "$S/_head.html" \
   "$S/_nav.html" \
   "$S/_sidebar.html" \
+  "$S/_intro.html" \
   "$H/_hero.html" \
   "$H/_grid.html" \
   "$H/_practice.html" \
