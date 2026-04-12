@@ -72,14 +72,12 @@
     magnet.y = y;
     magnet.startTime = Date.now();
     magnet.tabTriggered = true;
-    console.log(`%c[HOVER CONVERGE]`, 'color: #2dc8b0; font-weight: bold', `Magnet: (${x.toFixed(1)}, ${y.toFixed(1)})`);
   }
 
   // Reset collision on hover leave
   function stopTabCollision() {
     magnet.active = false;
     tabCollisionActive = false;
-    console.log(`%c[HOVER LEAVE]`, 'color: #999; font-weight: bold');
   }
 
   // Apply burst on click
@@ -99,7 +97,6 @@
       orb.vy += (dy / d) * burstForce;
     });
 
-    console.log(`%c[CLICK BURST]`, 'color: #8b6cf7; font-weight: bold', `Force: ${burstForce.toFixed(1)}`);
     magnet.tabTriggered = false;
   }
 
@@ -133,11 +130,6 @@
       const burstVy = (dy / d) * burstForce;
       orb.vx += burstVx;
       orb.vy += burstVy;
-    });
-    console.log(`%c[BURST RELEASE]`, 'color: #8b6cf7; font-weight: bold', {
-      magnetPos: { x: magnet.x.toFixed(1), y: magnet.y.toFixed(1) },
-      tabTriggered: magnet.tabTriggered,
-      burstForce: burstForce.toFixed(1)
     });
   }
 
@@ -301,8 +293,6 @@
 
     // Apply monochromatic shades to each orb: A=500 (base), B=300 (light), C=700 (dark)
     const shades = [colors[500], colors[300], colors[700]];
-    const shadeNames = ['base', 'light', 'dark'];
-
     orbEls.forEach((orb, i) => {
       const primaryColor = shades[i];
       // Create semi-transparent secondary for glow effect (same hue, lower opacity)
@@ -312,12 +302,6 @@
       orb.style.background = gradient;
     });
 
-    console.log(`%c[ORB COLORS]`, 'color: #2dc8b0; font-weight: bold', {
-      scheme: colorScheme,
-      orbA: 'base (500)',
-      orbB: 'light (300)',
-      orbC: 'dark (700)'
-    });
   }
 
   // Initialize with blue colors (first tab)
@@ -345,7 +329,6 @@
         updateOrbColors(color);
         convergenceDone = true;
 
-        console.log(`%c[ONE-SHOT HOVER]`, 'color: #e05c28; font-weight: bold', `Tab: ${tab.dataset.audience}, Center: (${centerX.toFixed(1)}, ${centerY.toFixed(1)})`);
       }
     });
 
@@ -376,4 +359,3 @@
   if (headline) headline.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
   if (sub)      sub.style.transition = 'opacity 0.3s ease';
 }());
-

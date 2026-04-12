@@ -7,7 +7,8 @@
       "Bash(sed -i '' 's/<section class=\"section-environments\">/<section id=\"environments\" class=\"section-environments\">/' /Volumes/lebe/website-workspace/projects/portfolio-site/src/partials/home/_environments.html)",
       "Bash(sed -i '' 's/<section class=\"grain bg-ink relative overflow-hidden py-36 md:py-56\">/<section id=\"contact\" class=\"grain bg-ink relative overflow-hidden py-36 md:py-56\">/' /Volumes/lebe/website-workspace/projects/portfolio-site/src/partials/home/_contact.html)",
       "Bash(curl -s http://localhost:8080/index.html)",
-      "Bash(grep \"heading-hero\" src/css/*.css)"
+      "Bash(grep \"heading-hero\" src/css/*.css)",
+      "Bash(git --version)"
     ],
     "additionalDirectories": [
       "/private/tmp"

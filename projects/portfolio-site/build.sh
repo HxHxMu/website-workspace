@@ -49,7 +49,4 @@ cat \
   "$S/_scripts-page.html" \
   > src/case-study.html
 
-# ── CSS ──
-npx @tailwindcss/cli -i ./src/input.css -o ./src/output.css --minify
-
-echo "Built: index.html, about.html, case-study.html"
+echo "Built HTML: index.html, about.html, case-study.html"

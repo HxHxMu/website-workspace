@@ -25,13 +25,9 @@ jobs:
         working-directory: projects/portfolio-site
         run: npm install
 
-      - name: Build HTML
+      - name: Build Site
         working-directory: projects/portfolio-site
-        run: chmod +x build.sh && ./build.sh
-
-      - name: Build CSS
-        working-directory: projects/portfolio-site
-        run: npm run build:css
+        run: chmod +x build.sh && npm run build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4

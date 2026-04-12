@@ -6,6 +6,7 @@
     // ── Nav: glass on scroll ──
     const nav = document.getElementById('nav');
     function updateNav() {
+      if (!nav) return;
       if (window.scrollY > 40) {
         nav.style.backdropFilter = 'blur(18px)';
         nav.style.webkitBackdropFilter = 'blur(18px)';
@@ -19,6 +20,7 @@
       }
     }
     window.addEventListener('scroll', updateNav, { passive: true });
+    updateNav();
 
     // ── Scroll reveals ──
     const observer = new IntersectionObserver((entries) => {

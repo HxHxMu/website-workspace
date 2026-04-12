@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "./build.sh && tailwindcss -i ./src/input.css -o ./src/output.css --minify",
+    "build": "./build.sh && npm run build:css",
     "build:css": "tailwindcss -i ./src/input.css -o ./src/output.css --minify",
     "serve": "python3 -m http.server 8080 -d ./src"
   },
