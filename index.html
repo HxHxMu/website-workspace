@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Luis E. Bonilla — Product Designer & Creative Technologist</title>
+  <link rel="stylesheet" href="./output.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..800;1,14..32,300..800&display=swap" rel="stylesheet">
+</head>
+<body class="bg-ink text-warm-white font-sans">
+
+  <!-- ═══════════════════════════════════════════════
+       MONOGRAM
+  ═══════════════════════════════════════════════ -->
+  <a href="./index.html" id="monogram" class="monogram" aria-label="Luis E. Bonilla — Home">
+    <span class="monogram-initial">L</span><span class="monogram-rest"><span class="mono-l" style="--d:0">u</span><span class="mono-l" style="--d:1">i</span><span class="mono-l" style="--d:2">s</span><span class="mono-l" style="--d:3"> </span><span class="mono-l" style="--d:4">E</span><span class="mono-l" style="--d:5">.</span><span class="mono-l" style="--d:6"> </span><span class="mono-l" style="--d:7">B</span><span class="mono-l" style="--d:8">o</span><span class="mono-l" style="--d:9">n</span><span class="mono-l" style="--d:10">i</span><span class="mono-l" style="--d:11">l</span><span class="mono-l" style="--d:12">l</span><span class="mono-l" style="--d:13">a</span></span>
+  </a>
+
+  <!-- ═══════════════════════════════════════════════
+       SIDEBAR NAV (desktop)
+  ═══════════════════════════════════════════════ -->
+  <nav id="sidebar" aria-label="Page sections" class="sidebar-nav hidden lg:flex flex-col gap-2">
+    <a href="#hero"         class="sidebar-link sidebar-link--active" data-section="hero">Intro</a>
+    <a href="#work-grid"    class="sidebar-link" data-section="work-grid">Work</a>
+    <a href="#values"       class="sidebar-link" data-section="values">Values</a>
+    <a href="#background"   class="sidebar-link" data-section="background">Background</a>
+    <a href="#work"         class="sidebar-link" data-section="work">Cases</a>
+    <a href="#experience"   class="sidebar-link" data-section="experience">Experience</a>
+    <a href="#contact"      class="sidebar-link" data-section="contact">Contact</a>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════
+       HAMBURGER BUTTON (mobile / tablet)
+  ═══════════════════════════════════════════════ -->
+  <button id="menu-btn" class="menu-btn" aria-label="Open menu" aria-expanded="false">
+    <span class="menu-bar"></span>
+    <span class="menu-bar"></span>
+  </button>
+
+  <!-- ═══════════════════════════════════════════════
+       FULL-SCREEN OVERLAY MENU
+  ═══════════════════════════════════════════════ -->
+  <div id="menu-overlay" class="menu-overlay" aria-hidden="true">
+
+    <!-- Close button -->
+    <button id="menu-close" class="menu-close" aria-label="Close menu">
+      <span class="menu-bar menu-bar--close-a"></span>
+      <span class="menu-bar menu-bar--close-b"></span>
+    </button>
+
+    <!-- Nav links — large editorial -->
+    <nav class="menu-overlay-nav" aria-label="Site navigation">
+      <a href="#hero"         class="overlay-link" data-index="0">Intro</a>
+      <a href="#work-grid"    class="overlay-link" data-index="1">Work</a>
+      <a href="#values"       class="overlay-link" data-index="2">Values</a>
+      <a href="#background"   class="overlay-link" data-index="3">Background</a>
+      <a href="#work"         class="overlay-link" data-index="4">Cases</a>
+      <a href="#experience"   class="overlay-link" data-index="5">Experience</a>
+      <a href="#contact"      class="overlay-link" data-index="6">Contact</a>
+    </nav>
+
+    <!-- Bottom meta -->
+    <div class="menu-overlay-meta">
+      <span>hello@luisbonilla.com</span>
+    </div>
+
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════
+       INTRO OVERLAY — Full screen name reveal
+  ═══════════════════════════════════════════════ -->
+  <div id="intro-overlay" class="intro-overlay">
+    <div class="intro-content">
+      <h1 class="intro-name">Luis E. Bonilla</h1>
+      <p class="intro-subtitle">— Designer & Creative Technologist</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       HERO
+  ═══════════════════════════════════════════════ -->
+  <section id="hero" class="grain relative min-h-screen hero-gradient flex flex-col justify-center overflow-hidden">
+
+    <!-- Parallax atmospheric layer (JS transforms the wrapper, gradient is CSS) -->
+    <div id="hero-parallax" class="absolute inset-0 pointer-events-none will-change-transform">
+      <div class="absolute inset-0 atmo-hero"></div>
+    </div>
+
+    <!-- Dot grid — faint structural texture -->
+    <div class="absolute inset-0 pointer-events-none hero-dot-grid"></div>
+
+    <!-- Ambient gradient orbs — above parallax layer -->
+    <div class="hero-orb hero-orb-a"></div>
+    <div class="hero-orb hero-orb-b"></div>
+    <div class="hero-orb hero-orb-c"></div>
+
+
+    <!-- Scroll-fade overlay (JS-driven opacity) -->
+    <div id="hero-fade" class="absolute inset-0 bg-ink pointer-events-none" style="opacity: 0;"></div>
+
+    <!-- Content: full-width editorial statement -->
+    <div class="relative z-10 mx-auto max-w-7xl px-6 md:px-10 w-full py-20 md:py-32 flex-1 flex flex-col justify-center">
+
+      <!-- Audience selector -->
+      <div class="audience-strip reveal mb-10 md:mb-14">
+        <div class="audience-tabs flex flex-wrap gap-2">
+          <button class="audience-tab audience-tab--active text-xs font-medium uppercase tracking-label px-4 py-2 border rounded-full transition-all duration-300 bg-warm-white/05 text-warm-white border-warm-white/35" data-audience="anyone" data-color="blue">For Anyone</button>
+          <button class="audience-tab text-xs font-medium uppercase tracking-label px-4 py-2 border rounded-full transition-all duration-300 bg-transparent text-warm-muted border-warm-white/12 hover:border-warm-white/35 hover:text-warm-white hover:bg-warm-white/05" data-audience="recruiters" data-color="teal">Recruiters</button>
+          <button class="audience-tab text-xs font-medium uppercase tracking-label px-4 py-2 border rounded-full transition-all duration-300 bg-transparent text-warm-muted border-warm-white/12 hover:border-warm-white/35 hover:text-warm-white hover:bg-warm-white/05" data-audience="directors" data-color="violet">Design Directors</button>
+          <button class="audience-tab text-xs font-medium uppercase tracking-label px-4 py-2 border rounded-full transition-all duration-300 bg-transparent text-warm-muted border-warm-white/12 hover:border-warm-white/35 hover:text-warm-white hover:bg-warm-white/05" data-audience="designers" data-color="warm">Product Designers</button>
+          <button class="audience-tab text-xs font-medium uppercase tracking-label px-4 py-2 border rounded-full transition-all duration-300 bg-transparent text-warm-muted border-warm-white/12 hover:border-warm-white/35 hover:text-warm-white hover:bg-warm-white/05" data-audience="pms" data-color="teal">Product Managers</button>
+          <button class="audience-tab text-xs font-medium uppercase tracking-label px-4 py-2 border rounded-full transition-all duration-300 bg-transparent text-warm-muted border-warm-white/12 hover:border-warm-white/35 hover:text-warm-white hover:bg-warm-white/05" data-audience="engineers" data-color="violet">Engineers</button>
+          <button class="audience-tab text-xs font-medium uppercase tracking-label px-4 py-2 border rounded-full transition-all duration-300 bg-transparent text-warm-muted border-warm-white/12 hover:border-warm-white/35 hover:text-warm-white hover:bg-warm-white/05" data-audience="creative-ai" data-color="violet">Creative / AI</button>
+        </div>
+      </div>
+
+      <!-- Headline — swaps per audience -->
+      <h1 id="hero-headline" class="heading-hero font-bold text-warm-white max-w-5xl reveal reveal-delay-1">
+        Designer who makes complex things feel clear, alive, and worth using.
+      </h1>
+
+      <p id="hero-sub" class="mt-10 text-base md:text-lg text-warm-muted leading-relaxed max-w-md reveal reveal-delay-2">
+        Product design &middot; creative technology &middot; AI workflows.<br>
+        Disney &middot; Citrix &middot; Life Force Academy.
+      </p>
+
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center opacity-30 pointer-events-none">
+      <div class="w-px h-14 bg-warm-white/50 animate-scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       WORK GRID
+  ═══════════════════════════════════════════════ -->
+  <section id="work-grid" class="w-full overflow-hidden reveal">
+    <img
+      src="./assets/img/work_collage.png"
+      alt="Selected work — product design, interaction, and generative systems"
+      class="w-full block object-cover">
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       VALUES
+  ═══════════════════════════════════════════════ -->
+  <section id="values" class="bg-ink relative overflow-hidden py-16">
+    <div class="relative z-10 mx-auto max-w-7xl px-6 md:px-10">
+
+      <!-- Values block — tight typographic display -->
+      <div class="values-block space-y-0">
+        <div class="values-row reveal" data-value="useful" data-color="blue">
+          <h3 class="values-word font-bold text-warm-white">Useful</h3>
+          <span class="values-arrow">→</span>
+          <p class="values-support text-2xl md:text-3xl font-normal leading-none">function first</p>
+        </div>
+
+        <div class="values-row reveal reveal-delay-2" data-value="considered" data-color="teal">
+          <h3 class="values-word font-bold text-warm-white">Considered</h3>
+          <span class="values-arrow">→</span>
+          <p class="values-support text-2xl md:text-3xl font-normal leading-none">intentional decisions</p>
+        </div>
+
+        <div class="values-row reveal reveal-delay-4" data-value="beautiful" data-color="warm">
+          <h3 class="values-word font-bold text-warm-white">Beautiful</h3>
+          <span class="values-arrow">→</span>
+          <p class="values-support text-2xl md:text-3xl font-normal leading-none">visual craft</p>
+        </div>
+
+        <div class="values-row reveal reveal-delay-5" data-value="thoughtful" data-color="violet">
+          <h3 class="values-word font-bold text-warm-white">Thoughtful</h3>
+          <span class="values-arrow">→</span>
+          <p class="values-support text-2xl md:text-3xl font-normal leading-none">human layer</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       BACKGROUND
+  ═══════════════════════════════════════════════ -->
+  <section id="background" class="bg-ink relative overflow-hidden py-16">
+    <div class="relative z-10 mx-auto max-w-7xl px-6 md:px-10">
+
+      <!-- 2x2 staggered grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-start">
+
+        <!-- Row 1: Empty | Text -->
+        <div class="hidden md:block"></div>
+        <div class="reveal">
+          <p class="text-lg md:text-xl font-normal text-warm-muted leading-relaxed">
+            I started in print, designing album covers, promo, and apparel, shaping visuals that carried identity and mood.
+          </p>
+          <p class="mt-6 text-lg md:text-xl font-normal text-warm-muted leading-relaxed">
+            That path led me into the web during the Flash era, when design, motion, and code began to blur together. I explored interaction, animation, and front-end work, always grounded in visual thinking and how things feel in motion.
+          </p>
+        </div>
+
+        <!-- Row 2: Text | Empty -->
+        <div class="reveal reveal-delay-1">
+          <p class="text-lg md:text-xl font-normal text-warm-muted leading-relaxed">
+            Over time, the work shifted. It became less about individual pieces and more about how everything connects. I moved into product design, focusing on structure, systems, and experiences that need to scale and hold together.
+          </p>
+          <p class="mt-6 text-lg md:text-xl font-normal text-warm-muted leading-relaxed">
+            Today, I bring it all together, using generative tools and AI-assisted coding to design and build products, creative systems, and digital experiences.
+          </p>
+        </div>
+        <div class="hidden md:block"></div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       SELECTED WORK
+  ═══════════════════════════════════════════════ -->
+  <section id="work" class="mx-auto max-w-7xl px-6 md:px-10 pb-0 pt-8">
+
+    <div class="mb-10 reveal">
+      <p class="text-xs uppercase tracking-label text-warm-dim mb-5">Selected Work</p>
+      <p class="max-w-2xl text-warm-muted text-base md:text-lg leading-relaxed">
+        A selection of product, interaction, and generative systems work across consumer platforms, accessibility, and AI-assisted creative direction.
+      </p>
+    </div>
+
+    <!-- ── CASE 1 — LFA: Featured large card ── -->
+    <a href="./case-study.html"
+       class="card-lift card-case card-case--lg card-gradient-lfa group relative block mb-3 reveal reveal-delay-1">
+
+      <!-- Inner border ring -->
+      <div class="absolute inset-0 card-ring ring-1 ring-warm-white/6 group-hover:ring-warm-white/18 transition-all duration-500 pointer-events-none"></div>
+
+      <!-- Atmospheric accent glow -->
+      <div class="absolute right-0 top-0 w-3/5 h-full pointer-events-none card-accent-lfa"></div>
+
+      <!-- Bottom vignette -->
+      <div class="absolute card-vignette pointer-events-none"></div>
+
+      <div class="relative z-20 p-10 md:p-16 flex flex-col md:flex-row gap-10 min-h-[640px]">
+
+        <!-- Left: Copy -->
+        <div class="flex flex-col justify-between flex-1">
+          <div>
+            <span class="text-xs uppercase tracking-label text-accent-lfa/75">01 — Product System</span>
+          </div>
+          <div>
+            <h3 class="heading-case-lg font-bold text-warm-white mb-5 group-hover:translate-x-2 transition-transform duration-500">
+              Life Force<br>Academy
+            </h3>
+            <p class="max-w-sm text-warm-muted text-sm md:text-base leading-relaxed mb-6">
+              Redesigned a fragmented learning platform into a clearer, more scalable member experience across onboarding, membership, and content discovery.
+            </p>
+            <p class="text-xs text-warm-dim mb-2">Principal Product Designer &middot; Web Platform</p>
+            <p class="text-xs text-accent-lfa/65 mb-8">~20% onboarding completion improvement &middot; ~15% conversion lift</p>
+            <span class="inline-flex items-center gap-2.5 text-sm text-warm-white/70 group-hover:text-warm-white transition-colors duration-400">
+              View Case Study
+              <span class="group-hover:translate-x-1.5 transition-transform duration-300 inline-block">&rarr;</span>
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </a>
+
+    <!-- ── Two-column: Disney + AI ── -->
+    <div class="grid md:grid-cols-2 gap-3 mb-3">
+
+      <!-- CASE 2 — Disney -->
+      <a href="./case-study.html"
+         class="card-lift card-case card-case--sm card-gradient-disney group relative block reveal reveal-delay-2">
+        <div class="absolute inset-0 card-ring ring-1 ring-warm-white/6 group-hover:ring-warm-white/18 transition-all duration-500 pointer-events-none"></div>
+
+        <div class="absolute right-0 top-0 w-3/5 h-full pointer-events-none card-accent-disney"></div>
+        <div class="absolute card-vignette card-vignette--disney pointer-events-none"></div>
+
+        <div class="relative z-20 p-10 md:p-12 flex flex-col justify-between min-h-[520px]">
+          <div class="flex items-start justify-between">
+            <span class="text-xs uppercase tracking-label text-accent-disney/70">02 — Interaction + Accessibility</span>
+          </div>
+
+          <div>
+            <h3 class="heading-case-sm font-bold text-warm-white mb-4 group-hover:translate-x-1.5 transition-transform duration-500">
+              Disney<br>Parks
+            </h3>
+            <p class="text-warm-muted text-sm leading-relaxed mb-4 max-w-xs">
+              Refined video playback interactions and accessibility semantics to create a more predictable and inclusive mobile experience.
+            </p>
+            <p class="text-xs text-warm-dim mb-2">Product Designer &middot; iOS / Android</p>
+            <p class="text-xs text-accent-disney/60 mb-6">Playback behavior &middot; screen reader clarity &middot; interface semantics</p>
+            <span class="inline-flex items-center gap-2 text-xs text-warm-white/60 group-hover:text-warm-white transition-colors duration-300">
+              View Case Study <span class="group-hover:translate-x-1.5 transition-transform duration-300 inline-block">&rarr;</span>
+            </span>
+          </div>
+        </div>
+      </a>
+
+      <!-- CASE 3 — AI Workflow -->
+      <a href="./case-study.html"
+         class="card-lift card-case card-case--sm card-gradient-ai group relative block reveal reveal-delay-3">
+        <div class="absolute inset-0 card-ring ring-1 ring-warm-white/6 group-hover:ring-warm-white/18 transition-all duration-500 pointer-events-none"></div>
+
+        <div class="absolute left-0 bottom-0 w-4/5 h-full pointer-events-none card-accent-ai"></div>
+
+        <div class="relative z-20 p-10 md:p-12 flex flex-col justify-between min-h-[520px]">
+          <div>
+            <span class="text-xs uppercase tracking-label text-accent-ai/70">03 — Generative Creative System</span>
+          </div>
+
+          <div>
+            <h3 class="heading-case-sm font-bold text-warm-white mb-4 group-hover:translate-x-1.5 transition-transform duration-500">
+              AI<br>Workflow
+            </h3>
+            <p class="text-warm-muted text-sm leading-relaxed mb-4 max-w-xs">
+              Built an AI-native visual and release pipeline for a fictional music artist — combining identity design, prompt iteration, and scalable asset production.
+            </p>
+            <p class="text-xs text-warm-dim mb-2">Creative Direction &middot; Generative Media</p>
+            <p class="text-xs text-accent-ai/60 mb-6">Prompt systems &middot; visual identity &middot; continuous content production</p>
+            <span class="inline-flex items-center gap-2 text-xs text-warm-white/60 group-hover:text-warm-white transition-colors duration-300">
+              View Project <span class="group-hover:translate-x-1.5 transition-transform duration-300 inline-block">&rarr;</span>
+            </span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       EXPERIENCE
+  ═══════════════════════════════════════════════ -->
+  <section id="experience" class="mx-auto max-w-7xl px-6 md:px-10 py-24 md:py-36">
+
+    <div class="grid md:grid-cols-12 gap-10 md:gap-16 mb-16 reveal">
+      <div class="md:col-span-3">
+        <p class="text-xs uppercase tracking-label text-warm-dim">Experience</p>
+      </div>
+      <div class="md:col-span-8">
+        <p class="text-warm-muted text-base leading-relaxed">
+          15+ years working across consumer products, enterprise platforms, wellness tech, and independent creative systems.
+        </p>
+      </div>
+    </div>
+
+    <div class="reveal reveal-delay-1 space-y-20">
+
+      <!-- Disney -->
+      <div class="pb-20 border-b-surface-md">
+        <div class="exp-logo mb-6">
+          <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="48" cy="48" r="48" fill="#1a1a1a"/>
+            <circle cx="48" cy="48" r="44" fill="none" stroke="rgba(242,240,235,0.15)" stroke-width="1"/>
+            <text x="48" y="56" text-anchor="middle" font-size="24" font-weight="bold" fill="rgba(242,240,235,0.35)" font-family="system-ui">D</text>
+          </svg>
+        </div>
+        <p class="text-[10px] uppercase tracking-[0.16em] text-warm-dim mb-3">Disney</p>
+        <h3 class="exp-title text-warm-white mb-2">Product Designer</h3>
+        <p class="text-xs text-warm-dim mb-6">2021–2023 &middot; Los Angeles, CA</p>
+        <p class="text-base text-warm-muted leading-relaxed max-w-2xl">Consumer product, interaction design, accessibility, and platform experience for Parks mobile apps.</p>
+      </div>
+
+      <!-- Citrix -->
+      <div class="pb-20 border-b-surface-md">
+        <div class="exp-logo mb-6">
+          <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="48" cy="48" r="48" fill="#1a1a1a"/>
+            <circle cx="48" cy="48" r="44" fill="none" stroke="rgba(242,240,235,0.15)" stroke-width="1"/>
+            <text x="48" y="56" text-anchor="middle" font-size="24" font-weight="bold" fill="rgba(242,240,235,0.35)" font-family="system-ui">C</text>
+          </svg>
+        </div>
+        <p class="text-[10px] uppercase tracking-[0.16em] text-warm-dim mb-3">Citrix</p>
+        <h3 class="exp-title text-warm-white mb-2">Senior Product Designer</h3>
+        <p class="text-xs text-warm-dim mb-6">2018–2021 &middot; Santa Clara, CA</p>
+        <p class="text-base text-warm-muted leading-relaxed max-w-2xl">Enterprise UX systems, end-to-end workflows, and interface clarity across virtualization products.</p>
+      </div>
+
+      <!-- PwC -->
+      <div class="pb-20 border-b-surface-md">
+        <div class="exp-logo mb-6">
+          <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="48" cy="48" r="48" fill="#1a1a1a"/>
+            <circle cx="48" cy="48" r="44" fill="none" stroke="rgba(242,240,235,0.15)" stroke-width="1"/>
+            <text x="48" y="56" text-anchor="middle" font-size="24" font-weight="bold" fill="rgba(242,240,235,0.35)" font-family="system-ui">P</text>
+          </svg>
+        </div>
+        <p class="text-[10px] uppercase tracking-[0.16em] text-warm-dim mb-3">PwC</p>
+        <h3 class="exp-title text-warm-white mb-2">UX Designer</h3>
+        <p class="text-xs text-warm-dim mb-6">2016–2018 &middot; New York, NY</p>
+        <p class="text-base text-warm-muted leading-relaxed max-w-2xl">Responsive product design and cross-functional digital delivery for internal and client-facing tools.</p>
+      </div>
+
+      <!-- Life Force Academy -->
+      <div class="pb-20 border-b-surface-md">
+        <div class="exp-logo mb-6">
+          <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="48" cy="48" r="48" fill="#1a1a1a"/>
+            <circle cx="48" cy="48" r="44" fill="none" stroke="rgba(242,240,235,0.15)" stroke-width="1"/>
+            <text x="48" y="56" text-anchor="middle" font-size="24" font-weight="bold" fill="rgba(242,240,235,0.35)" font-family="system-ui">L</text>
+          </svg>
+        </div>
+        <p class="text-[10px] uppercase tracking-[0.16em] text-warm-dim mb-3">Life Force Academy</p>
+        <h3 class="exp-title text-warm-white mb-2">Principal Product Designer</h3>
+        <p class="text-xs text-warm-dim mb-6">2023–2024 &middot; Miami, FL</p>
+        <p class="text-base text-warm-muted leading-relaxed max-w-2xl">End-to-end platform redesign — onboarding, membership, content systems, and design infrastructure.</p>
+      </div>
+
+      <!-- Independent -->
+      <div>
+        <div class="exp-logo mb-6">
+          <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="48" cy="48" r="48" fill="#1a1a1a"/>
+            <circle cx="48" cy="48" r="44" fill="none" stroke="rgba(242,240,235,0.15)" stroke-width="1"/>
+            <text x="48" y="56" text-anchor="middle" font-size="24" font-weight="bold" fill="rgba(242,240,235,0.35)" font-family="system-ui">✦</text>
+          </svg>
+        </div>
+        <p class="text-[10px] uppercase tracking-[0.16em] text-warm-dim mb-3">Independent</p>
+        <h3 class="exp-title text-warm-white mb-2">Creative Direction &amp; AI Experiments</h3>
+        <p class="text-xs text-warm-dim mb-6">Ongoing &middot; Remote</p>
+        <p class="text-base text-warm-muted leading-relaxed max-w-2xl">Generative identity systems, motion design, creative tooling, and AI-assisted production pipelines.</p>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════
+       CONTACT
+  ═══════════════════════════════════════════════ -->
+  <section id="contact" class="grain bg-ink relative overflow-hidden py-36 md:py-56">
+    <div class="absolute inset-0 pointer-events-none atmo-cta"></div>
+
+    <div class="relative z-10 mx-auto max-w-7xl px-6 md:px-10">
+      <div class="grid md:grid-cols-12 gap-16 items-end">
+
+        <!-- Left: text -->
+        <div class="md:col-span-7 reveal">
+          <p class="text-xs uppercase tracking-label text-warm-dim mb-10">Currently Available</p>
+
+          <h2 class="heading-cta font-bold text-warm-white">
+            Let's build<br>something worth<br>designing.
+          </h2>
+
+          <p class="mt-10 max-w-sm text-warm-muted text-base leading-relaxed">
+            Open to product design, creative technology, and AI-driven experience work. Based in Florida, available remotely.
+          </p>
+
+          <div class="mt-12 flex flex-wrap gap-4 reveal reveal-delay-1">
+            <a href="mailto:hello@luisbonilla.com"
+               class="group inline-flex items-center justify-center gap-3 bg-warm-white text-ink text-sm font-semibold px-8 py-3 rounded-full hover:bg-warm-muted focus:outline-none focus:ring-4 focus:ring-warm-white/30 transition-all duration-300">
+              Get in Touch
+              <span class="group-hover:translate-x-1 transition-transform duration-300">&rarr;</span>
+            </a>
+            <a href="mailto:hello@luisbonilla.com?subject=Resume%20Request"
+               class="inline-flex items-center justify-center text-sm font-medium text-warm-muted border border-warm-white/16 px-8 py-3 rounded-full hover:border-warm-white/35 hover:bg-warm-white/05 hover:text-warm-white focus:outline-none focus:ring-4 focus:ring-warm-white/10 transition-all duration-300">
+              View R&eacute;sum&eacute;
+            </a>
+          </div>
+        </div>
+
+        <!-- Right: photo -->
+        <div class="md:col-span-5 reveal reveal-delay-2">
+          <div class="contact-photo-wrap relative overflow-hidden rounded-2xl">
+            <img
+              src="./assets/img/placeholders/profile-photo.svg"
+              alt="Luis E. Bonilla"
+              class="w-full block object-cover aspect-[4/5] max-h-[560px]">
+            <div class="absolute inset-0 bg-[linear-gradient(to_top,rgba(10,10,10,0.4)_0%,transparent_50%)] pointer-events-none"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════════════ -->
+  <footer class="site-footer">
+    <div class="mx-auto max-w-7xl px-6 md:px-10 py-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <p class="text-xs text-warm-dim">© 2025 Luis E. Bonilla</p>
+      <div class="flex gap-6">
+        <a href="https://www.linkedin.com/in/lxexb" target="_blank" rel="noopener noreferrer" class="text-xs text-warm-dim hover:text-warm-white transition-colors duration-300">LinkedIn</a>
+        <a href="https://dribbble.com/" target="_blank" rel="noopener noreferrer" class="text-xs text-warm-dim hover:text-warm-white transition-colors duration-300">Dribbble</a>
+        <a href="mailto:hello@luisbonilla.com" class="text-xs text-warm-dim hover:text-warm-white transition-colors duration-300">Email</a>
+      </div>
+    </div>
+  </footer>
+<!-- ═══════════════════════════════════════════════
+       SCRIPTS
+  ═══════════════════════════════════════════════ -->
+<script src="js/orb-physics.js" defer></script>
+<script src="js/main.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/flowbite@3/dist/flowbite.min.js"></script>
+
+</body>
+
+</html>

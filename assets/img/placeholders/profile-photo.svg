@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600">
+  <rect width="600" height="600" fill="#141414"/>
+  <circle cx="300" cy="220" r="100" fill="#2a2a2a"/>
+  <ellipse cx="300" cy="520" rx="180" ry="140" fill="#2a2a2a"/>
+  <text x="300" y="580" text-anchor="middle" fill="#444" font-size="13" font-family="system-ui, sans-serif" letter-spacing="0.1em">PHOTO PLACEHOLDER</text>
+</svg>

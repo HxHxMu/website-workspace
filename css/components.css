@@ -1,0 +1,209 @@
+@layer utilities {
+
+  /* ══════════════════════════════════════════════
+     HERO
+  ══════════════════════════════════════════════ */
+
+  .hero-gradient {
+    background: #0a0a0a;
+  }
+
+  /* ══════════════════════════════════════════════
+     SECTION BACKGROUNDS
+  ══════════════════════════════════════════════ */
+
+  .section-artifacts {
+    background: #0e0e0e;
+  }
+
+  .section-environments {
+    background: #0d0d0d;
+    border-top:    1px solid rgba(var(--ww),0.06);
+    border-bottom: 1px solid rgba(var(--ww),0.06);
+  }
+
+  .site-footer {
+    border-top: 1px solid rgba(var(--ww),0.07);
+  }
+
+
+  /* ══════════════════════════════════════════════
+     ATMOSPHERIC OVERLAYS
+     Decorative full-bleed gradient divs, named by section.
+  ══════════════════════════════════════════════ */
+
+  .atmo-perspective {
+    background: radial-gradient(ellipse 50% 60% at 80% 50%, rgba(224,92,40,0.05) 0%, transparent 60%);
+  }
+
+  .atmo-artifacts {
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 40%, rgba(224,92,40,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 50% at 80% 70%, rgba(80,110,210,0.04) 0%, transparent 60%);
+  }
+
+  .atmo-thesis {
+    background:
+      radial-gradient(ellipse 50% 60% at 30% 50%, rgba(224,92,40,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 50% at 75% 60%, rgba(180,60,18,0.04) 0%, transparent 60%);
+  }
+
+  .atmo-cta {
+    background:
+      radial-gradient(ellipse 60% 70% at 15% 85%, rgba(224,92,40,0.13) 0%, transparent 52%),
+      radial-gradient(ellipse 42% 52% at 88% 15%, rgba(180,60,18,0.08) 0%, transparent 50%);
+  }
+
+
+  /* ══════════════════════════════════════════════
+     CARD SYSTEM
+  ══════════════════════════════════════════════ */
+
+  /* Shared case card geometry */
+  .card-case {
+    border-radius: 1.75rem;
+    overflow: hidden;
+  }
+  .card-case--lg { min-height: 640px; }
+  .card-case--sm { min-height: 520px; }
+
+  /* Inner ring — matches card border-radius */
+  .card-ring {
+    border-radius: 1.75rem;
+    z-index: 10;
+  }
+
+  /* Card background gradients */
+  .card-gradient-lfa {
+    background:
+      radial-gradient(ellipse 90% 70% at 75% 50%, rgba(80,110,210,0.30) 0%, transparent 58%),
+      radial-gradient(ellipse 55% 45% at 18% 72%, rgba(50,70,160,0.20) 0%, transparent 50%),
+      #0c0d14;
+  }
+  .card-gradient-disney {
+    background:
+      radial-gradient(ellipse 85% 68% at 68% 42%, rgba(205,155,55,0.30) 0%, transparent 56%),
+      radial-gradient(ellipse 48% 48% at 25% 72%, rgba(175,100,28,0.20) 0%, transparent 50%),
+      #100e08;
+  }
+  .card-gradient-ai {
+    background:
+      radial-gradient(ellipse 85% 68% at 62% 48%, rgba(45,185,165,0.26) 0%, transparent 58%),
+      radial-gradient(ellipse 48% 45% at 82% 18%, rgba(35,135,180,0.18) 0%, transparent 50%),
+      #080e0d;
+  }
+
+  /* Card inner accent glow (right/left side radial overlay) */
+  .card-accent-lfa {
+    background: radial-gradient(ellipse 100% 80% at 80% 35%, rgba(80,120,240,0.24) 0%, transparent 55%);
+  }
+  .card-accent-disney {
+    background: radial-gradient(ellipse 100% 72% at 80% 30%, rgba(215,162,60,0.26) 0%, transparent 54%);
+  }
+  .card-accent-ai {
+    background: radial-gradient(ellipse 90% 72% at 18% 72%, rgba(45,190,168,0.20) 0%, transparent 54%);
+  }
+
+  /* Bottom vignette fade */
+  .card-vignette {
+    bottom: 0; left: 0; right: 0;
+    height: 60%;
+    background: linear-gradient(to bottom, transparent, rgba(8,10,18,0.80));
+  }
+  .card-vignette--disney {
+    height: 50%;
+    background: linear-gradient(to bottom, transparent, rgba(14,11,6,0.72));
+  }
+
+  /* Card lift hover */
+  .card-lift {
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .card-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 32px 80px rgba(0,0,0,0.28);
+  }
+
+
+  /* ══════════════════════════════════════════════
+     ARTIFACT TILES
+  ══════════════════════════════════════════════ */
+
+  .artifact-tile {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.5s ease;
+  }
+  .artifact-tile:hover {
+    transform: scale(1.02);
+  }
+  /* Initial hidden state — no inline style needed */
+  .artifact-label {
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .artifact-tile:hover .artifact-label {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+
+  /* ══════════════════════════════════════════════
+     ENVIRONMENT ROWS
+  ══════════════════════════════════════════════ */
+
+  .env-row {
+    transition: background-color 0.4s ease;
+  }
+  .env-row:hover {
+    background-color: rgb(var(--ww) / 0.02);
+  }
+  /* Initial hidden state — no inline style needed */
+  .env-preview {
+    opacity: 0;
+    transform: translateX(8px) scale(0.96);
+    z-index: 20;
+    pointer-events: none;
+    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .env-row:hover .env-preview {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+
+
+  /* ══════════════════════════════════════════════
+     DECORATIVE IMAGES
+  ══════════════════════════════════════════════ */
+
+  /* CTA background artifact */
+  .img-cta-artifact {
+    width: 200px;
+    height: 280px;
+    opacity: 0.25;
+  }
+
+  /* ══════════════════════════════════════════════
+     EXPERIENCE
+  ══════════════════════════════════════════════ */
+
+  .exp-logo {
+    flex-shrink: 0;
+    width: 80px;
+    height: 80px;
+  }
+  .exp-logo svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .exp-title {
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+  }
+
+}

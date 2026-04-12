@@ -1,0 +1,33 @@
+@import "tailwindcss";
+@plugin "flowbite/plugin";
+@source "../../node_modules/flowbite";
+
+@theme {
+  --color-ink: #0a0a0a;
+  --color-surface: #111111;
+  --color-surface-2: #161616;
+  --color-surface-3: #1e1e1e;
+  --color-warm-white: #f2f0eb;
+  --color-warm-muted: #b8b0a8;
+  --color-warm-dim: #a89f96;
+  --color-accent: #e05c28;
+  --color-accent-light: #f28c60;
+  --color-accent-lfa: rgb(140 162 255);
+  --color-accent-disney: rgb(220 172 80);
+  --color-accent-ai: rgb(65 200 178);
+
+  --font-family-sans: Inter, system-ui, sans-serif;
+  --letter-spacing-label: 0.14em;
+  --letter-spacing-display: -0.03em;
+  --letter-spacing-prose: -0.018em;
+  --letter-spacing-env: -0.025em;
+
+  --radius-card: 1.25rem;
+  --radius-card-lg: 1.75rem;
+}
+
+@import "./css/base.css";
+@import "./css/animations.css";
+@import "./css/utilities.css";
+@import "./css/typography.css";
+@import "./css/components.css";
