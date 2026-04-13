@@ -50,8 +50,8 @@
 
   .atmo-cta {
     background:
-      radial-gradient(ellipse 60% 70% at 15% 85%, rgba(224,92,40,0.13) 0%, transparent 52%),
-      radial-gradient(ellipse 42% 52% at 88% 15%, rgba(180,60,18,0.08) 0%, transparent 50%);
+      radial-gradient(ellipse 60% 70% at 15% 85%, rgba(80,120,240,0.14) 0%, transparent 52%),
+      radial-gradient(ellipse 42% 52% at 88% 15%, rgba(120,160,255,0.10) 0%, transparent 50%);
   }
 
 

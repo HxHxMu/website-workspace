@@ -14,11 +14,11 @@ Build a polished portfolio and case study website for Luis E. Bonilla that feels
 - static-first architecture
 
 ## Source of Truth
-- docs/architecture.md
-- docs/sitemap.md
-- docs/decisions.md
-- docs/content-model.md
-- content/
+- `src/partials/` for page composition
+- `src/css/` for custom styling layers
+- `src/js/` for runtime behavior
+- `content/` for written project content
+- `refs/` and `visual-tests/` for visual matching inputs
 
 ## Constraints
 - strong visual clarity
@@ -62,7 +62,6 @@ Yes. Load identity files for portfolio, About, case studies, and personal positi
   - Applied globally via `:root` in `base.css`
   - Single-point maintenance for palette changes
 - **File organization**:
-  - `tokens.css` — deleted (tokens now in tailwind.config.js)
   - `base.css` — root variables, HTML/body resets, selection styling
   - `animations.css` — @keyframes for reveals, orbs, transitions
   - `utilities.css` — component utilities, navigation, interactive elements
@@ -70,13 +69,16 @@ Yes. Load identity files for portfolio, About, case studies, and personal positi
   - `components.css` — card systems, atmospheric overlays, decorative elements
 
 ### Build Process
-- **Command**: `./build.sh` in project root
+- **Commands**:
+  - `./build.sh` = build HTML only
+  - `npm run build:css` = build CSS only
+  - `npm run build` = build HTML, then CSS
 - **Steps**:
-  1. Concatenates HTML partials in order: head → nav → sidebar → home sections → footer → scripts
-  2. Runs Tailwind CLI: `npx @tailwindcss/cli -i ./src/input.css -o ./src/output.css --minify`
-  3. Outputs compiled site to `src/` directory
-- **No build tools required**: Pure HTML concatenation + Tailwind compilation
-- **JS handling**: External `src/js/main.js` (241 lines) loaded with `<script src="js/main.js" defer>`
+  1. Concatenate HTML partials into `src/index.html`, `src/about.html`, and `src/case-study.html`
+  2. Compile Tailwind from `src/input.css` to `src/output.css`
+  3. Publish/deploy from `src/`
+- **No framework build tools required**: HTML concatenation + Tailwind compilation
+- **JS handling**: browser-loaded scripts in `src/js/`
 
 ### Responsive Design
 - **Breakpoints**: Tailwind defaults (lg = 1024px)
@@ -95,16 +97,9 @@ Yes. Load identity files for portfolio, About, case studies, and personal positi
 - **Always verify contrast** before deploying
 
 ### JavaScript Architecture
-- **One main file**: `src/js/main.js` (no build step, runs directly in browser)
-- **Sections** (in order):
-  1. Orb physics engine (hero section, ~95 lines)
-  2. Hero parallax + fade on scroll
-  3. Scroll reveal observer (IntersectionObserver)
-  4. Hero title word-wrap animation
-  5. Mobile menu toggle (click/escape handlers)
-  6. Sidebar active link highlighting (scroll detection)
-  7. Audience tab copy swapping
-  8. Artifact tile hover label reveal
+- **Runtime files**:
+  - `src/js/main.js` = intro sequence, reveal logic, menu behavior, section highlighting, headline animation
+  - `src/js/orb-physics.js` = hero orb motion, audience-tab interactions, orb color/state changes
 - **No frameworks**: Vanilla JS, requestAnimationFrame for physics, IntersectionObserver for reveals
 - **Performance**: Debounce scroll listeners (passive: true), use `will-change` for animated elements
 
@@ -134,7 +129,6 @@ Periodically audit for unused patterns:
 - [ ] Profile photo → `src/assets/img/` + wire to contact section
 - [ ] Work collage grid finalization (Figma export)
 - [ ] Case study pages (currently link to generic placeholder)
-- [ ] About page (not yet implemented)
 
 **Deployment:**
 - [ ] Commit optimizations to git

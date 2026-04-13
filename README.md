@@ -1,12 +1,8 @@
 # Website Workspace
 
-Token-conscious workspace for:
-- portfolio sites
-- case study sites
-- landing pages
-- advanced marketing websites
+Token-conscious workspace for static marketing sites, case studies, and portfolio projects.
 
-## Global defaults
+## Global Defaults
 - Tailwind CSS
 - GitHub
 - Vercel
@@ -14,21 +10,25 @@ Token-conscious workspace for:
 - no database by default
 - optional Supabase only when needed
 
-## Context model
-- `.claude/system` = global rules
-- `.claude/identity` = personal context, opt-in only
-- `projects/*` = isolated project context
-- `tools/visual-loop` = screenshot comparison workflow
+## Context Layout
+- `.claude/system/` = workspace-wide rules and routing
+- `.claude/identity/` = personal background and case-study context
+- `projects/*` = isolated project implementations and project-specific docs
+- `design-system/` = shared tokens and preset-level guidance
+- `tools/visual-loop/` = screenshot comparison workflow
 
-## Design rule
-Tailwind is global.
-Design systems are chosen per project.
+## Documentation Strategy
+- Keep global rules in the workspace root and `.claude/system/`
+- Keep design language decisions inside each project
+- Keep project docs aligned to files that actually exist
+- Prefer short, current docs over aspirational doc trees
 
-## Portfolio rule
-The portfolio uses a custom Editorial Product Portfolio design system.
+## Project Notes
+- `projects/portfolio-site/` uses a custom Editorial Product Portfolio design system
+- `projects/client-site-template/` is a lighter marketing-site starter
 
-## Visual matching
+## Visual Matching
 Reference-driven visual matching lives in:
-- project refs/
-- project visual-tests/
-- tools/visual-loop/
+- project `refs/`
+- project `visual-tests/`
+- `tools/visual-loop/`
