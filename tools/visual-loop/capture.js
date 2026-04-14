@@ -12,7 +12,12 @@ async function main() {
     viewport: config.viewport
   });
 
-  const url = `http://127.0.0.1:8000/${config.page}`;
+  const baseUrl =
+    process.env.VISUAL_LOOP_BASE_URL ||
+    config.base_url ||
+    "http://127.0.0.1:8080";
+  const url = new URL(config.page, `${baseUrl}/`).toString();
+
   await page.goto(url, { waitUntil: "networkidle" });
 
   const outputPath = path.resolve(__dirname, "output/current/current.png");
