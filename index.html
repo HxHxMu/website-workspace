@@ -82,7 +82,7 @@
   <!-- ═══════════════════════════════════════════════
        HERO
   ═══════════════════════════════════════════════ -->
-  <section id="hero" class="grain relative min-h-screen hero-gradient flex flex-col justify-center overflow-hidden">
+  <section id="hero" data-orb-field="hero" data-orb-palette="blue" data-orb-mode="hero-tabs" class="grain orb-field orb-field--hero relative min-h-screen hero-gradient flex flex-col justify-center overflow-hidden">
 
     <!-- Parallax atmospheric layer (JS transforms the wrapper, gradient is CSS) -->
     <div id="hero-parallax" class="absolute inset-0 pointer-events-none will-change-transform">
@@ -93,16 +93,16 @@
     <div class="absolute inset-0 pointer-events-none hero-dot-grid"></div>
 
     <!-- Ambient gradient orbs — above parallax layer -->
-    <div class="hero-orb hero-orb-a"></div>
-    <div class="hero-orb hero-orb-b"></div>
-    <div class="hero-orb hero-orb-c"></div>
+    <div class="orb-field__orb orb-field__orb--a"></div>
+    <div class="orb-field__orb orb-field__orb--b"></div>
+    <div class="orb-field__orb orb-field__orb--c"></div>
 
 
     <!-- Scroll-fade overlay (JS-driven opacity) -->
     <div id="hero-fade" class="absolute inset-0 bg-ink pointer-events-none" style="opacity: 0;"></div>
 
     <!-- Content: full-width editorial statement -->
-    <div class="relative z-10 mx-auto max-w-7xl px-6 md:px-10 w-full py-20 md:py-32 flex-1 flex flex-col justify-center">
+    <div class="rail-clear relative z-10 mx-auto max-w-7xl px-6 md:px-10 w-full py-20 md:py-32 flex-1 flex flex-col justify-center">
 
       <!-- Audience selector -->
       <div class="audience-strip reveal mb-10 md:mb-14">
@@ -112,7 +112,7 @@
           <button class="audience-tab text-xs font-medium uppercase tracking-label px-4 py-2 border rounded-full transition-all duration-300 bg-transparent text-warm-muted border-warm-white/12 hover:border-warm-white/35 hover:text-warm-white hover:bg-warm-white/05" data-audience="directors" data-color="violet">Design Directors</button>
           <button class="audience-tab text-xs font-medium uppercase tracking-label px-4 py-2 border rounded-full transition-all duration-300 bg-transparent text-warm-muted border-warm-white/12 hover:border-warm-white/35 hover:text-warm-white hover:bg-warm-white/05" data-audience="designers" data-color="warm">Product Designers</button>
           <button class="audience-tab text-xs font-medium uppercase tracking-label px-4 py-2 border rounded-full transition-all duration-300 bg-transparent text-warm-muted border-warm-white/12 hover:border-warm-white/35 hover:text-warm-white hover:bg-warm-white/05" data-audience="pms" data-color="teal">Product Managers</button>
-          <button class="audience-tab text-xs font-medium uppercase tracking-label px-4 py-2 border rounded-full transition-all duration-300 bg-transparent text-warm-muted border-warm-white/12 hover:border-warm-white/35 hover:text-warm-white hover:bg-warm-white/05" data-audience="engineers" data-color="violet">Engineers</button>
+          <button class="audience-tab text-xs font-medium uppercase tracking-label px-4 py-2 border rounded-full transition-all duration-300 bg-transparent text-warm-muted border-warm-white/12 hover:border-warm-white/35 hover:text-warm-white hover:bg-warm-white/05" data-audience="engineers" data-color="blue">Engineers</button>
           <button class="audience-tab text-xs font-medium uppercase tracking-label px-4 py-2 border rounded-full transition-all duration-300 bg-transparent text-warm-muted border-warm-white/12 hover:border-warm-white/35 hover:text-warm-white hover:bg-warm-white/05" data-audience="creative-ai" data-color="violet">Creative / AI</button>
         </div>
       </div>
@@ -149,7 +149,7 @@
        VALUES
   ═══════════════════════════════════════════════ -->
   <section id="values" class="bg-ink relative overflow-hidden py-16">
-    <div class="relative z-10 mx-auto max-w-7xl px-6 md:px-10">
+    <div class="rail-clear relative z-10 mx-auto max-w-7xl px-6 md:px-10">
 
       <!-- Values block — tight typographic display -->
       <div class="values-block space-y-0">
@@ -185,7 +185,7 @@
        BACKGROUND
   ═══════════════════════════════════════════════ -->
   <section id="background" class="bg-ink relative overflow-hidden py-16">
-    <div class="relative z-10 mx-auto max-w-7xl px-6 md:px-10">
+    <div class="rail-clear relative z-10 mx-auto max-w-7xl px-6 md:px-10">
 
       <!-- 2x2 staggered grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-start">
@@ -220,7 +220,7 @@
   <!-- ═══════════════════════════════════════════════
        SELECTED WORK
   ═══════════════════════════════════════════════ -->
-  <section id="work" class="mx-auto max-w-7xl px-6 md:px-10 pb-0 pt-8">
+  <section id="work" class="rail-clear mx-auto max-w-7xl px-6 md:px-10 pb-0 pt-8">
 
     <div class="mb-10 reveal">
       <p class="text-xs uppercase tracking-label text-warm-dim mb-5">Selected Work</p>
@@ -334,7 +334,7 @@
   <!-- ═══════════════════════════════════════════════
        EXPERIENCE
   ═══════════════════════════════════════════════ -->
-  <section id="experience" class="mx-auto max-w-7xl px-6 md:px-10 py-24 md:py-36">
+  <section id="experience" class="rail-clear mx-auto max-w-7xl px-6 md:px-10 py-24 md:py-36">
 
     <div class="grid md:grid-cols-12 gap-10 md:gap-16 mb-16 reveal">
       <div class="md:col-span-3">
@@ -428,14 +428,16 @@
 
   </section>
 
-
   <!-- ═══════════════════════════════════════════════
        CONTACT
   ═══════════════════════════════════════════════ -->
-  <section id="contact" class="grain bg-ink relative overflow-hidden py-36 md:py-56">
+  <section id="contact" data-orb-field="contact" data-orb-palette="blue" class="grain orb-field orb-field--contact bg-ink relative overflow-hidden py-36 md:py-56">
     <div class="absolute inset-0 pointer-events-none atmo-cta"></div>
+    <div class="orb-field__orb orb-field__orb--a"></div>
+    <div class="orb-field__orb orb-field__orb--b"></div>
+    <div class="orb-field__orb orb-field__orb--c"></div>
 
-    <div class="relative z-10 mx-auto max-w-7xl px-6 md:px-10">
+    <div class="rail-clear relative z-10 mx-auto max-w-7xl px-6 md:px-10">
       <div class="grid md:grid-cols-12 gap-16 items-end">
 
         <!-- Left: text -->
@@ -486,7 +488,6 @@
       <p class="text-xs text-warm-dim">© 2025 Luis E. Bonilla</p>
       <div class="flex gap-6">
         <a href="https://www.linkedin.com/in/lxexb" target="_blank" rel="noopener noreferrer" class="text-xs text-warm-dim hover:text-warm-white transition-colors duration-300">LinkedIn</a>
-        <a href="https://dribbble.com/" target="_blank" rel="noopener noreferrer" class="text-xs text-warm-dim hover:text-warm-white transition-colors duration-300">Dribbble</a>
         <a href="mailto:hello@luisbonilla.com" class="text-xs text-warm-dim hover:text-warm-white transition-colors duration-300">Email</a>
       </div>
     </div>

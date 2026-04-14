@@ -473,6 +473,19 @@
     transform: scaleX(1);
   }
 
+  /* Keep desktop content clear of the floating left rail without
+     shrinking full-bleed background layers. */
+  @media (min-width: 1024px) {
+    .rail-clear {
+      padding-left: 10.5rem;
+    }
+  }
+  @media (min-width: 1280px) {
+    .rail-clear {
+      padding-left: 11.5rem;
+    }
+  }
+
   /* ── Audience selector ── */
   /* Active blue */
   .audience-tab--active[data-color="blue"] {
