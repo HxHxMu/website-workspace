@@ -24,13 +24,13 @@
   };
 
   const heroCopy = {
-    anyone: { h: 'Designer who makes complex things feel clear, alive, and worth using.', s: 'Product design · creative technology · AI workflows.<br>Disney · Citrix · Life Force Academy.' },
-    recruiters: { h: 'Senior product designer with 15+ years across consumer, enterprise, and AI.', s: 'Available for full-time roles. Based in Florida, open to remote.<br>Disney · Citrix · PwC · LFA.' },
-    directors: { h: 'Systems thinker who designs for scale, craft, and cross-functional clarity.', s: 'I bring product thinking, visual precision, and team-enabling structure to design orgs.' },
-    designers: { h: 'Interface, motion, and generative systems — built with intent and good taste.', s: 'From onboarding flows to AI creative pipelines. Always thinking about the layer beneath the layer.' },
-    pms: { h: 'A design partner who translates ambiguity into structured, shippable experiences.', s: 'I think in flows, edge cases, and outcomes — not just screens.' },
-    engineers: { h: 'Designer who specs clearly, prototypes in code, and respects the build.', s: 'Comfortable in HTML/CSS/JS. I reduce handoff friction and think in components.' },
-    'creative-ai': { h: 'I explore AI as part of the design process.', s: 'Faster iteration. New ways to create.' },
+    anyone: { h: 'Hello, I design digital products and systems, and I care about making them feel simple, clear, and easy to use.', s: '' },
+    recruiters: { h: 'If you\'re hiring, I\'m a product designer who\'s worked across Disney and enterprise products.', s: 'I\'ve done UX, UI, and systems—whatever helps move things forward.' },
+    directors: { h: 'If you\'re building something, I usually come in to help make it make more sense.', s: 'Cleaner structure, better flow, fewer headaches.' },
+    designers: { h: 'If you\'re a designer, you\'ll probably notice I care about how everything connects.', s: 'Not just the screens, but the stuff in between.' },
+    pms: { h: 'If you\'ve got an idea that\'s still a bit messy, I like helping shape it into something we can actually ship.', s: '' },
+    engineers: { h: 'If you\'re building it, I try to keep things clear upfront.', s: 'Fewer surprises, less back-and-forth.' },
+    'creative-ai': { h: 'If you\'re into new tools, I\'ve been playing with generative AI and AI-assisted coding to explore ideas and move faster.', s: 'It\'s been fun.' },
   };
 
   function withAlpha(color, alpha) {

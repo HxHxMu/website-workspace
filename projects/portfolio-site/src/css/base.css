@@ -3,8 +3,8 @@
     --ww: 242 240 235;  /* warm-white RGB channels — use as rgba(var(--ww), <alpha>) */
   }
   html {
-    background-color: #0a0a0a;
-    color: #f2f0eb;
+    background-color: var(--color-ink);
+    color: var(--color-warm-white);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -12,6 +12,6 @@
   body { overflow-x: hidden; }
   ::selection {
     background: rgba(224, 92, 40, 0.28);
-    color: #f2f0eb;
+    color: var(--color-warm-white);
   }
 }

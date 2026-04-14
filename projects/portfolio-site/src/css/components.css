@@ -5,7 +5,7 @@
   ══════════════════════════════════════════════ */
 
   .hero-gradient {
-    background: #0a0a0a;
+    background: var(--color-ink);
   }
 
   /* ══════════════════════════════════════════════
@@ -18,12 +18,12 @@
 
   .section-environments {
     background: #0d0d0d;
-    border-top:    1px solid rgba(var(--ww),0.06);
-    border-bottom: 1px solid rgba(var(--ww),0.06);
+    border-top:    1px solid rgba(var(--ww), 0.06);
+    border-bottom: 1px solid rgba(var(--ww), 0.06);
   }
 
   .site-footer {
-    border-top: 1px solid rgba(var(--ww),0.07);
+    border-top: 1px solid rgba(var(--ww), 0.07);
   }
 
 
@@ -158,7 +158,7 @@
     transition: background-color 0.4s ease;
   }
   .env-row:hover {
-    background-color: rgb(var(--ww) / 0.02);
+    background-color: rgba(var(--ww), 0.02);
   }
   /* Initial hidden state — no inline style needed */
   .env-preview {
@@ -191,19 +191,74 @@
 
   .exp-logo {
     flex-shrink: 0;
-    width: 80px;
-    height: 80px;
+    width: 120px;
+    height: 120px;
   }
-  .exp-logo svg {
+  .exp-logo svg,
+  .exp-logo img {
     width: 100%;
     height: 100%;
+    display: block;
   }
 
   .exp-title {
-    font-size: clamp(2.25rem, 5vw, 3.5rem);
-    font-weight: 700;
+    font-size: clamp(2.75rem, 6.5vw, 4.5rem);
+    font-weight: 500;
     letter-spacing: -0.03em;
     line-height: 1.05;
+  }
+
+  /* ── About ── */
+  .about-body {
+    font-size: 1.0625rem;
+    line-height: 1.8;
+    color: var(--color-warm-muted);
+  }
+
+  /* ── References ── */
+  .reference-block {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .reference-quote {
+    font-size: 1.125rem;
+    font-weight: 500;
+    line-height: 1.75;
+    color: var(--color-warm-white);
+  }
+
+  .reference-attribution {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .reference-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-warm-white);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: rgba(var(--ww), 0.3);
+    transition: text-decoration-color 0.3s ease;
+  }
+
+  .reference-name:hover {
+    text-decoration-color: var(--color-warm-white);
+  }
+
+  .reference-sep {
+    font-size: 0.75rem;
+    color: var(--color-warm-dim);
+  }
+
+  .reference-role {
+    font-size: 0.75rem;
+    color: var(--color-warm-dim);
+    letter-spacing: 0.02em;
   }
 
 }

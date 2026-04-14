@@ -19,8 +19,10 @@ cat \
   "$H/_grid.html" \
   "$H/_values.html" \
   "$H/_background.html" \
-  "$H/_work.html" \
   "$H/_experience.html" \
+  "$H/_references.html" \
+  "$H/_about.html" \
+  "$H/_work.html" \
   "$H/_contact.html" \
   "$S/_footer.html" \
   "$S/_scripts.html" \
