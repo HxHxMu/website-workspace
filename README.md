@@ -25,7 +25,22 @@ Token-conscious workspace for static marketing sites, case studies, and portfoli
 
 ## Project Notes
 - `projects/portfolio-site/` uses a custom Editorial Product Portfolio design system
-- `projects/client-site-template/` is a lighter marketing-site starter
+- `projects/client-site-template/` is a reusable client website starter
+
+## Dual-Lane Workflow
+1. Portfolio lane:
+Build and iterate in `projects/portfolio-site/`.
+2. Client lane:
+Scaffold a new project from the template with `./tools/new-client-site.sh <project-slug>`.
+3. Example:
+`./tools/new-client-site.sh client-acme`
+4. Next steps:
+`cd projects/client-acme && npm install && npm run build && npm run serve`
+5. Standalone delivery package (no workspace dependency):
+`./tools/release-client-site.sh client-acme`
+6. Policy behavior:
+`client-*` projects run strict dependency checks by default.
+Non-client projects allow external runtime deps by default (use `--strict-external` to enforce strict mode).
 
 ## Visual Matching
 Reference-driven visual matching lives in:

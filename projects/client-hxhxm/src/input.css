@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #0b1020;
+  --color-surface: #121a2e;
+  --color-surface-2: #1a243b;
+  --color-text: #f4f6fb;
+  --color-text-muted: #b8c0d8;
+  --color-brand: #56c0ff;
+  --color-brand-2: #8ef3c8;
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --letter-spacing-label: 0.12em;
+}
+
+@import "./css/base.css";
+@import "./css/components.css";
+@import "./css/utilities.css";

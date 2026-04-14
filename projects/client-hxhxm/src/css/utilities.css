@@ -1,0 +1,26 @@
+@layer utilities {
+  .label-text {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-label);
+    color: var(--color-text-muted);
+  }
+
+  .lead-copy {
+    color: var(--color-text-muted);
+    max-width: 44ch;
+    font-size: 1.03rem;
+    line-height: 1.6;
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 560ms ease, transform 560ms ease;
+  }
+
+  .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

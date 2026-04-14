@@ -1,0 +1,27 @@
+@layer base {
+  :root {
+    --text-rgb: 244 246 251;
+  }
+
+  html {
+    background-color: var(--color-ink);
+    color: var(--color-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    overflow-x: hidden;
+    line-height: 1.5;
+  }
+
+  ::selection {
+    background: rgba(86, 192, 255, 0.32);
+    color: var(--color-text);
+  }
+}
