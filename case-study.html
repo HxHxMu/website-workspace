@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="./output.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..800;1,14..32,300..800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..800;1,9..40,300..800&display=swap" rel="stylesheet">
 </head>
 <body class="bg-ink text-warm-white font-sans">
 
@@ -15,18 +15,15 @@
        MONOGRAM
   ═══════════════════════════════════════════════ -->
   <a href="./index.html" id="monogram" class="monogram" aria-label="Luis E. Bonilla — Home">
-    <span class="monogram-initial">L</span><span class="monogram-rest"><span class="mono-l" style="--d:0">u</span><span class="mono-l" style="--d:1">i</span><span class="mono-l" style="--d:2">s</span><span class="mono-l" style="--d:3"> </span><span class="mono-l" style="--d:4">E</span><span class="mono-l" style="--d:5">.</span><span class="mono-l" style="--d:6"> </span><span class="mono-l" style="--d:7">B</span><span class="mono-l" style="--d:8">o</span><span class="mono-l" style="--d:9">n</span><span class="mono-l" style="--d:10">i</span><span class="mono-l" style="--d:11">l</span><span class="mono-l" style="--d:12">l</span><span class="mono-l" style="--d:13">a</span></span>
+    <span class="monogram-initial">L</span><span class="monogram-rest"><span class="mono-l">u</span><span class="mono-l">i</span><span class="mono-l">s</span><span class="mono-l"> </span><span class="mono-l">E</span><span class="mono-l">.</span><span class="mono-l"> </span><span class="mono-l">B</span><span class="mono-l">o</span><span class="mono-l">n</span><span class="mono-l">i</span><span class="mono-l">l</span><span class="mono-l">l</span><span class="mono-l">a</span></span>
   </a>
 
   <!-- ═══════════════════════════════════════════════
        CASE STUDY — HERO
   ═══════════════════════════════════════════════ -->
-  <section class="grain relative overflow-hidden" style="background: #0c0d14; min-height: 70vh; display: flex; flex-direction: column; justify-content: flex-end;">
-    <div class="absolute inset-0 pointer-events-none"
-         style="background:
-           radial-gradient(ellipse 80% 60% at 70% 55%, rgba(80,110,210,0.28) 0%, transparent 56%),
-           radial-gradient(ellipse 45% 40% at 15% 75%, rgba(50,70,160,0.16) 0%, transparent 52%);"></div>
-    <div id="hero-fade" class="absolute inset-0 bg-ink pointer-events-none" style="opacity: 0;"></div>
+  <section class="grain relative overflow-hidden bg-[#0c0d14] min-h-[70vh] flex flex-col justify-end">
+    <div class="absolute inset-0 pointer-events-none atmo-case-hero"></div>
+    <div id="hero-fade" class="absolute inset-0 bg-ink pointer-events-none hero-fade-overlay"></div>
     <div class="h-24 shrink-0"></div>
     <div class="relative z-10 mx-auto max-w-7xl px-6 md:px-10 w-full pb-20 md:pb-32">
       <div class="flex flex-wrap gap-2 mb-8 reveal">
@@ -34,8 +31,7 @@
         <span class="inline-block text-xs font-medium uppercase tracking-label px-3 py-1.5 rounded-full border bg-accent-lfa/5 text-accent-lfa border-accent-lfa/25">UX/UI</span>
         <span class="inline-block text-xs font-medium uppercase tracking-label px-3 py-1.5 rounded-full border bg-accent-lfa/5 text-accent-lfa border-accent-lfa/25">Product</span>
       </div>
-      <h1 class="font-bold text-warm-white leading-[0.90] reveal reveal-delay-1"
-          style="font-size: clamp(52px, 9vw, 120px); letter-spacing: -0.035em;">
+      <h1 class="font-bold text-warm-white leading-[0.90] heading-case-hero reveal reveal-delay-1">
         Life Force<br>Academy
       </h1>
       <p class="mt-10 max-w-lg text-warm-muted text-lg leading-snug font-light reveal reveal-delay-2">
@@ -48,8 +44,7 @@
   <!-- ═══════════════════════════════════════════════
        CASE STUDY — OVERVIEW / META
   ═══════════════════════════════════════════════ -->
-  <section class="mx-auto max-w-7xl px-6 md:px-10 py-20 md:py-28"
-           style="border-bottom: 1px solid rgba(242,240,235,0.07);">
+  <section class="mx-auto max-w-7xl px-6 md:px-10 py-20 md:py-28 rule-soft-bottom">
     <dl class="grid md:grid-cols-4 gap-8">
 
       <div class="reveal">
@@ -87,8 +82,7 @@
         <p class="text-xs uppercase tracking-label text-warm-dim sticky top-32 reveal">Problem</p>
       </div>
       <div class="md:col-span-8">
-        <h2 class="font-semibold text-warm-white mb-8 reveal"
-            style="font-size: clamp(28px, 4vw, 52px); letter-spacing: -0.025em; line-height: 1.10;">
+        <h2 class="heading-case-body text-warm-white mb-8 reveal">
           A platform users couldn't navigate — and instructors couldn't grow with.
         </h2>
         <p class="text-warm-muted leading-snug reveal reveal-delay-1">
@@ -102,8 +96,7 @@
 
   <!-- Image placeholder -->
   <div class="mx-auto max-w-7xl px-6 md:px-10 mb-6 reveal">
-    <div class="w-full rounded-2xl bg-surface-3 flex items-center justify-center"
-         style="min-height: 480px; border: 1px solid rgba(242,240,235,0.06);">
+    <div class="w-full rounded-2xl bg-surface-3 flex items-center justify-center case-placeholder-frame case-placeholder-frame--lg">
       <p class="text-warm-dim text-xs uppercase tracking-label">Case study image</p>
     </div>
   </div>
@@ -115,8 +108,7 @@
         <p class="text-xs uppercase tracking-label text-warm-dim sticky top-32 reveal">Approach</p>
       </div>
       <div class="md:col-span-8 space-y-6">
-        <h2 class="font-semibold text-warm-white mb-8 reveal"
-            style="font-size: clamp(28px, 4vw, 52px); letter-spacing: -0.025em; line-height: 1.10;">
+        <h2 class="heading-case-body text-warm-white mb-8 reveal">
           Restructure from the user's first action, not the feature list.
         </h2>
         <p class="text-warm-muted leading-snug reveal reveal-delay-1">
@@ -136,12 +128,10 @@
   <!-- Image placeholder 2 -->
   <div class="mx-auto max-w-7xl px-6 md:px-10 mb-6 reveal">
     <div class="grid md:grid-cols-2 gap-4">
-      <div class="rounded-2xl bg-surface-3 flex items-center justify-center"
-           style="min-height: 320px; border: 1px solid rgba(242,240,235,0.06);">
+      <div class="rounded-2xl bg-surface-3 flex items-center justify-center case-placeholder-frame case-placeholder-frame--md">
         <p class="text-warm-dim text-xs uppercase tracking-label">Before</p>
       </div>
-      <div class="rounded-2xl bg-surface-3 flex items-center justify-center"
-           style="min-height: 320px; border: 1px solid rgba(242,240,235,0.06);">
+      <div class="rounded-2xl bg-surface-3 flex items-center justify-center case-placeholder-frame case-placeholder-frame--md">
         <p class="text-warm-dim text-xs uppercase tracking-label">After</p>
       </div>
     </div>
@@ -154,8 +144,7 @@
         <p class="text-xs uppercase tracking-label text-warm-dim sticky top-32 reveal">Outcome</p>
       </div>
       <div class="md:col-span-8">
-        <h2 class="font-semibold text-warm-white mb-8 reveal"
-            style="font-size: clamp(28px, 4vw, 52px); letter-spacing: -0.025em; line-height: 1.10;">
+        <h2 class="heading-case-body text-warm-white mb-8 reveal">
           Platform shipped. Onboarding completion up significantly.
         </h2>
         <p class="text-warm-muted leading-snug reveal reveal-delay-1">
@@ -170,7 +159,7 @@
   <!-- ═══════════════════════════════════════════════
        CASE STUDY — NEXT / BACK NAV
   ═══════════════════════════════════════════════ -->
-  <section style="border-top: 1px solid rgba(242,240,235,0.07);">
+  <section class="rule-soft-top">
     <div class="mx-auto max-w-7xl px-6 md:px-10 py-16 flex items-center justify-between">
       <a href="./index.html"
          class="text-xs uppercase tracking-label text-warm-dim hover:text-warm-white transition-colors duration-300">
@@ -199,44 +188,6 @@
   <!-- ═══════════════════════════════════════════════
        SCRIPTS — inner pages (no parallax)
   ═══════════════════════════════════════════════ -->
-  <script>
-    // ── Nav: glass on scroll ──
-    const nav = document.getElementById('nav');
-    function updateNav() {
-      if (!nav) return;
-      if (window.scrollY > 40) {
-        nav.style.backdropFilter = 'blur(18px)';
-        nav.style.webkitBackdropFilter = 'blur(18px)';
-        nav.style.backgroundColor = 'rgba(10,10,10,0.85)';
-        nav.style.borderBottom = '1px solid rgba(242,240,235,0.07)';
-      } else {
-        nav.style.backdropFilter = '';
-        nav.style.webkitBackdropFilter = '';
-        nav.style.backgroundColor = '';
-        nav.style.borderBottom = '';
-      }
-    }
-    window.addEventListener('scroll', updateNav, { passive: true });
-    updateNav();
-
-    // ── Scroll reveals ──
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.08, rootMargin: '0px 0px -32px 0px' });
-
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-    // Trigger above-fold reveals on load
-    document.querySelectorAll('section:first-of-type .reveal').forEach((el, i) => {
-      setTimeout(() => el.classList.add('visible'), 60 + i * 110);
-    });
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/flowbite@3/dist/flowbite.min.js"></script>
-
+  <script src="js/reveal.js" defer></script>
 </body>
 </html>

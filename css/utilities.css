@@ -184,6 +184,9 @@
   .border-b-surface  { border-bottom: 1px solid rgba(var(--ww), 0.06); }
   .border-t-surface-md { border-top:    1px solid rgba(var(--ww), 0.08); }
   .border-b-surface-md { border-bottom: 1px solid rgba(var(--ww), 0.08); }
+  .rule-soft-top { border-top: 1px solid rgba(var(--ww), 0.07); }
+  .rule-soft-bottom { border-bottom: 1px solid rgba(var(--ww), 0.07); }
+  .hero-fade-overlay { opacity: 0; }
 
   /* ── Monogram letter wave keyframe ── */
   @keyframes mono-wave {
@@ -249,12 +252,26 @@
   .mono-l:nth-child(12) { --mono-color: #e04080; }
   .mono-l:nth-child(13) { --mono-color: #e05060; }
   .mono-l:nth-child(14) { --mono-color: #e06040; }
+  .monogram-rest .mono-l:nth-child(1)  { --mono-delay: 80ms; }
+  .monogram-rest .mono-l:nth-child(2)  { --mono-delay: 135ms; }
+  .monogram-rest .mono-l:nth-child(3)  { --mono-delay: 190ms; }
+  .monogram-rest .mono-l:nth-child(4)  { --mono-delay: 245ms; }
+  .monogram-rest .mono-l:nth-child(5)  { --mono-delay: 300ms; }
+  .monogram-rest .mono-l:nth-child(6)  { --mono-delay: 355ms; }
+  .monogram-rest .mono-l:nth-child(7)  { --mono-delay: 410ms; }
+  .monogram-rest .mono-l:nth-child(8)  { --mono-delay: 465ms; }
+  .monogram-rest .mono-l:nth-child(9)  { --mono-delay: 520ms; }
+  .monogram-rest .mono-l:nth-child(10) { --mono-delay: 575ms; }
+  .monogram-rest .mono-l:nth-child(11) { --mono-delay: 630ms; }
+  .monogram-rest .mono-l:nth-child(12) { --mono-delay: 685ms; }
+  .monogram-rest .mono-l:nth-child(13) { --mono-delay: 740ms; }
+  .monogram-rest .mono-l:nth-child(14) { --mono-delay: 795ms; }
 
-  /* Trigger animation on hover or tap-open — staggered via --d */
+  /* Trigger animation on hover or tap-open — staggered via --mono-delay */
   .monogram:hover .mono-l,
   .monogram--open .mono-l {
     animation: mono-wave 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    animation-delay: calc(var(--d) * 55ms + 80ms);
+    animation-delay: var(--mono-delay, 80ms);
   }
   /* Reset when not hovering */
   .mono-l { transition: opacity 0.1s ease; }

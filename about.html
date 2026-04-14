@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="./output.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..800;1,14..32,300..800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..800;1,9..40,300..800&display=swap" rel="stylesheet">
 </head>
 <body class="bg-ink text-warm-white font-sans">
 
@@ -15,19 +15,18 @@
        MONOGRAM
   ═══════════════════════════════════════════════ -->
   <a href="./index.html" id="monogram" class="monogram" aria-label="Luis E. Bonilla — Home">
-    <span class="monogram-initial">L</span><span class="monogram-rest"><span class="mono-l" style="--d:0">u</span><span class="mono-l" style="--d:1">i</span><span class="mono-l" style="--d:2">s</span><span class="mono-l" style="--d:3"> </span><span class="mono-l" style="--d:4">E</span><span class="mono-l" style="--d:5">.</span><span class="mono-l" style="--d:6"> </span><span class="mono-l" style="--d:7">B</span><span class="mono-l" style="--d:8">o</span><span class="mono-l" style="--d:9">n</span><span class="mono-l" style="--d:10">i</span><span class="mono-l" style="--d:11">l</span><span class="mono-l" style="--d:12">l</span><span class="mono-l" style="--d:13">a</span></span>
+    <span class="monogram-initial">L</span><span class="monogram-rest"><span class="mono-l">u</span><span class="mono-l">i</span><span class="mono-l">s</span><span class="mono-l"> </span><span class="mono-l">E</span><span class="mono-l">.</span><span class="mono-l"> </span><span class="mono-l">B</span><span class="mono-l">o</span><span class="mono-l">n</span><span class="mono-l">i</span><span class="mono-l">l</span><span class="mono-l">l</span><span class="mono-l">a</span></span>
   </a>
 
   <!-- ═══════════════════════════════════════════════
        ABOUT — HERO
   ═══════════════════════════════════════════════ -->
   <section class="grain relative min-h-[60vh] hero-gradient flex flex-col justify-end overflow-hidden">
-    <div id="hero-fade" class="absolute inset-0 bg-ink pointer-events-none" style="opacity: 0;"></div>
+    <div id="hero-fade" class="absolute inset-0 bg-ink pointer-events-none hero-fade-overlay"></div>
     <div class="h-24 shrink-0"></div>
     <div class="relative z-10 mx-auto max-w-7xl px-6 md:px-10 w-full pb-20 md:pb-32">
       <p class="text-xs uppercase tracking-label text-warm-muted mb-8 reveal">About</p>
-      <h1 class="font-bold text-warm-white leading-[0.90] reveal reveal-delay-1"
-          style="font-size: clamp(56px, 10vw, 128px); letter-spacing: -0.035em;">
+      <h1 class="font-bold text-warm-white leading-[0.90] heading-about-hero reveal reveal-delay-1">
         Luis E.<br>Bonilla.
       </h1>
       <p class="mt-10 max-w-lg text-warm-muted text-lg leading-snug font-light reveal reveal-delay-2">
@@ -47,8 +46,7 @@
         <p class="text-xs uppercase tracking-label text-warm-dim sticky top-32">Background</p>
       </div>
       <div class="md:col-span-8 space-y-8">
-        <p class="text-2xl md:text-3xl font-light leading-[1.48] text-warm-white reveal"
-           style="letter-spacing: -0.018em;">
+        <p class="text-2xl md:text-3xl font-light leading-[1.48] text-warm-white tracking-prose reveal">
           I work at the intersection of product strategy, visual craft,
           and emerging technology.
         </p>
@@ -68,14 +66,12 @@
   <!-- ═══════════════════════════════════════════════
        ABOUT — CTA
   ═══════════════════════════════════════════════ -->
-  <section class="relative overflow-hidden py-32 md:py-48" style="background: #0a0a0a;">
-    <div class="absolute inset-0 pointer-events-none"
-         style="background: radial-gradient(ellipse 55% 65% at 20% 80%, rgba(224,92,40,0.10) 0%, transparent 52%);"></div>
+  <section class="relative overflow-hidden py-32 md:py-48 bg-ink">
+    <div class="absolute inset-0 pointer-events-none atmo-about-cta"></div>
     <div class="relative z-10 mx-auto max-w-7xl px-6 md:px-10">
       <div class="reveal">
         <p class="text-xs uppercase tracking-label text-warm-dim mb-8">Currently Available</p>
-        <h2 class="font-bold text-warm-white leading-[0.95]"
-            style="font-size: clamp(40px, 7vw, 96px); letter-spacing: -0.035em; max-width: 760px;">
+        <h2 class="font-bold text-warm-white leading-[0.95] heading-about-cta">
           Let's build something worth designing.
         </h2>
         <div class="mt-12 flex flex-wrap gap-4">
@@ -109,44 +105,6 @@
   <!-- ═══════════════════════════════════════════════
        SCRIPTS — inner pages (no parallax)
   ═══════════════════════════════════════════════ -->
-  <script>
-    // ── Nav: glass on scroll ──
-    const nav = document.getElementById('nav');
-    function updateNav() {
-      if (!nav) return;
-      if (window.scrollY > 40) {
-        nav.style.backdropFilter = 'blur(18px)';
-        nav.style.webkitBackdropFilter = 'blur(18px)';
-        nav.style.backgroundColor = 'rgba(10,10,10,0.85)';
-        nav.style.borderBottom = '1px solid rgba(242,240,235,0.07)';
-      } else {
-        nav.style.backdropFilter = '';
-        nav.style.webkitBackdropFilter = '';
-        nav.style.backgroundColor = '';
-        nav.style.borderBottom = '';
-      }
-    }
-    window.addEventListener('scroll', updateNav, { passive: true });
-    updateNav();
-
-    // ── Scroll reveals ──
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.08, rootMargin: '0px 0px -32px 0px' });
-
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-    // Trigger above-fold reveals on load
-    document.querySelectorAll('section:first-of-type .reveal').forEach((el, i) => {
-      setTimeout(() => el.classList.add('visible'), 60 + i * 110);
-    });
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/flowbite@3/dist/flowbite.min.js"></script>
-
+  <script src="js/reveal.js" defer></script>
 </body>
 </html>

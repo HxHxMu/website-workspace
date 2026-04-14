@@ -2,44 +2,6 @@
   <!-- ═══════════════════════════════════════════════
        SCRIPTS — inner pages (no parallax)
   ═══════════════════════════════════════════════ -->
-  <script>
-    // ── Nav: glass on scroll ──
-    const nav = document.getElementById('nav');
-    function updateNav() {
-      if (!nav) return;
-      if (window.scrollY > 40) {
-        nav.style.backdropFilter = 'blur(18px)';
-        nav.style.webkitBackdropFilter = 'blur(18px)';
-        nav.style.backgroundColor = 'rgba(10,10,10,0.85)';
-        nav.style.borderBottom = '1px solid rgba(242,240,235,0.07)';
-      } else {
-        nav.style.backdropFilter = '';
-        nav.style.webkitBackdropFilter = '';
-        nav.style.backgroundColor = '';
-        nav.style.borderBottom = '';
-      }
-    }
-    window.addEventListener('scroll', updateNav, { passive: true });
-    updateNav();
-
-    // ── Scroll reveals ──
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.08, rootMargin: '0px 0px -32px 0px' });
-
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-    // Trigger above-fold reveals on load
-    document.querySelectorAll('section:first-of-type .reveal').forEach((el, i) => {
-      setTimeout(() => el.classList.add('visible'), 60 + i * 110);
-    });
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/flowbite@3/dist/flowbite.min.js"></script>
-
+  <script src="js/reveal.js" defer></script>
 </body>
 </html>

@@ -92,6 +92,11 @@
   }
 
   /* ── Hero title line reveal ── */
+  .hero-word {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+  }
   .hero-line-inner {
     display: block;
     transform: translateY(108%);
