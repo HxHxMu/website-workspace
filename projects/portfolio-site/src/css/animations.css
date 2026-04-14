@@ -68,9 +68,24 @@
     animation: glow-pulse-c 5s ease-in-out infinite;
     animation-delay: -1s;
   }
+  html[data-theme="light"] .orb-field__orb {
+    filter: blur(8px) saturate(0.86);
+  }
+  html[data-theme="light"] .orb-field__orb--a {
+    background: radial-gradient(ellipse at center, rgba(200,90,48,0.34) 0%, rgba(200,90,48,0.11) 45%, transparent 70%);
+  }
+  html[data-theme="light"] .orb-field__orb--b {
+    background: radial-gradient(ellipse at center, rgba(184,137,43,0.26) 0%, rgba(106,132,216,0.1) 45%, transparent 70%);
+  }
+  html[data-theme="light"] .orb-field__orb--c {
+    background: radial-gradient(ellipse at center, rgba(106,132,216,0.3) 0%, rgba(47,158,143,0.1) 45%, transparent 70%);
+  }
 
   .orb-field--contact .orb-field__orb {
     opacity: 0.9;
+  }
+  html[data-theme="light"] .orb-field--contact .orb-field__orb {
+    opacity: 0.52;
   }
   .orb-field--contact .orb-field__orb--a {
     width: 48%;

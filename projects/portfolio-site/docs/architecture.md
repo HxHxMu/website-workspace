@@ -10,6 +10,8 @@ This project is static-first and follows an anti-entanglement structure so compo
 - `src/css/typography.css` owns reusable text scale/spacing classes.
 - `src/css/components.css` owns section/component skins and visual systems.
 - `src/css/utilities.css` owns shared utility classes used across sections.
+- `src/js/theme-init.js` owns pre-paint theme selection only.
+- `src/js/theme-toggle.js` owns runtime theme switching and persistence.
 - `src/js/reveal.js` owns shared reveal behavior for all pages.
 - `src/js/main.js` owns home-only interaction logic.
 - `src/js/orb-physics.js` owns orb simulation only.
@@ -22,6 +24,9 @@ This project is static-first and follows an anti-entanglement structure so compo
 - No inline `style=""` attributes in partials.
 - No external script CDNs in partials.
 - Script tags are only allowed in:
+  - `src/partials/shared/_head.html` for `js/theme-init.js`
+  - `src/partials/shared/_head-about.html` for `js/theme-init.js`
+  - `src/partials/shared/_head-case-study.html` for `js/theme-init.js`
   - `src/partials/shared/_scripts.html`
   - `src/partials/shared/_scripts-page.html`
 - Link tags are only allowed in shared head partials.

@@ -24,6 +24,7 @@ render_adapters() {
 {
   cat "$S/_head.html"
   cat "$S/_nav.html"
+  cat "$S/_theme-toggle.html"
   cat "$S/_sidebar.html"
   cat "$S/_intro.html"
   cat "$H/_hero.html"
@@ -52,6 +53,7 @@ render_adapters() {
 {
   cat "$S/_head-about.html"
   cat "$S/_nav.html"
+  cat "$S/_theme-toggle.html"
   cat "$A/_hero.html"
   render_adapters "about-after-hero"
   cat "$A/_bio.html"
@@ -66,6 +68,7 @@ render_adapters() {
 {
   cat "$S/_head-case-study.html"
   cat "$S/_nav.html"
+  cat "$S/_theme-toggle.html"
   cat "$C/_hero.html"
   render_adapters "case-after-hero"
   cat "$C/_overview.html"

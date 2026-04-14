@@ -44,6 +44,12 @@ const allowedExternalLinkHosts = new Set([
   'fonts.gstatic.com'
 ]);
 
+function isAllowedScriptTag(filePath, src) {
+  if (allowedScriptPartials.has(filePath)) return true;
+  if (allowedHeadPartials.has(filePath) && src === 'js/theme-init.js') return true;
+  return false;
+}
+
 function walkFiles(dir, extension, files = []) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   entries.forEach((entry) => {
@@ -86,12 +92,11 @@ htmlFiles.forEach((filePath) => {
   }
 
   const scriptTags = [...content.matchAll(/<script\b[^>]*\bsrc\s*=\s*["']([^"']+)["'][^>]*>/gi)];
-  if (scriptTags.length > 0 && !allowedScriptPartials.has(filePath)) {
-    violations.push(`${relPath}: only shared script partials can include <script src=...>.`);
-  }
-
   scriptTags.forEach((match) => {
     const src = match[1];
+    if (!isAllowedScriptTag(filePath, src)) {
+      violations.push(`${relPath}: script source "${src}" is not allowed in this partial.`);
+    }
     discoveredScriptSources.push(src);
     if (/^https?:\/\//i.test(src)) {
       violations.push(`${relPath}: external script source "${src}" is not allowed.`);
