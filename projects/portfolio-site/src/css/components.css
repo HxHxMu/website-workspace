@@ -284,4 +284,19 @@
     letter-spacing: 0.02em;
   }
 
+  /* ── Contact text links ── */
+  .contact-text-link {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--color-warm-muted);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-color: rgba(var(--ww), 0.2);
+    transition: color 0.3s ease, text-decoration-color 0.3s ease;
+  }
+  .contact-text-link:hover {
+    color: var(--color-warm-white);
+    text-decoration-color: rgba(var(--ww), 0.8);
+  }
+
 }
