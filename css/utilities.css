@@ -147,6 +147,17 @@
     transform: translateX(0);
   }
 
+  @media (max-width: 767px) {
+    .values-row {
+      display: block;
+    }
+
+    .values-arrow,
+    .values-support {
+      display: none;
+    }
+  }
+
   /* ── Grain texture overlay ── */
   .grain::after {
     content: '';
@@ -212,7 +223,8 @@
     margin-left: 0;
     transition: max-width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .monogram:hover .monogram-rest {
+  .monogram:hover .monogram-rest,
+  .monogram--open .monogram-rest {
     max-width: 400px;
   }
 
@@ -238,8 +250,9 @@
   .mono-l:nth-child(13) { --mono-color: #e05060; }
   .mono-l:nth-child(14) { --mono-color: #e06040; }
 
-  /* Trigger animation on hover — staggered via --d */
-  .monogram:hover .mono-l {
+  /* Trigger animation on hover or tap-open — staggered via --d */
+  .monogram:hover .mono-l,
+  .monogram--open .mono-l {
     animation: mono-wave 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     animation-delay: calc(var(--d) * 55ms + 80ms);
   }

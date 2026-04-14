@@ -149,3 +149,27 @@ document.querySelectorAll('.artifact-tile').forEach(tile => {
     label.style.color = 'rgba(242,240,235,0)';
   });
 });
+
+
+// ── Monogram: tap-to-open on touch devices ──
+(function () {
+  const mono = document.getElementById('monogram');
+  if (!mono) return;
+
+  // Only intercept on touch-capable devices
+  mono.addEventListener('touchstart', function (e) {
+    // If not yet open, open it and prevent navigation
+    if (!mono.classList.contains('monogram--open')) {
+      e.preventDefault();
+      mono.classList.add('monogram--open');
+    }
+    // Second tap navigates normally (no preventDefault)
+  }, { passive: false });
+
+  // Tapping elsewhere closes it
+  document.addEventListener('touchstart', function (e) {
+    if (!mono.contains(e.target)) {
+      mono.classList.remove('monogram--open');
+    }
+  }, { passive: true });
+}());
