@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Life Force Academy — Luis E. Bonilla</title>
+  <script src="js/theme-init.js"></script>
   <link rel="stylesheet" href="./output.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,11 +18,38 @@
   <a href="./index.html" id="monogram" class="monogram" aria-label="Luis E. Bonilla — Home">
     <span class="monogram-initial">L</span><span class="monogram-rest"><span class="mono-l">u</span><span class="mono-l">i</span><span class="mono-l">s</span><span class="mono-l"> </span><span class="mono-l">E</span><span class="mono-l">.</span><span class="mono-l"> </span><span class="mono-l">B</span><span class="mono-l">o</span><span class="mono-l">n</span><span class="mono-l">i</span><span class="mono-l">l</span><span class="mono-l">l</span><span class="mono-l">a</span></span>
   </a>
+  <!-- ═══════════════════════════════════════════════
+       THEME TOGGLE
+  ═══════════════════════════════════════════════ -->
+  <button
+    id="theme-toggle"
+    class="theme-toggle"
+    type="button"
+    aria-label="Switch to light mode">
+    <span class="theme-toggle__track" aria-hidden="true">
+      <span class="theme-toggle__thumb">
+        <svg class="theme-toggle__icon theme-toggle__icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4.25"></circle>
+          <path d="M12 2.75v2.2"></path>
+          <path d="M12 19.05v2.2"></path>
+          <path d="M5.46 5.46l1.55 1.55"></path>
+          <path d="M17 17l1.54 1.54"></path>
+          <path d="M2.75 12h2.2"></path>
+          <path d="M19.05 12h2.2"></path>
+          <path d="M5.46 18.54l1.55-1.55"></path>
+          <path d="M17 7l1.54-1.54"></path>
+        </svg>
+        <svg class="theme-toggle__icon theme-toggle__icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.2 14.3A7.75 7.75 0 1 1 9.7 3.8a6.35 6.35 0 0 0 10.5 10.5Z"></path>
+        </svg>
+      </span>
+    </span>
+  </button>
 
   <!-- ═══════════════════════════════════════════════
        CASE STUDY — HERO
   ═══════════════════════════════════════════════ -->
-  <section class="grain relative overflow-hidden bg-[#0c0d14] min-h-[70vh] flex flex-col justify-end">
+  <section class="grain case-hero-shell relative overflow-hidden min-h-[70vh] flex flex-col justify-end">
     <div class="absolute inset-0 pointer-events-none atmo-case-hero"></div>
     <div id="hero-fade" class="absolute inset-0 bg-ink pointer-events-none hero-fade-overlay"></div>
     <div class="h-24 shrink-0"></div>
@@ -176,8 +204,8 @@
        FOOTER
   ═══════════════════════════════════════════════ -->
   <footer class="site-footer">
-    <div class="mx-auto max-w-7xl px-6 md:px-10 py-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-      <p class="text-xs text-warm-dim">© 2025 Luis E. Bonilla</p>
+    <div class="mx-auto max-w-7xl px-6 md:px-10 py-3 md:py-4 flex items-center justify-end">
+      <p class="w-full text-right text-[11px] md:text-xs text-warm-dim">© 2026 Design and code by Luis Bonilla</p>
     </div>
   </footer>
 
@@ -185,5 +213,6 @@
        SCRIPTS — inner pages (no parallax)
   ═══════════════════════════════════════════════ -->
   <script src="js/reveal.js" defer></script>
+  <script src="js/theme-toggle.js" defer></script>
 </body>
 </html>

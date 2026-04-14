@@ -80,20 +80,52 @@ document.querySelectorAll('#hero .reveal').forEach((el, i) => {
   const overlay = document.getElementById('menu-overlay');
   const closeBtn = document.getElementById('menu-close');
   if (!btn || !overlay) return;
+  let closeMenuTimer = null;
+
+  function parseTimeToMs(value) {
+    const trimmed = value.trim();
+    if (trimmed.endsWith('ms')) return Number.parseFloat(trimmed);
+    if (trimmed.endsWith('s')) return Number.parseFloat(trimmed) * 1000;
+    return 0;
+  }
+
+  function getOverlayTransitionMs() {
+    const styles = window.getComputedStyle(overlay);
+    const durations = styles.transitionDuration.split(',').map(parseTimeToMs);
+    const delays = styles.transitionDelay.split(',').map(parseTimeToMs);
+    const totals = durations.map((duration, index) => duration + (delays[index] ?? delays[delays.length - 1] ?? 0));
+    return Math.max(...totals, 760);
+  }
+
+  function finishClose() {
+    btn.classList.remove('menu-btn--hidden');
+    document.body.classList.remove('menu-open');
+    document.body.style.overflow = '';
+    closeMenuTimer = null;
+  }
 
   function openMenu() {
+    if (closeMenuTimer) {
+      window.clearTimeout(closeMenuTimer);
+      closeMenuTimer = null;
+    }
+
     overlay.classList.add('is-open');
     overlay.setAttribute('aria-hidden', 'false');
     btn.setAttribute('aria-expanded', 'true');
     btn.classList.add('menu-btn--hidden');
+    document.body.classList.add('menu-open');
     document.body.style.overflow = 'hidden';
   }
   function closeMenu() {
     overlay.classList.remove('is-open');
     overlay.setAttribute('aria-hidden', 'true');
     btn.setAttribute('aria-expanded', 'false');
-    btn.classList.remove('menu-btn--hidden');
-    document.body.style.overflow = '';
+
+    if (closeMenuTimer) {
+      window.clearTimeout(closeMenuTimer);
+    }
+    closeMenuTimer = window.setTimeout(finishClose, getOverlayTransitionMs());
   }
 
   btn.addEventListener('click', openMenu);
