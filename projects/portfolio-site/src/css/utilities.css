@@ -475,15 +475,36 @@
 
   /* Keep desktop content clear of the floating left rail without
      shrinking full-bleed background layers. */
+  .rail-clear {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+  @media (min-width: 768px) {
+    .rail-clear {
+      padding-left: 2.5rem;
+      padding-right: 2.5rem;
+    }
+  }
   @media (min-width: 1024px) {
     .rail-clear {
       padding-left: 10.5rem;
+      padding-right: 0;
     }
   }
   @media (min-width: 1280px) {
     .rail-clear {
       padding-left: 11.5rem;
+      padding-right: 0;
     }
+  }
+
+  /* ── Scrollbar hide (for horizontal scroll strips) ── */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 
   /* ── Audience selector ── */
