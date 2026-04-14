@@ -211,7 +211,7 @@
   /* ── About ── */
   .about-body {
     font-size: 1.0625rem;
-    line-height: 1.8;
+    line-height: 1.5;
     color: var(--color-warm-muted);
   }
 
@@ -225,7 +225,7 @@
   .reference-quote {
     font-size: 1.125rem;
     font-weight: 500;
-    line-height: 1.75;
+    line-height: 1.5;
     color: var(--color-warm-white);
   }
 

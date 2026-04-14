@@ -9,7 +9,16 @@
     -moz-osx-font-smoothing: grayscale;
   }
   * { box-sizing: border-box; }
-  body { overflow-x: hidden; }
+  body {
+    overflow-x: hidden;
+    line-height: 1.5;
+    font-size: 0.875rem;
+  }
+  @media (min-width: 768px) {
+    body {
+      font-size: 1rem;
+    }
+  }
   ::selection {
     background: rgba(224, 92, 40, 0.28);
     color: var(--color-warm-white);
