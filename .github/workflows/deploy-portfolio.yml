@@ -25,6 +25,10 @@ jobs:
         working-directory: projects/portfolio-site
         run: npm install
 
+      - name: Validate Architecture Guardrails
+        working-directory: projects/portfolio-site
+        run: npm run guardrails
+
       - name: Build Site
         working-directory: projects/portfolio-site
         run: chmod +x build.sh && npm run build

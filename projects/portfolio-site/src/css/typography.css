@@ -52,6 +52,25 @@
     letter-spacing: -0.032em;
     line-height: 0.96;
   }
+  .heading-case-body {
+    font-size: clamp(28px, 4vw, 52px);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+  }
+  .heading-case-hero {
+    font-size: clamp(52px, 9vw, 120px);
+    letter-spacing: -0.035em;
+  }
+  .heading-about-hero {
+    font-size: clamp(56px, 10vw, 128px);
+    letter-spacing: -0.035em;
+  }
+  .heading-about-cta {
+    font-size: clamp(40px, 7vw, 96px);
+    letter-spacing: -0.035em;
+    max-width: 760px;
+  }
 
   /* Environment company names */
   .heading-env {
@@ -63,5 +82,8 @@
   /* Section headings that use Tailwind for size, only need tracking */
   .heading-section {
     letter-spacing: -0.032em;
+  }
+  .tracking-prose {
+    letter-spacing: var(--letter-spacing-prose);
   }
 }

@@ -5,7 +5,10 @@
   "scripts": {
     "build": "./build.sh && npm run build:css",
     "build:css": "tailwindcss -i ./src/input.css -o ./src/output.css --minify",
-    "serve": "python3 -m http.server 8080 -d ./src"
+    "serve": "python3 -m http.server 8080 -d ./src",
+    "adapter:new": "node ./scripts/create-component-adapter.js",
+    "guardrails": "node ./scripts/check-architecture.js",
+    "verify": "npm run guardrails && npm run build"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.0.0",

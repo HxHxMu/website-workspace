@@ -35,6 +35,11 @@
   .atmo-perspective {
     background: radial-gradient(ellipse 50% 60% at 80% 50%, rgba(224,92,40,0.05) 0%, transparent 60%);
   }
+  .atmo-hero {
+    background:
+      radial-gradient(ellipse 70% 60% at 70% 48%, rgba(80,110,210,0.22) 0%, transparent 56%),
+      radial-gradient(ellipse 52% 45% at 16% 78%, rgba(50,70,160,0.12) 0%, transparent 52%);
+  }
 
   .atmo-artifacts {
     background:
@@ -52,6 +57,14 @@
     background:
       radial-gradient(ellipse 60% 70% at 15% 85%, rgba(80,120,240,0.14) 0%, transparent 52%),
       radial-gradient(ellipse 42% 52% at 88% 15%, rgba(120,160,255,0.10) 0%, transparent 50%);
+  }
+  .atmo-case-hero {
+    background:
+      radial-gradient(ellipse 80% 60% at 70% 55%, rgba(80,110,210,0.28) 0%, transparent 56%),
+      radial-gradient(ellipse 45% 40% at 15% 75%, rgba(50,70,160,0.16) 0%, transparent 52%);
+  }
+  .atmo-about-cta {
+    background: radial-gradient(ellipse 55% 65% at 20% 80%, rgba(224,92,40,0.10) 0%, transparent 52%);
   }
 
 
@@ -122,6 +135,16 @@
   .card-lift:hover {
     transform: translateY(-4px);
     box-shadow: 0 32px 80px rgba(0,0,0,0.28);
+  }
+
+  .case-placeholder-frame {
+    border: 1px solid rgba(var(--ww), 0.06);
+  }
+  .case-placeholder-frame--lg {
+    min-height: 480px;
+  }
+  .case-placeholder-frame--md {
+    min-height: 320px;
   }
 
 

@@ -53,18 +53,6 @@ function updateHero() {
 }
 window.addEventListener('scroll', updateHero, { passive: true });
 
-// ── Scroll reveals ──
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
-      observer.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.08, rootMargin: '0px 0px -32px 0px' });
-
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
 // ── Hero: cinematic title reveal — word-wrap line split ──
 (function () {
   const h1 = document.querySelector('#hero h1');
@@ -72,7 +60,7 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
   const words = h1.textContent.trim().split(/\s+/);
   h1.innerHTML = words.map(w =>
-    `<span class="hero-word" style="display:inline-block;overflow:hidden;vertical-align:bottom"><span class="hero-line-inner" style="display:inline-block">${w}&nbsp;</span></span>`
+    `<span class="hero-word"><span class="hero-line-inner">${w}&nbsp;</span></span>`
   ).join('');
 
   const inners = h1.querySelectorAll('.hero-line-inner');
@@ -132,23 +120,6 @@ document.querySelectorAll('#hero .reveal').forEach((el, i) => {
   window.addEventListener('scroll', updateSidebar, { passive: true });
   updateSidebar();
 }());
-
-
-// ── Artifact tile hover: label reveal ──
-document.querySelectorAll('.artifact-tile').forEach(tile => {
-  const label = tile.querySelector('.artifact-label');
-  if (!label) return;
-  tile.addEventListener('mouseenter', () => {
-    label.style.opacity = '1';
-    label.style.transform = 'translateY(0)';
-    label.style.color = 'rgba(242,240,235,0.6)';
-  });
-  tile.addEventListener('mouseleave', () => {
-    label.style.opacity = '0';
-    label.style.transform = 'translateY(4px)';
-    label.style.color = 'rgba(242,240,235,0)';
-  });
-});
 
 
 // ── Monogram: tap-to-open on touch devices ──
