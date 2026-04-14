@@ -8,12 +8,23 @@
 
   .heading-hero {
     font-size: clamp(56px, 6.5vw, 72px);
+    font-weight: 500;
     letter-spacing: -0.02em;
     line-height: 1.15;
   }
 
+  #hero-headline {
+    min-height: 5lh;
+  }
+  @media (min-width: 1024px) {
+    #hero-headline {
+      min-height: 3lh;
+    }
+  }
+
   .heading-cta {
     font-size: clamp(48px, 9vw, 128px);
+    font-weight: 500;
     letter-spacing: -0.035em;
     line-height: 0.95;
     max-width: 900px;
@@ -22,6 +33,7 @@
   /* Large editorial statement (closing thesis, perspective large) */
   .heading-statement {
     font-size: clamp(28px, 5vw, 68px);
+    font-weight: 500;
     letter-spacing: -0.025em;
     line-height: 1.28;
     max-width: 900px;
@@ -30,11 +42,13 @@
   /* Case study card headings */
   .heading-case-lg {
     font-size: clamp(40px, 6vw, 80px);
+    font-weight: 500;
     letter-spacing: -0.035em;
     line-height: 0.96;
   }
   .heading-case-sm {
     font-size: clamp(32px, 4.5vw, 58px);
+    font-weight: 500;
     letter-spacing: -0.032em;
     line-height: 0.96;
   }
@@ -42,6 +56,7 @@
   /* Environment company names */
   .heading-env {
     font-size: clamp(22px, 3.5vw, 46px);
+    font-weight: 500;
     letter-spacing: -0.025em;
   }
 

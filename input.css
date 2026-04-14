@@ -16,7 +16,7 @@
   --color-accent-disney: rgb(220 172 80);
   --color-accent-ai: rgb(65 200 178);
 
-  --font-family-sans: Inter, system-ui, sans-serif;
+  --font-family-sans: 'DM Sans', system-ui, sans-serif;
   --letter-spacing-label: 0.14em;
   --letter-spacing-display: -0.03em;
   --letter-spacing-prose: -0.018em;
