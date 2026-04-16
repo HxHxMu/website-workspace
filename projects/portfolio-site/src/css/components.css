@@ -33,8 +33,34 @@
   .site-footer {
     border-top: 1px solid rgba(var(--ww), 0.07);
   }
+  .home-page .site-footer {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: auto;
+    width: auto;
+    z-index: 30;
+    border-top: 0;
+    background: transparent;
+    pointer-events: none;
+  }
+  .home-page .site-footer > div {
+    max-width: none;
+    width: auto;
+    padding-left: 0;
+    padding-right: 1.5rem;
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
+  }
+  .home-page .site-footer p {
+    width: auto;
+    text-align: right;
+  }
   html[data-theme="light"] .site-footer {
     background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%);
+  }
+  html[data-theme="light"] .home-page .site-footer {
+    background: transparent;
   }
 
 

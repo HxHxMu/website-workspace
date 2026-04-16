@@ -45,7 +45,6 @@ render_adapters() {
   render_adapters "home-after-work"
   cat "$H/_contact.html"
   render_adapters "home-after-contact"
-  cat "$S/_footer.html"
   cat "$S/_scripts.html"
 } > src/index.html
 

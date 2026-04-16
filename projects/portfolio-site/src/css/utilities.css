@@ -531,6 +531,7 @@
       top: 50%;
       transform: translateY(-50%);
       z-index: 40;
+      padding-bottom: 5rem;
     }
   }
   .sidebar-link {
