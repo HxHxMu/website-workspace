@@ -24,7 +24,7 @@
       el.style.transform = 'translateY(40px)';
     });
 
-    // After intro animation completes (2050ms), fade in main content
+    // After intro animation completes (1300ms), fade in main content
     setTimeout(() => {
       introOverlay.style.display = 'none';
       introOverlay.style.pointerEvents = 'none';
@@ -35,7 +35,7 @@
       });
       // Mark intro as shown for this session
       sessionStorage.setItem('intro-shown', 'true');
-    }, 2050);
+    }, 1300);
   }
 }());
 
@@ -73,6 +73,29 @@ window.addEventListener('scroll', updateHero, { passive: true });
 document.querySelectorAll('#hero .reveal').forEach((el, i) => {
   setTimeout(() => el.classList.add('visible'), 280 + i * 120);
 });
+
+// ── Mobile audience tabs: fade hint only while more tabs remain to the right ──
+(function () {
+  const strip = document.querySelector('.audience-strip');
+  const tabs = strip?.querySelector('.audience-tabs');
+  if (!strip || !tabs) return;
+
+  const threshold = 8;
+
+  function updateAudienceStripState() {
+    const maxScroll = tabs.scrollWidth - tabs.clientWidth;
+    const hasOverflow = maxScroll > threshold;
+    const atEnd = tabs.scrollLeft >= maxScroll - threshold;
+
+    strip.classList.toggle('audience-strip--scrollable', hasOverflow);
+    strip.classList.toggle('audience-strip--at-end', !hasOverflow || atEnd);
+  }
+
+  tabs.addEventListener('scroll', updateAudienceStripState, { passive: true });
+  window.addEventListener('resize', updateAudienceStripState);
+  window.addEventListener('load', updateAudienceStripState);
+  requestAnimationFrame(updateAudienceStripState);
+}());
 
 // ── Mobile menu ──
 (function () {

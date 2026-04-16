@@ -45,58 +45,120 @@
       </span>
     </span>
   </button>
-
-  <!-- ═══════════════════════════════════════════════
+<!-- ═══════════════════════════════════════════════
        CASE STUDY — HERO
   ═══════════════════════════════════════════════ -->
-  <section class="grain case-hero-shell relative overflow-hidden min-h-[70vh] flex flex-col justify-end">
-    <div class="absolute inset-0 pointer-events-none atmo-case-hero"></div>
-    <div id="hero-fade" class="absolute inset-0 bg-ink pointer-events-none hero-fade-overlay"></div>
-    <div class="h-24 shrink-0"></div>
-    <div class="relative z-10 mx-auto max-w-7xl px-6 md:px-10 w-full pb-20 md:pb-32">
-      <div class="flex flex-wrap gap-2 mb-8 reveal">
-        <span class="inline-block text-xs font-medium uppercase tracking-label px-3 py-1.5 rounded-full border bg-accent-lfa/5 text-accent-lfa border-accent-lfa/25">Platform Redesign</span>
-        <span class="inline-block text-xs font-medium uppercase tracking-label px-3 py-1.5 rounded-full border bg-accent-lfa/5 text-accent-lfa border-accent-lfa/25">UX/UI</span>
-        <span class="inline-block text-xs font-medium uppercase tracking-label px-3 py-1.5 rounded-full border bg-accent-lfa/5 text-accent-lfa border-accent-lfa/25">Product</span>
-      </div>
-      <h1 class="font-bold text-warm-white leading-[0.90] heading-case-hero reveal reveal-delay-1">
-        Life Force<br>Academy
-      </h1>
-      <p class="mt-10 max-w-lg text-warm-muted text-lg leading-snug font-light reveal reveal-delay-2">
-        Full platform redesign — restructuring onboarding, dashboard UX, and content
-        discoverability for a wellness education platform.
-      </p>
-    </div>
-  </section>
+<section class="grain case-hero-shell relative overflow-hidden min-h-[60vh] flex flex-col justify-end">
+  <div class="absolute inset-0 pointer-events-none atmo-case-hero"></div>
+  <div id="hero-fade" class="absolute inset-0 bg-ink pointer-events-none hero-fade-overlay"></div>
+  <div class="h-24 shrink-0"></div>
 
-  <!-- ═══════════════════════════════════════════════
-       CASE STUDY — OVERVIEW / META
-  ═══════════════════════════════════════════════ -->
-  <section class="mx-auto max-w-7xl px-6 md:px-10 py-20 md:py-28 rule-soft-bottom">
-    <dl class="grid md:grid-cols-4 gap-8">
+  <div class="relative z-10 mx-auto max-w-7xl px-6 md:px-10 w-full pb-16 md:pb-24">
+    <div class="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
+      <div>
+        <p class="text-xs uppercase tracking-label text-accent-lfa/70 mb-4 reveal">Life Force Academy</p>
 
-      <div class="reveal">
-        <dt class="text-xs uppercase tracking-label text-warm-dim mb-3">Role</dt>
-        <dd class="text-warm-white text-sm">Lead Product Designer</dd>
-      </div>
+        <h1 class="heading-case-hero font-bold text-warm-white leading-[0.92] reveal reveal-delay-1">
+          Life Force Academy<br>Onboarding redesign
+        </h1>
 
-      <div class="reveal reveal-delay-1">
-        <dt class="text-xs uppercase tracking-label text-warm-dim mb-3">Timeline</dt>
-        <dd class="text-warm-white text-sm">2023 · 6 months</dd>
-      </div>
+        <div class="mt-10 flex flex-col gap-8 reveal reveal-delay-2">
+          <p class="text-warm-muted text-base leading-snug max-w-lg">
+            I redesigned onboarding so new members did not land in a generic content wall after checkout. The new 6-step flow captured goals and experience level, then shaped the first-session dashboard around them, improving completion by 20% and conversion by roughly 15%.
+          </p>
 
-      <div class="reveal reveal-delay-2">
-        <dt class="text-xs uppercase tracking-label text-warm-dim mb-3">Disciplines</dt>
-        <dd class="text-warm-white text-sm">UX Strategy · UI Design · Prototyping</dd>
+          <div class="flex flex-wrap gap-3">
+            <span class="case-chip">+20% onboarding completion</span>
+            <span class="case-chip">~15% conversion lift</span>
+            <span class="case-chip">Fewer "where do I start?" support questions</span>
+          </div>
+
+          <dl class="grid grid-cols-2 gap-x-6 gap-y-4 max-w-lg pt-6 border-t border-warm-white/10">
+            <div>
+              <dt class="text-[10px] uppercase tracking-label text-warm-dim mb-2">Role</dt>
+              <dd class="text-sm text-warm-white">Sole Product Designer</dd>
+            </div>
+            <div>
+              <dt class="text-[10px] uppercase tracking-label text-warm-dim mb-2">Scope</dt>
+              <dd class="text-sm text-warm-white">Onboarding, IA, dashboard UX</dd>
+            </div>
+            <div>
+              <dt class="text-[10px] uppercase tracking-label text-warm-dim mb-2">Partners</dt>
+              <dd class="text-sm text-warm-white">Founder, marketing, engineering</dd>
+            </div>
+            <div>
+              <dt class="text-[10px] uppercase tracking-label text-warm-dim mb-2">Platform</dt>
+              <dd class="text-sm text-warm-white">Web + mobile membership</dd>
+            </div>
+          </dl>
+        </div>
       </div>
 
       <div class="reveal reveal-delay-3">
-        <dt class="text-xs uppercase tracking-label text-warm-dim mb-3">Outcome</dt>
-        <dd class="text-warm-white text-sm">Shipped · Platform live</dd>
+        <img
+          src="./assets/img/usecase_lfa/LFA_hero.png"
+          alt="Life Force Academy dashboard redesign — desktop and mobile onboarding flow"
+          class="w-full block h-auto rounded-2xl">
       </div>
+    </div>
+  </div>
+</section>
 
-    </dl>
-  </section>
+<!-- Dashboard walkthrough -->
+<div class="mx-auto max-w-7xl px-6 md:px-10 -mt-2 reveal">
+  <div class="overflow-hidden rounded-2xl border border-warm-white/10 bg-surface-2">
+    <video
+      autoplay
+      loop
+      muted
+      playsinline
+      class="w-full block h-auto">
+      <source src="./assets/img/usecase_lfa/LFA_screen_video.mov" type="video/mp4">
+      <img
+        src="./assets/img/usecase_lfa/LFA_hero.png"
+        alt="Life Force Academy dashboard redesign — desktop and mobile onboarding flow"
+        class="w-full block h-auto">
+    </video>
+  </div>
+
+  <div class="mt-4">
+    <div>
+      <p class="text-[10px] uppercase tracking-label text-warm-dim mb-2">Dashboard walkthrough</p>
+      <p class="text-sm text-warm-muted leading-snug max-w-2xl">
+        A click-through of the post-onboarding dashboard, showing how members found relevant content, returned to classes, and moved through the live experience.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     CASE STUDY — SNAPSHOT
+═══════════════════════════════════════════════ -->
+<section class="mx-auto max-w-7xl px-6 md:px-10 py-12 rule-soft-bottom">
+  <p class="text-[10px] uppercase tracking-label text-warm-dim mb-6 reveal">Project snapshot</p>
+
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <article class="case-consequence-card reveal">
+      <p class="text-[10px] uppercase tracking-label text-warm-dim mb-3">Delivered</p>
+      <p class="text-sm text-warm-white leading-snug">Onboarding, membership selection, first-session dashboard</p>
+    </article>
+
+    <article class="case-consequence-card reveal reveal-delay-1">
+      <p class="text-[10px] uppercase tracking-label text-warm-dim mb-3">Timeline</p>
+      <p class="text-sm text-warm-white leading-snug">2023-2024</p>
+    </article>
+
+    <article class="case-consequence-card reveal reveal-delay-2">
+      <p class="text-[10px] uppercase tracking-label text-warm-dim mb-3">Constraint</p>
+      <p class="text-sm text-warm-white leading-snug">WordPress / WooCommerce</p>
+    </article>
+
+    <article class="case-consequence-card reveal reveal-delay-3">
+      <p class="text-[10px] uppercase tracking-label text-warm-dim mb-3">Baseline</p>
+      <p class="text-sm text-warm-white leading-snug">Previous dashboard-first handoff</p>
+    </article>
+  </div>
+</section>
 
   <!-- ═══════════════════════════════════════════════
        CASE STUDY — CONTENT BODY
