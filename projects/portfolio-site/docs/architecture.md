@@ -1,6 +1,7 @@
 # Portfolio Site Architecture Guardrails
 
 This project is static-first and follows an anti-entanglement structure so component work stays isolated and predictable.
+`CLAUDE.md` owns the project brief and visual/design intent; this file owns technical boundaries and enforcement rules.
 
 ## Layer Boundaries
 
@@ -31,6 +32,28 @@ This project is static-first and follows an anti-entanglement structure so compo
   - `src/partials/shared/_scripts-page.html`
 - Link tags are only allowed in shared head partials.
 - CSS `@import` is only allowed in `src/input.css`.
+
+## Build Rules
+
+- `./build.sh` builds HTML from partials into `src/index.html`, `src/about.html`, and `src/case-study.html`.
+- `npm run build:css` compiles `src/input.css` to `src/output.css`.
+- `npm run build` runs HTML build first, then CSS build.
+- `npm run guardrails` checks architecture constraints.
+- `npm run verify` runs guardrails plus the full build.
+
+## Responsive Rules
+
+- Tailwind breakpoints are the default breakpoint system (`lg = 1024px`).
+- Validate key layouts at 375px, 768px, and 1024px+.
+- Sidebar nav is hidden below 1024px and fixed left at 1024px+.
+- Hamburger/menu button is visible below 1024px and hidden at 1024px+.
+- When a custom media rule owns behavior, remove conflicting utility classes from the HTML.
+
+## Maintenance Rules
+
+- Prefer CSS classes over inline styles for all visual presentation.
+- Do not leave unused utility classes, animations, or component shells in the codebase.
+- Use `rg` to verify whether selectors or classes are still in use before keeping them.
 
 ## 21st.dev Component Integration Pattern
 
@@ -71,8 +94,3 @@ When integrating a component from 21st.dev:
   - `case-after-overview`
   - `case-after-content`
   - `case-after-nav`
-
-## Guardrail Commands
-
-- `npm run guardrails` checks architecture constraints.
-- `npm run verify` runs guardrails + full build.

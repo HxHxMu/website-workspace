@@ -17,8 +17,9 @@ Build a polished portfolio and case study website for Luis E. Bonilla that feels
 - `src/partials/` for page composition
 - `src/css/` for custom styling layers
 - `src/js/` for runtime behavior
-- `content/` for written project content
+- `content/` for written project content when populated
 - `refs/` and `visual-tests/` for visual matching inputs
+- `docs/architecture.md` for technical build and guardrail rules
 
 ## Constraints
 - strong visual clarity
@@ -26,7 +27,6 @@ Build a polished portfolio and case study website for Luis E. Bonilla that feels
 - modern landing-page quality
 - modular case study structure
 - easy content updates
-- identity files are relevant here
 
 ## Design System & Visual Direction
 This project uses a custom **Editorial Product Portfolio** design system. Do NOT use Material Design or generic SaaS dashboard UI.
@@ -37,100 +37,22 @@ The visual language should feel premium, modern, editorial, thoughtful, and high
 - Components should feel clean, lightweight, and refined. Avoid overbuilt UI chrome or app-like heaviness.
 - Do not let Tailwind dictate the visual identity; the design system leads.
 
-**Typography Principles**: Typography leads the system. Prioritize strong headline hierarchy, clear section rhythm, and elegant contrast between large and small text. San-serif modern (Inter) dominates.
+**Typography Principles**: Typography leads the system. Prioritize strong headline hierarchy, clear section rhythm, and elegant contrast between large and small text. The site currently uses **DM Sans**; preserve that choice unless there is a deliberate design reason to change it.
 
-**Color System & Flowbite Mapping**:
-- Primary (Accent): `#e05c28` (color-accent, maps to Flowbite `primary-500`)
-- Secondary (Warm Accent): `#b8b0a8` (color-warm-muted, secondary-300), `#504e4b` (color-warm-dim, secondary-500)
-- Backgrounds: `#0a0a0a` (bg-dark/gray-900), `#111111` (gray-800), `#1e1e1e` (gray-700)
-- Text: `#f2f0eb` (text-primary), `#b8b0a8` (text-secondary), `#504e4b` (text-tertiary)
+**Color Principles**:
+- Preserve the existing warm-neutral palette, strong contrast, and restrained accent usage.
+- Color tokens and palette values live in `src/css/base.css`.
+- Maintain WCAG AA contrast for body text and primary UI states.
+- Always verify contrast before shipping palette or typography changes.
 
 ## Motion
 Follow standard website motion defaults (subtle, fast, purpose-driven).
 Key focus areas for this project: hover states, reveal transitions, and interactive visual feedback.
 
 ## Identity Loading
-Yes. Load identity files for portfolio, About, case studies, and personal positioning.
+Load identity and positioning references when working on portfolio framing, About content, case studies, or personal brand language.
 
-## Build & Architecture
-
-### CSS Architecture
-- **Layer structure**: `@layer utilities` → custom utilities, animations, components
-- **Entry point**: `src/input.css` imports Tailwind, then custom CSS files
-- **Tokenization**: Use CSS custom properties to reduce duplication
-  - `--ww: 242 240 235` (warm-white RGB channels) — use as `rgba(var(--ww), <opacity>)`
-  - Applied globally via `:root` in `base.css`
-  - Single-point maintenance for palette changes
-- **File organization**:
-  - `base.css` — root variables, HTML/body resets, selection styling
-  - `animations.css` — @keyframes for reveals, orbs, transitions
-  - `utilities.css` — component utilities, navigation, interactive elements
-  - `typography.css` — heading scales (clamp-based), letter-spacing groups
-  - `components.css` — card systems, atmospheric overlays, decorative elements
-
-### Build Process
-- **Commands**:
-  - `./build.sh` = build HTML only
-  - `npm run build:css` = build CSS only
-  - `npm run build` = build HTML, then CSS
-- **Steps**:
-  1. Concatenate HTML partials into `src/index.html`, `src/about.html`, and `src/case-study.html`
-  2. Compile Tailwind from `src/input.css` to `src/output.css`
-  3. Publish/deploy from `src/`
-- **No framework build tools required**: HTML concatenation + Tailwind compilation
-- **JS handling**: browser-loaded scripts in `src/js/`
-
-### Responsive Design
-- **Breakpoints**: Tailwind defaults (lg = 1024px)
-- **Mobile-first media queries**: Test at 375px (mobile), 768px (tablet), 1024px+ (desktop)
-- **Key patterns**:
-  - Sidebar nav: hidden <1024px, fixed left at 1024px+
-  - Hamburger menu: visible <1024px, hidden at 1024px+ (use `@media (min-width: 1024px) { display: none; }`, avoid `lg:hidden` Tailwind class)
-  - Always remove conflicting utility classes from HTML when using custom @media rules
-
-### Color System & Accessibility
-- **Updated for WCAG AA** (4.5:1 contrast minimum):
-  - `warm-white: #f2f0eb`
-  - `warm-muted: #b8b0a8` (4.9:1 ratio, body text)
-  - `warm-dim: #a89f96` (3.8:1 ratio, acceptable for large text)
-- **Project accent**: `#e05c28` (orange, used for highlights/hovers)
-- **Always verify contrast** before deploying
-
-### JavaScript Architecture
-- **Runtime files**:
-  - `src/js/main.js` = intro sequence, reveal logic, menu behavior, section highlighting, headline animation
-  - `src/js/orb-physics.js` = hero orb motion, audience-tab interactions, orb color/state changes
-- **No frameworks**: Vanilla JS, requestAnimationFrame for physics, IntersectionObserver for reveals
-- **Performance**: Debounce scroll listeners (passive: true), use `will-change` for animated elements
-
-## Code Quality
-
-### Avoid Dead Code
-Periodically audit for unused patterns:
-- Deleted classes: `.hero-frag-*`, `.float-slow`, `.placeholder-module`, `.card-visual-col`, `.img-perspective-fragment`
-- Never commit unused @keyframes or utility classes
-- Use `grep -r "class-name" src/` to verify usage before keeping code
-
-### Navigation Hover States
-- **Sidebar links**: Animated gradient underline slides from left (500ms, cubic-bezier easing) with subtle letter-spacing expansion
-- **Overlay menu links**: Color fades white + radial glow appears (elastic scaleX 1.01)
-- **Audience tabs**: Border glow expands (box-shadow 0 to 16px, warm accent color)
-- **Pattern**: Use pseudo-elements (::before, ::after) for layered hover effects; avoid inline styles
-
-### Inline Styles
-❌ **Do NOT use inline `style="..."` attributes in HTML**
-✓ Use CSS classes for all visual styles (ref: `/Users/luisbonilla/.claude/projects/-Volumes-lebe-website-workspace/memory/feedback_no_inline_styles.md`)
-
-
-
-## Pending Tasks
-
-**Content & Assets:**
-- [ ] Profile photo → `src/assets/img/` + wire to contact section
-- [ ] Work collage grid finalization (Figma export)
-- [ ] Case study pages (currently link to generic placeholder)
-
-**Deployment:**
-- [ ] Commit optimizations to git
-- [ ] Deploy to Vercel
-- [ ] Test across devices/browsers
+### Interaction Language
+- Preserve the site's existing interaction language unless intentionally redesigning it.
+- Prefer pseudo-elements and CSS classes over inline styles for hover and active states.
+- Keep motion subtle, fast, and purposeful.

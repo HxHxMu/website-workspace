@@ -1,7 +1,8 @@
 # Reference Notes
 
 ## Goal
-Use the reference image as inspiration for layout rhythm, spacing, typography scale, hierarchy, and overall polish.
+Use the reference image as supporting inspiration for layout rhythm, spacing, typography scale, hierarchy, and overall polish.
+`CLAUDE.md` remains the primary project and design brief.
 
 ## Priority
 1. layout
