@@ -56,3 +56,14 @@ Load identity and positioning references when working on portfolio framing, Abou
 - Preserve the site's existing interaction language unless intentionally redesigning it.
 - Prefer pseudo-elements and CSS classes over inline styles for hover and active states.
 - Keep motion subtle, fast, and purposeful.
+
+## Pending — Post-MVP
+
+**Case studies (intentionally excluded from MVP launch):**
+- Work cards in `src/partials/home/_work.html` are commented out — restore when case study pages are ready
+- Each card links to its own page (LFA, Disney, AI Workflow) — pages need to be built before re-enabling
+- `case-study.html` exists and builds correctly but is not linked from the homepage
+
+**Other:**
+- Work collage grid finalization (Figma export)
+- Deploy to Vercel and test across devices/browsers
