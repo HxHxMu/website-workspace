@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900">
+  <rect width="1440" height="900" fill="#0e0e0e"/>
+  <!-- Row 1 -->
+  <rect x="8"   y="8"   width="340" height="260" rx="4" fill="#1a1a1a"/>
+  <rect x="356" y="8"   width="220" height="120" rx="4" fill="#222"/>
+  <rect x="356" y="136" width="220" height="132" rx="4" fill="#1d1d1d"/>
+  <rect x="584" y="8"   width="280" height="260" rx="4" fill="#181818"/>
+  <rect x="872" y="8"   width="180" height="120" rx="4" fill="#202020"/>
+  <rect x="1060" y="8"  width="372" height="120" rx="4" fill="#1c1c1c"/>
+  <rect x="872" y="136" width="560" height="132" rx="4" fill="#1a1a1a"/>
+  <!-- Row 2 -->
+  <rect x="8"   y="276" width="180" height="200" rx="4" fill="#202020"/>
+  <rect x="196" y="276" width="380" height="200" rx="4" fill="#1c1c1c"/>
+  <rect x="584" y="276" width="180" height="200" rx="4" fill="#181818"/>
+  <rect x="772" y="276" width="280" height="200" rx="4" fill="#222"/>
+  <rect x="1060" y="276" width="372" height="200" rx="4" fill="#1e1e1e"/>
+  <!-- Row 3 -->
+  <rect x="8"   y="484" width="560" height="180" rx="4" fill="#1d1d1d"/>
+  <rect x="576" y="484" width="280" height="180" rx="4" fill="#1a1a1a"/>
+  <rect x="864" y="484" width="280" height="180" rx="4" fill="#202020"/>
+  <rect x="1152" y="484" width="280" height="180" rx="4" fill="#1c1c1c"/>
+  <!-- Row 4 -->
+  <rect x="8"   y="672" width="220" height="220" rx="4" fill="#181818"/>
+  <rect x="236" y="672" width="340" height="220" rx="4" fill="#222"/>
+  <rect x="584" y="672" width="180" height="220" rx="4" fill="#1e1e1e"/>
+  <rect x="772" y="672" width="380" height="220" rx="4" fill="#1a1a1a"/>
+  <rect x="1160" y="672" width="272" height="220" rx="4" fill="#202020"/>
+  <!-- Label -->
+  <text x="720" y="456" text-anchor="middle" fill="#333" font-size="13" font-family="system-ui, sans-serif" letter-spacing="0.15em">WORK GRID — EXPORT FROM FIGMA</text>
+</svg>

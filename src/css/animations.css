@@ -1,0 +1,134 @@
+@layer utilities {
+
+  /* ── Scroll reveal ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(26px);
+    transition:
+      opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-delay-1 { transition-delay: 120ms; }
+  .reveal-delay-2 { transition-delay: 240ms; }
+  .reveal-delay-3 { transition-delay: 360ms; }
+  .reveal-delay-4 { transition-delay: 480ms; }
+  .reveal-delay-5 { transition-delay: 600ms; }
+
+  /* Glow pulse — CSS only, float handled by JS */
+  @keyframes glow-pulse {
+    0%,100% { opacity: 0.4;  filter: blur(80px) brightness(1);   }
+    50%      { opacity: 0.85; filter: blur(60px) brightness(1.4); }
+  }
+  @keyframes glow-pulse-b {
+    0%,100% { opacity: 0.3;  filter: blur(90px) brightness(1);   }
+    50%      { opacity: 0.75; filter: blur(65px) brightness(1.3); }
+  }
+  @keyframes glow-pulse-c {
+    0%,100% { opacity: 0.25; filter: blur(100px) brightness(1);  }
+    50%      { opacity: 0.65; filter: blur(70px)  brightness(1.35); }
+  }
+
+  .orb-field__orb {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 2;
+    will-change: transform, opacity, filter, background;
+    /* JS sets left/top as home, then drives translate and scale */
+    transform: translate(0px, 0px);
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .orb-field__orb--a {
+    width: 55%;
+    height: 55%;
+    top: 5%;
+    left: 10%;
+    background: radial-gradient(ellipse at center, rgba(224,92,40,0.9) 0%, rgba(200,50,10,0.3) 45%, transparent 70%);
+    animation: glow-pulse 7s ease-in-out infinite;
+  }
+  .orb-field__orb--b {
+    width: 48%;
+    height: 52%;
+    top: 28%;
+    right: 8%;
+    background: radial-gradient(ellipse at center, rgba(140,40,200,0.85) 0%, rgba(80,20,160,0.3) 45%, transparent 70%);
+    animation: glow-pulse-b 9s ease-in-out infinite;
+    animation-delay: -3s;
+  }
+  .orb-field__orb--c {
+    width: 42%;
+    height: 48%;
+    bottom: 8%;
+    left: 22%;
+    background: radial-gradient(ellipse at center, rgba(30,90,255,0.8) 0%, rgba(10,50,200,0.25) 45%, transparent 70%);
+    animation: glow-pulse-c 5s ease-in-out infinite;
+    animation-delay: -1s;
+  }
+  html[data-theme="light"] .orb-field__orb {
+    filter: blur(8px) saturate(0.86);
+  }
+  html[data-theme="light"] .orb-field__orb--a {
+    background: radial-gradient(ellipse at center, rgba(200,90,48,0.34) 0%, rgba(200,90,48,0.11) 45%, transparent 70%);
+  }
+  html[data-theme="light"] .orb-field__orb--b {
+    background: radial-gradient(ellipse at center, rgba(184,137,43,0.26) 0%, rgba(106,132,216,0.1) 45%, transparent 70%);
+  }
+  html[data-theme="light"] .orb-field__orb--c {
+    background: radial-gradient(ellipse at center, rgba(106,132,216,0.3) 0%, rgba(47,158,143,0.1) 45%, transparent 70%);
+  }
+
+  .orb-field--contact .orb-field__orb {
+    opacity: 0.9;
+  }
+  html[data-theme="light"] .orb-field--contact .orb-field__orb {
+    opacity: 0.52;
+  }
+  .orb-field--contact .orb-field__orb--a {
+    width: 48%;
+    height: 60%;
+    top: 12%;
+    left: -4%;
+  }
+  .orb-field--contact .orb-field__orb--b {
+    width: 42%;
+    height: 48%;
+    top: 10%;
+    right: -2%;
+  }
+  .orb-field--contact .orb-field__orb--c {
+    width: 36%;
+    height: 42%;
+    bottom: -6%;
+    left: 34%;
+  }
+
+  /* ── Hero title line reveal ── */
+  .hero-word {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+  }
+  .hero-line-inner {
+    display: block;
+    transform: translateY(108%);
+    transition: transform 1.1s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .hero-line-inner.visible {
+    transform: translateY(0);
+  }
+
+  /* ── Scroll indicator ── */
+  @keyframes scroll-line {
+    0%   { transform: scaleY(0); transform-origin: top;    opacity: 1; }
+    50%  { transform: scaleY(1); transform-origin: top;    opacity: 1; }
+    51%  { transform: scaleY(1); transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; opacity: 0.2; }
+  }
+  .animate-scroll-line {
+    animation: scroll-line 2.2s ease-in-out infinite;
+  }
+}

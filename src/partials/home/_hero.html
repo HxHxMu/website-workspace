@@ -1,0 +1,67 @@
+<!-- ═══════════════════════════════════════════════
+       HERO
+  ═══════════════════════════════════════════════ -->
+<section id="hero" data-orb-field="hero" data-orb-palette="blue" data-orb-mode="hero-tabs"
+  class="grain orb-field orb-field--hero relative min-h-screen hero-gradient flex flex-col justify-center overflow-hidden">
+
+  <!-- Parallax atmospheric layer (JS transforms the wrapper, gradient is CSS) -->
+  <div id="hero-parallax" class="absolute inset-0 pointer-events-none will-change-transform">
+    <div class="absolute inset-0 atmo-hero"></div>
+  </div>
+
+  <!-- Dot grid — faint structural texture -->
+  <div class="absolute inset-0 pointer-events-none hero-dot-grid"></div>
+
+  <!-- Ambient gradient orbs — above parallax layer -->
+  <div class="orb-field__orb orb-field__orb--a"></div>
+  <div class="orb-field__orb orb-field__orb--b"></div>
+  <div class="orb-field__orb orb-field__orb--c"></div>
+
+
+  <!-- Scroll-fade overlay (JS-driven opacity) -->
+  <div id="hero-fade" class="absolute inset-0 bg-ink pointer-events-none hero-fade-overlay"></div>
+
+  <!-- Content: full-width editorial statement -->
+  <div
+    class="rail-clear relative z-10 mx-auto max-w-7xl w-full flex-1 flex flex-col justify-start pt-40 md:pt-52">
+
+    <!-- Audience selector -->
+    <div class="audience-strip reveal mb-2">
+      <div class="audience-tabs flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+        <button
+          class="audience-tab audience-tab--active flex-shrink-0 text-sm font-medium tracking-label px-4 py-2 rounded-full transition-all duration-300 text-warm-white"
+          data-audience="anyone" data-color="blue">For Everyone</button>
+        <button
+          class="audience-tab flex-shrink-0 text-sm font-medium tracking-label px-4 py-2 rounded-full transition-all duration-300 text-warm-muted"
+          data-audience="recruiters" data-color="teal">Recruiters</button>
+        <button
+          class="audience-tab flex-shrink-0 text-sm font-medium tracking-label px-4 py-2 rounded-full transition-all duration-300 text-warm-muted"
+          data-audience="directors" data-color="violet">Hiring Managers</button>
+        <button
+          class="audience-tab flex-shrink-0 text-sm font-medium tracking-label px-4 py-2 rounded-full transition-all duration-300 text-warm-muted"
+          data-audience="designers" data-color="warm">Designers</button>
+        <button
+          class="audience-tab flex-shrink-0 text-sm font-medium tracking-label px-4 py-2 rounded-full transition-all duration-300 text-warm-muted"
+          data-audience="pms" data-color="teal">Product Managers</button>
+        <button
+          class="audience-tab flex-shrink-0 text-sm font-medium tracking-label px-4 py-2 rounded-full transition-all duration-300 text-warm-muted"
+          data-audience="engineers" data-color="blue">Engineers</button>
+        <button
+          class="audience-tab flex-shrink-0 text-sm font-medium tracking-label px-4 py-2 rounded-full transition-all duration-300 text-warm-muted"
+          data-audience="creative-ai" data-color="violet">AI / Creative Tech</button>
+      </div>
+    </div>
+
+    <!-- Headline — swaps per audience -->
+    <h1 id="hero-headline" class="heading-hero text-warm-white max-w-5xl reveal reveal-delay-1">
+      Hello, I design digital products and systems, and I care about making them feel simple, clear, and easy to use.
+    </h1>
+
+
+  </div>
+
+  <!-- Scroll indicator -->
+  <div class="hero-scroll-indicator absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center opacity-30 pointer-events-none">
+    <div class="hero-scroll-indicator__line w-px h-14 animate-scroll-line"></div>
+  </div>
+</section>

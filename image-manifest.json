@@ -1,0 +1,114 @@
+[
+  {
+    "id": "lfa-dashboard",
+    "prompt": "A premium dark-themed wellness platform dashboard. Clean SaaS layout with sidebar navigation, analytics cards showing user engagement metrics, a progress chart, and a daily wellness score widget. Subtle blue accent. Rounded corners, soft shadows, modern sans-serif typography.",
+    "width": 1024,
+    "height": 640,
+    "output": "src/assets/img/placeholders/lfa-dashboard.png"
+  },
+  {
+    "id": "lfa-onboarding",
+    "prompt": "A dark-themed mobile onboarding flow for a wellness app. Step indicator step 2 of 4, a question about wellness goals with selectable pill-shaped options. Soft blue accents, generous whitespace, modern and calm.",
+    "width": 640,
+    "height": 800,
+    "output": "src/assets/img/placeholders/lfa-onboarding.png"
+  },
+  {
+    "id": "lfa-video-player",
+    "prompt": "A dark-themed custom video player UI for a wellness education platform. Paused meditation video with large centered play button, progress bar, chapter markers, lesson title overlay. Minimal chrome. Blue accent.",
+    "width": 800,
+    "height": 560,
+    "output": "src/assets/img/placeholders/lfa-video-player.png"
+  },
+  {
+    "id": "disney-player-ui",
+    "prompt": "A premium dark-themed streaming video player interface. Paused animated movie frame with transport controls, timeline scrubber, volume, subtitles toggle, fullscreen button. Sleek minimal chrome. Warm amber gold accent.",
+    "width": 800,
+    "height": 560,
+    "output": "src/assets/img/placeholders/disney-player-ui.png"
+  },
+  {
+    "id": "disney-a11y-annotation",
+    "prompt": "A dark-themed accessibility audit annotation screen. UI component with colored overlay markers for contrast ratios, focus order numbers, ARIA label callouts. Sidebar with WCAG checklist. Professional UX tool aesthetic. Amber accent.",
+    "width": 800,
+    "height": 560,
+    "output": "src/assets/img/placeholders/disney-a11y-annotation.png"
+  },
+  {
+    "id": "txai-ti-prompt",
+    "prompt": "A dark-themed AI prompt engineering interface. Split view: left text prompt input with parameters, right side generated image preview. Terminal aesthetic mixed with modern UI. Teal cyan accent.",
+    "width": 800,
+    "height": 560,
+    "output": "src/assets/img/placeholders/txai-ti-prompt.png"
+  },
+  {
+    "id": "txai-ti-output",
+    "prompt": "A dark-themed gallery view of AI-generated visual outputs. Grid of 6 images with metadata below each. One selected with teal border. Clean tool-like interface.",
+    "width": 800,
+    "height": 560,
+    "output": "src/assets/img/placeholders/txai-ti-output.png"
+  },
+  {
+    "id": "lebe-campaign",
+    "prompt": "A dark-themed creative campaign dashboard. Brand campaign overview with hero image preview, color palette swatches, typography specimens, social media asset thumbnails. Warm orange accent. Agency studio aesthetic.",
+    "width": 640,
+    "height": 640,
+    "output": "src/assets/img/placeholders/lebe-campaign.png"
+  },
+  {
+    "id": "motion-prototype",
+    "prompt": "A dark-themed motion design tool interface. Timeline editor with keyframe diamonds, canvas with animated UI transition mid-frame, properties panel with easing curves. Neutral gray accent.",
+    "width": 800,
+    "height": 560,
+    "output": "src/assets/img/placeholders/motion-prototype.png"
+  },
+  {
+    "id": "figma-flow",
+    "prompt": "A dark-themed design tool canvas showing a user flow diagram. Connected screens with arrows, checkout flow. Minimap in corner, layers panel visible. Clean vector aesthetic. Purple accent.",
+    "width": 800,
+    "height": 560,
+    "output": "src/assets/img/placeholders/figma-flow.png"
+  },
+  {
+    "id": "design-system-components",
+    "prompt": "A dark-themed design system component library. Grid of UI components: buttons, input fields, toggles, dropdowns, tags, color tokens. Clean documentation layout. Blue accent. Ultra-wide aspect ratio.",
+    "width": 1200,
+    "height": 514,
+    "output": "src/assets/img/placeholders/design-system-components.png"
+  },
+  {
+    "id": "disney-preview",
+    "prompt": "Small dark-themed preview showing a streaming platform with movie poster grid. Compact thumbnail. Amber gold accent.",
+    "width": 480,
+    "height": 300,
+    "output": "src/assets/img/placeholders/disney-preview.png"
+  },
+  {
+    "id": "lfa-dashboard-preview",
+    "prompt": "Small dark-themed preview showing a wellness dashboard with circular progress ring and stat cards. Compact thumbnail. Blue accent.",
+    "width": 480,
+    "height": 300,
+    "output": "src/assets/img/placeholders/lfa-dashboard-preview.png"
+  },
+  {
+    "id": "independent-visual",
+    "prompt": "Small dark-themed preview of generative art output. Abstract geometric shapes with glowing teal edges on black background. Creative coding aesthetic. Compact.",
+    "width": 480,
+    "height": 300,
+    "output": "src/assets/img/placeholders/independent-visual.png"
+  },
+  {
+    "id": "cta-artifact",
+    "prompt": "Tall narrow dark abstract composition. Layered geometric shapes with warm orange glow, subtle noise texture, depth. Fragment of a design system. Atmospheric moody portrait orientation.",
+    "width": 400,
+    "height": 560,
+    "output": "src/assets/img/placeholders/cta-artifact.png"
+  },
+  {
+    "id": "perspective-fragment",
+    "prompt": "Small dark abstract design fragment. Portion of a Figma artboard with layered rectangles, subtle grid, vector paths. Zoomed-in crop of a designer workspace. Minimal quiet.",
+    "width": 400,
+    "height": 560,
+    "output": "src/assets/img/placeholders/perspective-fragment.png"
+  }
+]

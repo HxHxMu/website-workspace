@@ -1,0 +1,19 @@
+{
+  "page": "index.html",
+  "base_url": "http://127.0.0.1:8080",
+  "viewport": {
+    "width": 1440,
+    "height": 2200
+  },
+  "target_similarity": 0.92,
+  "max_iterations": 6,
+  "priority_order": [
+    "layout",
+    "spacing",
+    "typography",
+    "hierarchy",
+    "radius",
+    "shadow",
+    "color"
+  ]
+}
