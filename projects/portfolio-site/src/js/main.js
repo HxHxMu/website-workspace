@@ -18,6 +18,9 @@
     });
   } else {
     // Play intro for first time this session
+    // Lock scroll while intro plays
+    document.body.classList.add('overflow-hidden');
+
     // Hide all main content initially
     mainContent.forEach(el => {
       el.style.opacity = '0';
@@ -28,6 +31,7 @@
     setTimeout(() => {
       introOverlay.style.display = 'none';
       introOverlay.style.pointerEvents = 'none';
+      document.body.classList.remove('overflow-hidden');
       mainContent.forEach(el => {
         el.style.transition = 'opacity 800ms ease, transform 800ms cubic-bezier(0.16, 1, 0.3, 1)';
         el.style.opacity = '1';
@@ -35,7 +39,7 @@
       });
       // Mark intro as shown for this session
       sessionStorage.setItem('intro-shown', 'true');
-    }, 1300);
+    }, 1800);
   }
 }());
 
