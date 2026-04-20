@@ -63,6 +63,7 @@ Load identity and positioning references when working on portfolio framing, Abou
 - Work cards in `src/partials/home/_work.html` are commented out — restore when case study pages are ready
 - Each card links to its own page (LFA, Disney, AI Workflow) — pages need to be built before re-enabling
 - `case-study.html` exists and builds correctly but is not linked from the homepage
+- "Cases" link removed from sidebar nav and overlay menu in `src/partials/shared/_sidebar.html` — restore both links (`#work`, data-section="work") when case studies are re-enabled
 
 **Other:**
 - Work collage grid finalization (Figma export)
