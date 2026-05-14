@@ -186,9 +186,9 @@ async function renderProductGrid() {
 
       dots.forEach(d => {
         d.classList.remove('bg-brand');
-        d.classList.add('bg-white/50');
+        d.classList.add('bg-text/30');
       });
-      dots[idx].classList.remove('bg-white/50');
+      dots[idx].classList.remove('bg-text/30');
       dots[idx].classList.add('bg-brand');
     };
 
