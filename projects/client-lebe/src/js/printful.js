@@ -126,7 +126,7 @@ async function renderProductGrid() {
           <div class="absolute bottom-3 left-3 bg-white/90 text-brand px-3 py-1 rounded font-bold text-sm z-20">${discountPercent}% OFF</div>
 
           <!-- Carousel dots (mobile visible, desktop hidden) -->
-          <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-2 z-10 md:hidden">
+          <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-2 z-10 hidden sm:flex md:hidden">
             ${product.images.map((_, imgIdx) => `
               <button class="carousel-dot w-2 h-2 rounded-full transition-colors ${imgIdx === 0 ? 'bg-brand' : 'bg-text/30'}" data-index="${imgIdx}" aria-label="Image ${imgIdx + 1}"></button>
             `).join('')}
