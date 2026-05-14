@@ -1,40 +1,58 @@
-// Printful products (hardcoded for v1)
+// Printful products with image carousel (2 shots each)
 const PRODUCTS = [
   {
-    id: 'sp432310961',
+    id: 'saguanari-seamless-ainbo-bra',
     name: 'Saguanari Seamless Ainbo Bra',
-    thumbnail_url: 'https://files.cdn.printful.com/files/ba0/ba09b047dc3e9f9ec3234760ac944ffd_preview.png',
-    published_to_stores: [{ sync_product_id: 432310961 }]
+    url: 'https://lebe.printful.me/product/saguanari-seamless-ainbo-bra',
+    images: [
+      './assets/images/product%20shots/ainbo_bra_terracota_1.jpg',
+      './assets/images/product%20shots/ainbo_bra_terracota_2.jpg'
+    ]
   },
   {
-    id: 'sp432310896',
+    id: 'ainbo-high-waist-legging',
     name: 'High-Waist Ainbo Leggings',
-    thumbnail_url: 'https://files.cdn.printful.com/files/3d9/3d90c76c641ed8a51a428bdb232d25b6_preview.png',
-    published_to_stores: [{ sync_product_id: 432310896 }]
+    url: 'https://lebe.printful.me/product/ainbo-high-waist-legging',
+    images: [
+      './assets/images/product%20shots/ainbo_leggin_terracota_1.jpg',
+      './assets/images/product%20shots/ainbo_leggin_terracota_2.jpg'
+    ]
   },
   {
-    id: 'sp6477600e15cb73',
-    name: 'Sanguanari Sports Bra Black',
-    thumbnail_url: 'https://files.cdn.printful.com/files/647/6477600e15cb73_thumb.png',
-    published_to_stores: [{ sync_product_id: 432310962 }]
+    id: 'saguanari-racerback-bra-black',
+    name: 'Saguanari Sports Bra Black',
+    url: 'https://lebe.printful.me/product/saguanari-racerback-bra-black',
+    images: [
+      './assets/images/product%20shots/saguanari_bra_blk_1.jpg',
+      './assets/images/product%20shots/saguanari_bra_blk_2.jpg'
+    ]
   },
   {
-    id: 'sp64775fcaef5f21',
-    name: 'Sanguanari Sports Bra White',
-    thumbnail_url: 'https://files.cdn.printful.com/files/647/64775fcaef5f21_thumb.png',
-    published_to_stores: [{ sync_product_id: 432310963 }]
+    id: 'saguanari-racerback-bra-white',
+    name: 'Saguanari Sports Bra White',
+    url: 'https://lebe.printful.me/product/saguanari-racerback-bra-white',
+    images: [
+      './assets/images/product%20shots/saguanari_bra_wht_1.jpg',
+      './assets/images/product%20shots/saguanari_bra_wht_2.jpg'
+    ]
   },
   {
-    id: 'sp64000b204a6de9',
+    id: 'saguanari-high-waist-white-legging',
     name: 'Saguanari White Yoga Leggings',
-    thumbnail_url: 'https://files.cdn.printful.com/files/640/64000b204a6de9_preview.png',
-    published_to_stores: [{ sync_product_id: 432310964 }]
+    url: 'https://lebe.printful.me/product/saguanari-high-waist-white-legging',
+    images: [
+      './assets/images/product%20shots/saguanari_leggin_wht_1.jpg',
+      './assets/images/product%20shots/saguanari_leggin_wht_2.jpg'
+    ]
   },
   {
-    id: 'sp63ec714091ff89',
-    name: 'Saguanari Yoga Leggings',
-    thumbnail_url: 'https://files.cdn.printful.com/files/63e/63ec714091ff89_preview.png',
-    published_to_stores: [{ sync_product_id: 432310965 }]
+    id: 'saguanari-high-waist-black-legging',
+    name: 'Saguanari Yoga Leggings Black',
+    url: 'https://lebe.printful.me/product/saguanari-high-waist-black-legging',
+    images: [
+      './assets/images/product%20shots/saguanari_leggin_blk_1.jpg',
+      './assets/images/product%20shots/saguanari_leggin_blk_2.jpg'
+    ]
   }
 ];
 
@@ -55,14 +73,38 @@ async function renderProductGrid() {
     return;
   }
 
-  grid.innerHTML = products.slice(0, 6).map(product => {
-    const syncId = product.published_to_stores?.[0]?.sync_product_id;
-    const printfulLink = `https://lebe.printful.me/products/${syncId}`;
+  grid.innerHTML = products.slice(0, 6).map((product, idx) => {
+    const printfulLink = product.url;
+    const carouselId = `carousel-${idx}`;
     return `
       <a href="${printfulLink}" target="_blank" rel="noopener noreferrer" class="group">
-        <div class="aspect-square bg-surface rounded overflow-hidden mb-3">
-          <div class="w-full h-full bg-gradient-to-br from-brand to-red-900 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-            <span class="text-white text-sm text-center px-4 font-semibold">${product.name}</span>
+        <div class="carousel-container aspect-square bg-surface rounded overflow-hidden mb-3 relative">
+          <div id="${carouselId}" class="carousel w-full h-full relative">
+            ${product.images.map((img, imgIdx) => `
+              <img
+                src="${img}"
+                alt="${product.name}"
+                class="product-card carousel-img w-full h-full object-cover absolute inset-0"
+                style="${imgIdx === 0 ? '' : 'display: none;'}"
+                loading="lazy"
+                data-index="${imgIdx}"
+              >
+            `).join('')}
+          </div>
+
+          <!-- Arrow buttons (desktop only, hidden on mobile) -->
+          <button class="carousel-arrow carousel-prev hidden md:flex absolute left-3 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-20 bg-black/60 hover:bg-black text-white p-3 rounded-full items-center justify-center" aria-label="Previous image">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <button class="carousel-arrow carousel-next hidden md:flex absolute right-3 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-20 bg-black/60 hover:bg-black text-white p-3 rounded-full items-center justify-center" aria-label="Next image">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+
+          <!-- Carousel dots (mobile visible, desktop hidden) -->
+          <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-2 z-10 md:hidden">
+            ${product.images.map((_, imgIdx) => `
+              <button class="carousel-dot w-2 h-2 rounded-full transition-colors ${imgIdx === 0 ? 'bg-brand' : 'bg-white/50'}" data-index="${imgIdx}" aria-label="Image ${imgIdx + 1}"></button>
+            `).join('')}
           </div>
         </div>
         <h2 class="font-semibold text-base line-clamp-2">${product.name}</h2>
@@ -70,6 +112,97 @@ async function renderProductGrid() {
       </a>
     `;
   }).join('');
+
+  // Add carousel handlers
+  document.querySelectorAll('.carousel-container').forEach(container => {
+    const carousel = container.querySelector('[id^="carousel-"]');
+    const dots = container.querySelectorAll('.carousel-dot');
+    const images = carousel.querySelectorAll('.carousel-img');
+    const prevBtn = container.querySelector('.carousel-prev');
+    const nextBtn = container.querySelector('.carousel-next');
+    let currentIdx = 0;
+    let touchStartX = 0;
+
+    const showImage = (idx, direction = 'next') => {
+      const current = images[currentIdx];
+      const next = images[idx];
+
+      // Show the next image immediately (for animation to work)
+      next.style.display = 'block';
+
+      // Force reflow to ensure animation plays
+      void next.offsetWidth;
+
+      if (direction === 'next') {
+        // Current image pushes out to the left
+        current.style.animation = 'slideOutLeft 0.4s ease-in-out forwards';
+        // New image slides in from the right
+        next.style.animation = 'slideInRight 0.4s ease-in-out forwards';
+      } else {
+        // Current image pushes out to the right
+        current.style.animation = 'slideOutRight 0.4s ease-in-out forwards';
+        // New image slides in from the left
+        next.style.animation = 'slideInLeft 0.4s ease-in-out forwards';
+      }
+
+      // Hide the previous image after animation
+      setTimeout(() => {
+        current.style.animation = '';
+        current.style.display = 'none';
+      }, 400);
+
+      currentIdx = idx;
+
+      dots.forEach(d => {
+        d.classList.remove('bg-brand');
+        d.classList.add('bg-white/50');
+      });
+      dots[idx].classList.remove('bg-white/50');
+      dots[idx].classList.add('bg-brand');
+    };
+
+    // Dot clicks (mobile)
+    dots.forEach((dot, idx) => {
+      dot.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        showImage(idx);
+      });
+    });
+
+    // Arrow buttons (desktop)
+    prevBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      showImage((currentIdx - 1 + images.length) % images.length, 'prev');
+    });
+
+    nextBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      showImage((currentIdx + 1) % images.length, 'next');
+    });
+
+    // Touch/swipe support for mobile
+    carousel.addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].clientX;
+    });
+
+    carousel.addEventListener('touchend', (e) => {
+      const touchEndX = e.changedTouches[0].clientX;
+      const diff = touchStartX - touchEndX;
+
+      if (Math.abs(diff) > 50) { // Swipe threshold
+        if (diff > 0) {
+          // Swipe left → next image
+          showImage((currentIdx + 1) % images.length, 'next');
+        } else {
+          // Swipe right → prev image
+          showImage((currentIdx - 1 + images.length) % images.length, 'prev');
+        }
+      }
+    });
+  });
 }
 
 // Render product detail
