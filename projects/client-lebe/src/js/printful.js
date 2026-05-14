@@ -2,7 +2,7 @@
 const PRODUCTS = [
   {
     id: 'saguanari-seamless-ainbo-bra',
-    name: 'Saguanari Seamless Ainbo Bra',
+    name: 'Ainbo Seamless Bra',
     url: 'https://lebe.printful.me/product/saguanari-seamless-ainbo-bra',
     images: [
       './assets/images/product%20shots/ainbo_bra_terracota_1.jpg',
@@ -11,7 +11,7 @@ const PRODUCTS = [
   },
   {
     id: 'ainbo-high-waist-legging',
-    name: 'High-Waist Ainbo Leggings',
+    name: 'Ainbo High-Waist Leggings',
     url: 'https://lebe.printful.me/product/ainbo-high-waist-legging',
     images: [
       './assets/images/product%20shots/ainbo_leggin_terracota_1.jpg',
