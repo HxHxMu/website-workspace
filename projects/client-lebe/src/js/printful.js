@@ -3,6 +3,9 @@ const PRODUCTS = [
   {
     id: 'saguanari-seamless-ainbo-bra',
     name: 'Ainbo Seamless Bra',
+    color: 'Terracota',
+    originalPrice: 75,
+    salePrice: 45,
     url: 'https://lebe.printful.me/product/saguanari-seamless-ainbo-bra',
     images: [
       './assets/images/product%20shots/ainbo_bra_terracota_1.jpg',
@@ -12,6 +15,9 @@ const PRODUCTS = [
   {
     id: 'ainbo-high-waist-legging',
     name: 'Ainbo High-Waist Leggings',
+    color: 'Terracota',
+    originalPrice: 70,
+    salePrice: 40,
     url: 'https://lebe.printful.me/product/ainbo-high-waist-legging',
     images: [
       './assets/images/product%20shots/ainbo_leggin_terracota_1.jpg',
@@ -20,7 +26,10 @@ const PRODUCTS = [
   },
   {
     id: 'saguanari-racerback-bra-black',
-    name: 'Saguanari Sports Bra Black',
+    name: 'Saguanari Sports Bra',
+    color: 'Black',
+    originalPrice: 60,
+    salePrice: 40,
     url: 'https://lebe.printful.me/product/saguanari-racerback-bra-black',
     images: [
       './assets/images/product%20shots/saguanari_bra_blk_1.jpg',
@@ -29,7 +38,10 @@ const PRODUCTS = [
   },
   {
     id: 'saguanari-racerback-bra-white',
-    name: 'Saguanari Sports Bra White',
+    name: 'Saguanari Sports Bra',
+    color: 'White',
+    originalPrice: 60,
+    salePrice: 40,
     url: 'https://lebe.printful.me/product/saguanari-racerback-bra-white',
     images: [
       './assets/images/product%20shots/saguanari_bra_wht_1.jpg',
@@ -38,7 +50,10 @@ const PRODUCTS = [
   },
   {
     id: 'saguanari-high-waist-white-legging',
-    name: 'Saguanari White Yoga Leggings',
+    name: 'Saguanari Yoga Leggings',
+    color: 'White',
+    originalPrice: 70,
+    salePrice: 40,
     url: 'https://lebe.printful.me/product/saguanari-high-waist-white-legging',
     images: [
       './assets/images/product%20shots/saguanari_leggin_wht_1.jpg',
@@ -47,7 +62,10 @@ const PRODUCTS = [
   },
   {
     id: 'saguanari-high-waist-black-legging',
-    name: 'Saguanari Yoga Leggings Black',
+    name: 'Saguanari Yoga Leggings',
+    color: 'Black',
+    originalPrice: 70,
+    salePrice: 40,
     url: 'https://lebe.printful.me/product/saguanari-high-waist-black-legging',
     images: [
       './assets/images/product%20shots/saguanari_leggin_blk_1.jpg',
@@ -108,7 +126,12 @@ async function renderProductGrid() {
           </div>
         </div>
         <h2 class="font-semibold text-base line-clamp-2">${product.name}</h2>
-        <p class="text-brand font-semibold mt-1">View details →</p>
+        <p class="text-text-muted text-sm mt-1">${product.color}</p>
+        <div class="flex items-center gap-2 mt-2">
+          <span class="text-text-muted line-through text-sm">$${product.originalPrice}</span>
+          <span class="text-brand font-semibold">$${product.salePrice}</span>
+        </div>
+        <p class="text-brand font-semibold mt-2">View details →</p>
       </a>
     `;
   }).join('');
