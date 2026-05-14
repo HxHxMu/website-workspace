@@ -124,13 +124,13 @@ async function renderProductGrid() {
           <!-- Badges -->
           ${product.bestSeller ? '<div class="absolute top-3 left-3 bg-text/80 text-ink px-3 py-1 rounded-full text-xs font-semibold z-20">Best Seller</div>' : ''}
           <div class="absolute bottom-3 left-3 bg-white/90 text-brand px-3 py-1 rounded font-bold text-sm z-20">${discountPercent}% OFF</div>
+        </div>
 
-          <!-- Carousel dots (mobile visible, desktop hidden) -->
-          <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-2 z-10 hidden sm:flex md:hidden">
-            ${product.images.map((_, imgIdx) => `
-              <button class="carousel-dot w-2 h-2 rounded-full transition-colors ${imgIdx === 0 ? 'bg-brand' : 'bg-text/30'}" data-index="${imgIdx}" aria-label="Image ${imgIdx + 1}"></button>
-            `).join('')}
-          </div>
+        <!-- Carousel dots (mobile visible, desktop hidden) -->
+        <div class="flex justify-center gap-2 mt-2 sm:hidden">
+          ${product.images.map((_, imgIdx) => `
+            <button class="carousel-dot w-2 h-2 rounded-full transition-colors ${imgIdx === 0 ? 'bg-brand' : 'bg-text/30'}" data-index="${imgIdx}" aria-label="Image ${imgIdx + 1}"></button>
+          `).join('')}
         </div>
 
         <h2 class="font-semibold text-base line-clamp-2 mt-3">${product.name}</h2>
@@ -147,7 +147,8 @@ async function renderProductGrid() {
   // Add carousel handlers
   document.querySelectorAll('.carousel-container').forEach(container => {
     const carousel = container.querySelector('[id^="carousel-"]');
-    const dots = container.querySelectorAll('.carousel-dot');
+    const parentLink = container.closest('a');
+    const dots = parentLink.querySelectorAll('.carousel-dot');
     const images = carousel.querySelectorAll('.carousel-img');
     const prevBtn = container.querySelector('.carousel-prev');
     const nextBtn = container.querySelector('.carousel-next');
