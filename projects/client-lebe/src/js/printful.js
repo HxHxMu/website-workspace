@@ -132,13 +132,13 @@ async function renderProductGrid() {
           ${product.bestSeller ? '<div class="absolute top-3 left-3 bg-text/80 text-ink px-3 py-1 rounded-full text-xs font-semibold z-20">Best Seller</div>' : ''}
           <div class="absolute bottom-3 left-3 bg-white/90 text-brand px-3 py-1 rounded font-bold text-sm z-20">${discountPercent}% OFF</div>
         </div>
-        <h2 class="font-semibold text-sm line-clamp-2 mt-2">${product.name}</h2>
-        <p class="text-text-muted text-xs mt-1">${product.color}</p>
-        <div class="flex items-center gap-2 mt-1">
-          <span class="text-text-muted text-xs line-through">$${product.originalPrice}</span>
-          <span class="text-brand font-semibold text-sm">$${product.salePrice}</span>
+        <h2 class="font-semibold text-base line-clamp-2 mt-3">${product.name}</h2>
+        <p class="text-text-muted text-sm mt-1">${product.color}</p>
+        <div class="flex items-center gap-2 mt-2">
+          <span class="text-text-muted text-sm line-through">$${product.originalPrice}</span>
+          <span class="text-brand font-semibold">$${product.salePrice}</span>
         </div>
-        <p class="text-brand font-semibold text-xs mt-1">View details →</p>
+        <p class="text-brand font-semibold text-sm mt-2">View details →</p>
       </a>
     `;
   }).join('');
