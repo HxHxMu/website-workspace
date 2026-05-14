@@ -168,11 +168,12 @@ document.querySelectorAll('#hero .reveal').forEach((el, i) => {
 // ── Sidebar: highlight active section on scroll ──
 (function () {
   const links = document.querySelectorAll('.sidebar-link');
-  const sections = Array.from(links).map(l => document.querySelector(l.getAttribute('href'))).filter(Boolean);
+  const anchorLinks = Array.from(links).filter(l => l.getAttribute('href').startsWith('#'));
+  const sections = anchorLinks.map(l => document.querySelector(l.getAttribute('href'))).filter(Boolean);
   function updateSidebar() {
     let current = sections[0];
     sections.forEach(s => { if (window.scrollY >= s.offsetTop - window.innerHeight * 0.4) current = s; });
-    links.forEach(l => {
+    anchorLinks.forEach(l => {
       l.classList.toggle('sidebar-link--active', l.getAttribute('href') === '#' + current.id);
     });
   }
