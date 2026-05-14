@@ -130,7 +130,7 @@ async function renderProductGrid() {
 
           <!-- Badges -->
           ${product.bestSeller ? '<div class="absolute top-3 left-3 bg-text/80 text-ink px-3 py-1 rounded-full text-xs font-semibold z-20">Best Seller</div>' : ''}
-          <div class="absolute bottom-3 left-3 text-brand font-bold text-lg z-20">${discountPercent}% OFF</div>
+          <div class="absolute bottom-3 left-3 bg-white/90 text-brand px-3 py-1 rounded font-bold text-sm z-20">${discountPercent}% OFF</div>
         </div>
         <h2 class="font-semibold text-base line-clamp-2">${product.name}</h2>
         <p class="text-text-muted text-sm mt-1">${product.color}</p>
