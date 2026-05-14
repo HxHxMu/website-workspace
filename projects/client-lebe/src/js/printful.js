@@ -42,6 +42,7 @@ const PRODUCTS = [
     color: 'White',
     originalPrice: 60,
     salePrice: 40,
+    bestSeller: true,
     url: 'https://lebe.printful.me/product/saguanari-racerback-bra-white',
     images: [
       './assets/images/product%20shots/saguanari_bra_wht_1.jpg',
@@ -54,6 +55,7 @@ const PRODUCTS = [
     color: 'White',
     originalPrice: 70,
     salePrice: 40,
+    bestSeller: true,
     url: 'https://lebe.printful.me/product/saguanari-high-waist-white-legging',
     images: [
       './assets/images/product%20shots/saguanari_leggin_wht_1.jpg',
@@ -94,6 +96,7 @@ async function renderProductGrid() {
   grid.innerHTML = products.slice(0, 6).map((product, idx) => {
     const printfulLink = product.url;
     const carouselId = `carousel-${idx}`;
+    const discountPercent = Math.round(((product.originalPrice - product.salePrice) / product.originalPrice) * 100);
     return `
       <a href="${printfulLink}" target="_blank" rel="noopener noreferrer" class="group">
         <div class="carousel-container aspect-square bg-surface rounded overflow-hidden mb-3 relative">
@@ -124,11 +127,15 @@ async function renderProductGrid() {
               <button class="carousel-dot w-2 h-2 rounded-full transition-colors ${imgIdx === 0 ? 'bg-brand' : 'bg-white/50'}" data-index="${imgIdx}" aria-label="Image ${imgIdx + 1}"></button>
             `).join('')}
           </div>
+
+          <!-- Badges -->
+          ${product.bestSeller ? '<div class="absolute top-3 left-3 bg-text/80 text-ink px-3 py-1 rounded-full text-xs font-semibold z-20">Best Seller</div>' : ''}
+          <div class="absolute bottom-3 left-3 text-brand font-bold text-lg z-20">${discountPercent}% OFF</div>
         </div>
         <h2 class="font-semibold text-base line-clamp-2">${product.name}</h2>
         <p class="text-text-muted text-sm mt-1">${product.color}</p>
         <div class="flex items-center gap-2 mt-2">
-          <span class="text-text-muted line-through text-sm">$${product.originalPrice}</span>
+          <span class="text-text-muted text-sm">$${product.originalPrice}</span>
           <span class="text-brand font-semibold">$${product.salePrice}</span>
         </div>
         <p class="text-brand font-semibold mt-2">View details →</p>
