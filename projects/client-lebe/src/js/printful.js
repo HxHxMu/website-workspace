@@ -135,7 +135,7 @@ async function renderProductGrid() {
         <h2 class="font-semibold text-base line-clamp-2">${product.name}</h2>
         <p class="text-text-muted text-sm mt-1">${product.color}</p>
         <div class="flex items-center gap-2 mt-2">
-          <span class="text-text-muted text-sm">$${product.originalPrice}</span>
+          <span class="text-text-muted text-sm line-through">$${product.originalPrice}</span>
           <span class="text-brand font-semibold">$${product.salePrice}</span>
         </div>
         <p class="text-brand font-semibold mt-2">View details →</p>
