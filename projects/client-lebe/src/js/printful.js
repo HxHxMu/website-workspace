@@ -129,8 +129,8 @@ async function renderProductGrid() {
           </div>
 
           <!-- Badges -->
-          <div class="absolute top-3 left-3 bg-white/90 text-brand px-3 py-1 rounded font-bold text-sm z-20">${discountPercent}% OFF</div>
-          ${product.bestSeller ? '<div class="absolute top-3 left-24 bg-text/80 text-ink px-3 py-1 rounded-full text-xs font-semibold z-20">Best Seller</div>' : ''}
+          ${product.bestSeller ? '<div class="absolute top-3 left-3 bg-text/80 text-ink px-3 py-1 rounded-full text-xs font-semibold z-20">Best Seller</div>' : ''}
+          <div class="absolute bottom-3 left-3 bg-white/90 text-brand px-3 py-1 rounded font-bold text-sm z-20">${discountPercent}% OFF</div>
         </div>
         <h2 class="font-semibold text-base line-clamp-2 mt-3">${product.name}</h2>
         <p class="text-text-muted text-sm mt-1">${product.color}</p>
