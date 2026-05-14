@@ -1,0 +1,14 @@
+{
+  "name": "client-lebe",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "./build.sh && npm run build:css",
+    "build:css": "tailwindcss -i ./src/input.css -o ./src/output.css --minify",
+    "serve": "python3 -m http.server 8080 -d ./src"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.0.0",
+    "tailwindcss": "^4.0.0"
+  }
+}

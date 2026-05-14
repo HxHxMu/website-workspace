@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product — LEBE</title>
+  <meta name="description" content="" />
+  <link rel="stylesheet" href="./output.css" />
+</head>
+<body class="bg-ink text-text font-sans">
+<!--INJECT: _header.html-->
+<main id="top">
+  <section class="container-shell py-16 md:py-24">
+    <div class="grid md:grid-cols-2 gap-12">
+      <!-- Product Image -->
+      <div class="flex items-center justify-center">
+        <img id="product-image" src="" alt="" class="w-full aspect-square object-cover rounded bg-surface">
+      </div>
+
+      <!-- Product Info -->
+      <div class="flex flex-col justify-start">
+        <div class="mb-8">
+          <h1 id="product-name" class="text-4xl md:text-5xl font-semibold tracking-tight mb-2"></h1>
+          <p id="product-price" class="text-2xl font-semibold text-brand"></p>
+        </div>
+
+        <form id="product-form" class="space-y-6 mb-12">
+          <!-- Color Swatches -->
+          <div>
+            <label class="block text-sm font-medium mb-3">Color</label>
+            <div id="color-swatches" class="flex gap-3"></div>
+          </div>
+
+          <!-- Size -->
+          <div>
+            <label for="size-select" class="block text-sm font-medium mb-3">Size</label>
+            <select id="size-select" class="w-full border border-text/20 rounded px-4 py-2 bg-surface text-text">
+              <option value="">Select a size</option>
+            </select>
+          </div>
+
+          <!-- Quantity -->
+          <div>
+            <label for="quantity" class="block text-sm font-medium mb-3">Quantity</label>
+            <select id="quantity" class="w-full border border-text/20 rounded px-4 py-2 bg-surface text-text">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>
+          </div>
+
+          <!-- Buy Button -->
+          <button type="button" id="buy-button" class="w-full btn-brand py-3 text-base font-semibold mt-8">
+            Buy Now
+          </button>
+        </form>
+
+        <!-- Description -->
+        <div class="border-t border-text/10 pt-8">
+          <h2 class="text-sm font-medium uppercase tracking-widest mb-4">Details</h2>
+          <p id="product-description" class="text-sm text-text-muted leading-relaxed"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<!--INJECT: _footer.html-->
+<script src="js/main.js" defer></script>
+<script src="js/printful.js" defer></script>
+<script src="js/product.js" defer></script>
+</body>
+</html>

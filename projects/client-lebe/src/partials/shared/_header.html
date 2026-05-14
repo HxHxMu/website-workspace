@@ -1,0 +1,28 @@
+<header class="site-header">
+  <div class="container-shell flex items-center justify-between py-4">
+    <a href="/" class="h-12 flex items-center">
+      <img src="./assets/images/lebe-logo.svg" alt="LEBE" class="h-full w-auto">
+    </a>
+
+    <button
+      id="menu-button"
+      class="md:hidden inline-flex items-center justify-center rounded-md border border-text/15 px-3 py-2 text-sm"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+      aria-label="Open site navigation">
+      Menu
+    </button>
+
+    <nav class="hidden md:flex items-center gap-8 text-sm text-text-muted">
+      <a href="/" class="hover:text-text transition-colors">Shop</a>
+      <a href="/about" class="hover:text-text transition-colors">About</a>
+    </nav>
+  </div>
+
+  <nav id="mobile-menu" class="hidden border-t border-text/10 md:hidden">
+    <div class="container-shell py-4 flex flex-col gap-3 text-sm">
+      <a href="/" class="hover:text-text transition-colors">Shop</a>
+      <a href="/about" class="hover:text-text transition-colors">About</a>
+    </div>
+  </nav>
+</header>
