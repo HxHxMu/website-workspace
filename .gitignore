@@ -9,3 +9,5 @@ src/output.css
 
 # Archive
 archive-shards/
+.gstack/
+.vercel

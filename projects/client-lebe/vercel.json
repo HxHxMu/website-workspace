@@ -1,9 +1,27 @@
 {
   "cleanUrls": true,
-  "rewrites": [
+  "buildCommand": "npm run build",
+  "outputDirectory": "src",
+  "routes": [
     {
-      "source": "/(.*)",
-      "destination": "/$1"
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/product.*",
+      "dest": "/product.html"
+    },
+    {
+      "src": "/cart.*",
+      "dest": "/cart.html"
+    },
+    {
+      "src": "/(.*\\..*)",
+      "dest": "/$1"
+    },
+    {
+      "src": "/.*",
+      "dest": "/index.html"
     }
   ]
 }

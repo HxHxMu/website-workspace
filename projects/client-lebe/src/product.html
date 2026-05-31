@@ -5,10 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Product — LEBE</title>
   <meta name="description" content="" />
+  <link rel="icon" href="./assets/images/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="./output.css" />
 </head>
 <body class="bg-ink text-text font-sans">
-<!--INJECT: _header.html-->
+<header class="site-header">
+  <div class="container-shell flex items-center justify-between py-3">
+    <a href="/" class="h-10 flex items-center">
+      <img src="./assets/images/lebe-logo.svg" alt="LEBE" class="h-full w-auto">
+    </a>
+
+    <button
+      id="menu-button"
+      class="md:hidden inline-flex items-center justify-center rounded-md border border-text/15 px-3 py-2 text-sm"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+      aria-label="Open site navigation">
+      Menu
+    </button>
+
+    <nav class="hidden md:flex items-center gap-8 text-sm text-text-muted">
+      <a href="/" class="hover:text-text transition-colors">Shop</a>
+    </nav>
+  </div>
+
+  <nav id="mobile-menu" class="hidden border-t border-text/10 md:hidden">
+    <div class="container-shell py-4 flex flex-col gap-3 text-sm">
+      <a href="/" class="hover:text-text transition-colors">Shop</a>
+    </div>
+  </nav>
+</header>
 <main id="top">
   <section class="container-shell py-16 md:py-24">
     <div class="grid md:grid-cols-2 gap-12">
@@ -53,7 +79,7 @@
 
           <!-- Buy Button -->
           <button type="button" id="buy-button" class="w-full btn-brand py-3 text-base font-semibold mt-8">
-            Buy Now
+            Add to Cart
           </button>
         </form>
 
@@ -66,9 +92,54 @@
     </div>
   </section>
 </main>
-<!--INJECT: _footer.html-->
+<footer class="border-t border-text/10">
+  <div class="container-shell py-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-text-muted">
+    <p>© LEBE 2026</p>
+    <p>Tribal. Bold. Minimal.</p>
+    <div class="flex gap-4">
+      <a href="https://www.instagram.com/_lebe._/" target="_blank" rel="noopener noreferrer" class="hover:text-text transition-colors" aria-label="Instagram">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><circle cx="17.5" cy="6.5" r="1.5"></circle></svg>
+      </a>
+      <a href="https://www.facebook.com/lebe.yogawear" target="_blank" rel="noopener noreferrer" class="hover:text-text transition-colors" aria-label="Facebook">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a6 6 0 0 0-6 6v3H7v4h2v8h4v-8h3l1-4h-4V8a2 2 0 0 1 2-2h1z"></path></svg>
+      </a>
+    </div>
+  </div>
+</footer>
 <script src="js/main.js" defer></script>
-<script src="js/printful.js" defer></script>
+<script src="js/cart.js" defer></script>
 <script src="js/product.js" defer></script>
+<script>
+console.log('=== INLINE SCRIPT LOADED ===');
+
+// Attach handlers synchronously, immediately
+const buyBtn = document.getElementById('buy-button');
+const form = document.getElementById('product-form');
+
+console.log('Immediate check - Buy button:', !!buyBtn, 'Form:', !!form);
+
+if (form) {
+  form.addEventListener('submit', function(e) {
+    console.log('>>> FORM SUBMIT <<<');
+    e.preventDefault();
+    e.stopPropagation();
+    if (typeof handleBuyClick === 'function') handleBuyClick();
+  }, true); // capture phase
+  console.log('Form handler attached (capture phase)');
+}
+
+if (buyBtn) {
+  buyBtn.addEventListener('click', function(e) {
+    console.log('>>> BUTTON CLICK <<<');
+    e.preventDefault();
+    e.stopPropagation();
+    if (typeof handleBuyClick === 'function') {
+      handleBuyClick(e);
+    }
+    return false;
+  }, true); // capture phase
+  console.log('Button handler attached (capture phase)');
+}
+</script>
 </body>
 </html>

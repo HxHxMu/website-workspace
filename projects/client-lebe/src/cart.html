@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shopping Cart — LEBE</title>
+  <meta name="description" content="" />
+  <link rel="icon" href="./assets/images/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="./output.css" />
+</head>
+<body class="bg-ink text-text font-sans">
+<header class="site-header">
+  <div class="container-shell flex items-center justify-between py-3">
+    <a href="/" class="h-10 flex items-center">
+      <img src="./assets/images/lebe-logo.svg" alt="LEBE" class="h-full w-auto">
+    </a>
+
+    <button
+      id="menu-button"
+      class="md:hidden inline-flex items-center justify-center rounded-md border border-text/15 px-3 py-2 text-sm"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+      aria-label="Open site navigation">
+      Menu
+    </button>
+
+    <nav class="hidden md:flex items-center gap-8 text-sm text-text-muted">
+      <a href="/" class="hover:text-text transition-colors">Shop</a>
+    </nav>
+  </div>
+
+  <nav id="mobile-menu" class="hidden border-t border-text/10 md:hidden">
+    <div class="container-shell py-4 flex flex-col gap-3 text-sm">
+      <a href="/" class="hover:text-text transition-colors">Shop</a>
+    </div>
+  </nav>
+</header>
+
+<main id="top">
+  <section class="container-shell py-16 md:py-24">
+    <h1 class="text-4xl md:text-5xl font-semibold tracking-tight mb-12">Your Cart</h1>
+
+    <!-- Empty State -->
+    <div id="cart-empty" class="text-center py-24">
+      <p class="text-text-muted mb-6 text-lg">Your cart is empty.</p>
+      <a href="/" class="inline-block btn-brand px-8 py-3">Continue Shopping</a>
+    </div>
+
+    <!-- Cart Content -->
+    <div id="cart-content" class="hidden">
+      <div class="grid md:grid-cols-3 gap-12">
+        <!-- Cart Items -->
+        <div id="cart-items" class="md:col-span-2 space-y-6">
+          <!-- Items rendered by JS -->
+        </div>
+
+        <!-- Sidebar: Summary + Checkout -->
+        <div class="space-y-6">
+          <!-- Order Summary Card -->
+          <div class="border border-text/20 rounded p-6">
+            <h2 class="text-lg font-semibold mb-4">Order Summary</h2>
+            <div class="space-y-2 mb-6 pb-6 border-b border-text/10">
+              <div class="flex justify-between text-sm">
+                <span class="text-text-muted">Subtotal</span>
+                <span id="cart-subtotal" class="font-semibold">$0.00</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-text-muted">Shipping</span>
+                <span class="text-text-muted text-xs">Calculated at checkout</span>
+              </div>
+            </div>
+            <button id="checkout-toggle" class="w-full btn-brand py-3 text-base font-semibold">
+              Proceed to Checkout
+            </button>
+          </div>
+
+          <!-- Checkout Form Section (hidden by default) -->
+          <div id="checkout-form-section" class="hidden border border-text/20 rounded p-6">
+            <h2 class="text-lg font-semibold mb-6">Shipping Details</h2>
+            <form id="checkout-form" class="space-y-4">
+              <div>
+                <label for="c-name" class="block text-xs font-semibold uppercase tracking-widest text-text-muted mb-2">Full Name</label>
+                <input type="text" id="c-name" required class="w-full border border-text/20 rounded px-4 py-2 bg-surface text-text text-sm focus:outline-none focus:border-brand">
+              </div>
+              <div>
+                <label for="c-email" class="block text-xs font-semibold uppercase tracking-widest text-text-muted mb-2">Email</label>
+                <input type="email" id="c-email" required class="w-full border border-text/20 rounded px-4 py-2 bg-surface text-text text-sm focus:outline-none focus:border-brand">
+              </div>
+              <div>
+                <label for="c-address1" class="block text-xs font-semibold uppercase tracking-widest text-text-muted mb-2">Address</label>
+                <input type="text" id="c-address1" required class="w-full border border-text/20 rounded px-4 py-2 bg-surface text-text text-sm focus:outline-none focus:border-brand">
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label for="c-city" class="block text-xs font-semibold uppercase tracking-widest text-text-muted mb-2">City</label>
+                  <input type="text" id="c-city" required class="w-full border border-text/20 rounded px-4 py-2 bg-surface text-text text-sm focus:outline-none focus:border-brand">
+                </div>
+                <div>
+                  <label for="c-state" class="block text-xs font-semibold uppercase tracking-widest text-text-muted mb-2">State Code <span class="text-xs font-normal">(e.g., CA, TX)</span></label>
+                  <input type="text" id="c-state" required maxlength="2" placeholder="CA" class="w-full border border-text/20 rounded px-4 py-2 bg-surface text-text text-sm focus:outline-none focus:border-brand">
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label for="c-zip" class="block text-xs font-semibold uppercase tracking-widest text-text-muted mb-2">ZIP</label>
+                  <input type="text" id="c-zip" required class="w-full border border-text/20 rounded px-4 py-2 bg-surface text-text text-sm focus:outline-none focus:border-brand">
+                </div>
+                <div>
+                  <label for="c-country" class="block text-xs font-semibold uppercase tracking-widest text-text-muted mb-2">Country</label>
+                  <input type="text" id="c-country" value="US" required class="w-full border border-text/20 rounded px-4 py-2 bg-surface text-text text-sm focus:outline-none focus:border-brand">
+                </div>
+              </div>
+              <button type="submit" id="submit-order" class="w-full btn-brand py-3 text-base font-semibold mt-6">
+                Place Order
+              </button>
+              <p id="checkout-error" class="hidden text-brand text-sm text-center mt-3"></p>
+            </form>
+          </div>
+
+          <!-- Order Confirmation (hidden until success) -->
+          <div id="order-confirmation" class="hidden border border-text/20 rounded p-6 text-center">
+            <h2 class="text-xl font-semibold mb-2">✓ Order Placed!</h2>
+            <p class="text-text-muted text-sm mb-4">Order ID: <span id="confirm-order-id" class="font-mono text-text font-semibold"></span></p>
+            <p class="text-text-muted text-sm mb-6">You'll receive a confirmation email shortly.</p>
+            <a href="/" class="inline-block btn-ghost px-8 py-2">Continue Shopping</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="border-t border-text/10">
+  <div class="container-shell py-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-text-muted">
+    <p>© LEBE 2026</p>
+    <p>Tribal. Bold. Minimal.</p>
+    <div class="flex gap-4">
+      <a href="https://www.instagram.com/_lebe._/" target="_blank" rel="noopener noreferrer" class="hover:text-text transition-colors" aria-label="Instagram">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><circle cx="17.5" cy="6.5" r="1.5"></circle></svg>
+      </a>
+      <a href="https://www.facebook.com/lebe.yogawear" target="_blank" rel="noopener noreferrer" class="hover:text-text transition-colors" aria-label="Facebook">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a6 6 0 0 0-6 6v3H7v4h2v8h4v-8h3l1-4h-4V8a2 2 0 0 1 2-2h1z"></path></svg>
+      </a>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js" defer></script>
+<script src="js/cart.js" defer></script>
+<script>
+(function() {
+  const itemsEl = document.getElementById('cart-items');
+  const emptyEl = document.getElementById('cart-empty');
+  const contentEl = document.getElementById('cart-content');
+  const subtotalEl = document.getElementById('cart-subtotal');
+
+  function renderCart() {
+    const cart = Cart.getCart();
+
+    if (cart.length === 0) {
+      emptyEl.classList.remove('hidden');
+      contentEl.classList.add('hidden');
+      return;
+    }
+
+    emptyEl.classList.add('hidden');
+    contentEl.classList.remove('hidden');
+
+    itemsEl.innerHTML = cart.map(item => `
+      <div class="flex gap-4 border-b border-text/10 pb-6" data-sync-variant-id="${item.syncVariantId}">
+        <img src="${item.image}" alt="${item.name}" class="w-24 h-24 object-cover rounded bg-surface flex-shrink-0">
+        <div class="flex-1 min-w-0">
+          <p class="font-semibold text-base line-clamp-2">${item.name}</p>
+          <p class="text-text-muted text-sm mt-0.5">Size: ${item.size}</p>
+          <div class="flex items-center gap-3 mt-3">
+            <div class="flex items-center gap-2 border border-text/20 rounded px-2 py-1 bg-surface">
+              <button class="qty-dec text-text-muted hover:text-text text-sm px-1">−</button>
+              <span class="qty-value text-sm w-4 text-center font-semibold">${item.quantity}</span>
+              <button class="qty-inc text-text-muted hover:text-text text-sm px-1">+</button>
+            </div>
+            <button class="remove-item text-xs font-semibold uppercase tracking-widest text-text-muted hover:text-brand transition-colors">Remove</button>
+          </div>
+        </div>
+        <p class="font-semibold text-base flex-shrink-0 text-right">$${(item.price * item.quantity).toFixed(2)}</p>
+      </div>
+    `).join('');
+
+    subtotalEl.textContent = `$${Cart.getSubtotal().toFixed(2)}`;
+  }
+
+  // Qty and remove handlers - attach ONCE at container level
+  itemsEl.addEventListener('click', (e) => {
+    console.log('Cart click detected on:', e.target.tagName, e.target.className);
+
+    const row = e.target.closest('[data-sync-variant-id]');
+    if (!row) {
+      console.log('No row found');
+      return;
+    }
+
+    const syncVariantId = parseInt(row.dataset.syncVariantId, 10);
+    console.log('Row found, syncVariantId:', syncVariantId);
+
+    const button = e.target.closest('button');
+    if (!button) {
+      console.log('No button element');
+      return;
+    }
+
+    console.log('Button classes:', button.className);
+
+    if (button.classList.contains('qty-dec')) {
+      console.log('qty-dec clicked');
+      e.preventDefault();
+      e.stopPropagation();
+      const cart = Cart.getCart();
+      const item = cart.find(i => i.syncVariantId === syncVariantId);
+      if (item) {
+        Cart.updateQuantity(syncVariantId, item.quantity - 1);
+        renderCart();
+      }
+    } else if (button.classList.contains('qty-inc')) {
+      console.log('qty-inc clicked');
+      e.preventDefault();
+      e.stopPropagation();
+      try {
+        const cart = Cart.getCart();
+        console.log('Cart retrieved:', cart.length, 'items');
+        const item = cart.find(i => i.syncVariantId === syncVariantId);
+        console.log('Item found:', item);
+        if (item) {
+          const newQty = item.quantity + 1;
+          console.log('Calling updateQuantity:', syncVariantId, newQty);
+          Cart.updateQuantity(syncVariantId, newQty);
+          console.log('After updateQuantity, calling renderCart');
+          renderCart();
+        }
+      } catch (err) {
+        console.error('Error in qty-inc:', err);
+      }
+    } else if (button.classList.contains('remove-item')) {
+      console.log('remove-item clicked');
+      e.preventDefault();
+      e.stopPropagation();
+      try {
+        console.log('Calling removeItem:', syncVariantId);
+        Cart.removeItem(syncVariantId);
+        console.log('After removeItem, calling renderCart');
+        renderCart();
+      } catch (err) {
+        console.error('Error in remove:', err);
+      }
+    }
+  });
+
+  // Toggle checkout form
+  document.getElementById('checkout-toggle')?.addEventListener('click', () => {
+    const formSection = document.getElementById('checkout-form-section');
+    formSection.classList.toggle('hidden');
+    if (!formSection.classList.contains('hidden')) {
+      formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+
+  // Checkout form submit
+  document.getElementById('checkout-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const submitBtn = document.getElementById('submit-order');
+    const errorEl = document.getElementById('checkout-error');
+    const cart = Cart.getCart();
+
+    if (cart.length === 0) {
+      errorEl.textContent = 'Cart is empty';
+      errorEl.classList.remove('hidden');
+      return;
+    }
+
+    const submitBtnText = submitBtn.textContent;
+    submitBtn.textContent = 'Placing order...';
+    submitBtn.disabled = true;
+    errorEl.classList.add('hidden');
+
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items: cart.map(i => ({
+            variantId: i.id,
+            syncVariantId: i.syncVariantId,
+            quantity: i.quantity
+          })),
+          customer: {
+            name: document.getElementById('c-name').value,
+            email: document.getElementById('c-email').value,
+            phone: '',
+            address1: document.getElementById('c-address1').value,
+            city: document.getElementById('c-city').value,
+            state: document.getElementById('c-state').value,
+            zip: document.getElementById('c-zip').value,
+            country: document.getElementById('c-country').value || 'US'
+          }
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Order failed');
+      }
+
+      const result = await response.json();
+
+      // Success
+      Cart.clearCart();
+      document.getElementById('checkout-form-section').classList.add('hidden');
+      document.getElementById('order-confirmation').classList.remove('hidden');
+      document.getElementById('confirm-order-id').textContent = result.orderId;
+    } catch (error) {
+      console.error('Checkout error:', error);
+      errorEl.textContent = error.message || 'Failed to place order. Please try again.';
+      errorEl.classList.remove('hidden');
+      submitBtn.textContent = submitBtnText;
+      submitBtn.disabled = false;
+    }
+  });
+
+  // Make renderCart globally accessible
+  window.renderCart = renderCart;
+
+  // Initial render when Cart is available
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOMContentLoaded fired, Cart =', typeof Cart);
+      const waitForCart = setInterval(function() {
+        if (typeof Cart !== 'undefined') {
+          clearInterval(waitForCart);
+          console.log('✓ Cart is ready, rendering cart');
+          renderCart();
+        }
+      }, 50);
+
+      // Timeout after 5 seconds
+      setTimeout(function() {
+        clearInterval(waitForCart);
+        if (typeof Cart === 'undefined') {
+          console.error('❌ Cart never loaded');
+        }
+      }, 5000);
+    });
+  } else {
+    // DOMContentLoaded already fired (inline script at end of body)
+    console.log('Document already loaded, Cart =', typeof Cart);
+    const waitForCart = setInterval(function() {
+      if (typeof Cart !== 'undefined') {
+        clearInterval(waitForCart);
+        console.log('✓ Cart is ready, rendering cart');
+        renderCart();
+      }
+    }, 50);
+
+    setTimeout(function() {
+      clearInterval(waitForCart);
+    }, 5000);
+  }
+})();
+</script>
+</body>
+</html>
