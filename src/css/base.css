@@ -1,25 +1,25 @@
 @layer base {
   :root {
-    --ww: 242 240 235;  /* current text RGB channels — use as rgba(var(--ww), <alpha>) */
-    --theme-bg: #0a0a0a;
-    --theme-surface: #111111;
-    --theme-surface-2: #161616;
-    --theme-surface-3: #1e1e1e;
-    --theme-text: #f2f0eb;
-    --theme-muted: #b8b0a8;
-    --theme-dim: #a89f96;
-    --theme-rule: rgba(242, 240, 235, 0.08);
-    --theme-accent: #e05c28;
-    --theme-accent-light: #f28c60;
-    --theme-accent-lfa: rgb(140 162 255);
-    --theme-accent-disney: rgb(220 172 80);
-    --theme-accent-ai: rgb(65 200 178);
-    --theme-toggle-bg: rgba(242, 240, 235, 0.08);
-    --theme-toggle-border: rgba(242, 240, 235, 0.11);
-    --theme-toggle-thumb-bg: rgba(242, 240, 235, 0.95);
-    --theme-toggle-thumb-ink: #0f0f0f;
-    --theme-toggle-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
-    --selection-bg: rgba(224, 92, 40, 0.28);
+    --ww: 18 18 18;
+    --theme-bg: #f7f6f2;
+    --theme-surface: #ffffff;
+    --theme-surface-2: #f1efe9;
+    --theme-surface-3: #e9e6dd;
+    --theme-text: #121212;
+    --theme-muted: #5f5a53;
+    --theme-dim: #7a746d;
+    --theme-rule: rgba(18, 18, 18, 0.12);
+    --theme-accent: #111111;
+    --theme-accent-light: #333333;
+    --theme-accent-lfa: rgb(44 95 199);
+    --theme-accent-disney: rgb(146 103 26);
+    --theme-accent-ai: rgb(22 132 118);
+    --theme-toggle-bg: rgba(255, 255, 255, 0.9);
+    --theme-toggle-border: rgba(18, 18, 18, 0.12);
+    --theme-toggle-thumb-bg: rgba(18, 18, 18, 0.96);
+    --theme-toggle-thumb-ink: #f7f6f2;
+    --theme-toggle-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+    --selection-bg: rgba(18, 18, 18, 0.16);
   }
   html[data-theme="dark"] {
     --ww: 242 240 235;

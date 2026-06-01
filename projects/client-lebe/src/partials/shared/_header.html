@@ -1,26 +1,10 @@
-<header class="site-header">
-  <div class="container-shell flex items-center justify-between py-3">
-    <a href="/" class="h-10 flex items-center">
-      <img src="./assets/images/lebe-logo.svg" alt="LEBE" class="h-full w-auto">
+<header class="lebe-header lebe-header--hero">
+  <nav class="lebe-shell h-full flex items-center justify-between">
+    <a href="/" class="lebe-brand">lebe.</a>
+    <a href="/cart" class="lebe-bag">
+      <svg class="h-5 w-5 transition duration-300 group-hover:scale-95" stroke="currentColor" fill="none" viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 00-3.75-3.75h-.75a3.75 3.75 0 00-3.75 3.75v4.5m11.25 5.25H3.75M21 21H3.75M4.5 15h15m-16.5-6h15" />
+      </svg>
     </a>
-
-    <button
-      id="menu-button"
-      class="md:hidden inline-flex items-center justify-center rounded-md border border-text/15 px-3 py-2 text-sm"
-      aria-expanded="false"
-      aria-controls="mobile-menu"
-      aria-label="Open site navigation">
-      Menu
-    </button>
-
-    <nav class="hidden md:flex items-center gap-8 text-sm text-text-muted">
-      <a href="/" class="hover:text-text transition-colors">Shop</a>
-    </nav>
-  </div>
-
-  <nav id="mobile-menu" class="hidden border-t border-text/10 md:hidden">
-    <div class="container-shell py-4 flex flex-col gap-3 text-sm">
-      <a href="/" class="hover:text-text transition-colors">Shop</a>
-    </div>
   </nav>
 </header>

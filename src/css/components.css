@@ -5,15 +5,10 @@
   ══════════════════════════════════════════════ */
 
   .hero-gradient {
-    background: var(--color-ink);
-  }
-  html[data-theme="light"] .hero-gradient {
-    background:
-      linear-gradient(180deg, rgba(255, 252, 246, 0.72) 0%, transparent 38%),
-      linear-gradient(180deg, color-mix(in srgb, var(--color-ink) 96%, white 4%) 0%, color-mix(in srgb, var(--color-surface) 74%, white 26%) 100%);
+    background: var(--color-surface);
   }
   .case-hero-shell {
-    background: color-mix(in srgb, var(--color-ink) 78%, var(--color-surface) 22%);
+    background: var(--color-surface);
   }
 
   /* ══════════════════════════════════════════════
@@ -21,13 +16,13 @@
   ══════════════════════════════════════════════ */
 
   .section-artifacts {
-    background: color-mix(in srgb, var(--color-ink) 92%, var(--color-surface) 8%);
+    background: var(--color-surface);
   }
 
   .section-environments {
-    background: color-mix(in srgb, var(--color-ink) 82%, var(--color-surface) 18%);
-    border-top:    1px solid rgba(var(--ww), 0.06);
-    border-bottom: 1px solid rgba(var(--ww), 0.06);
+    background: var(--color-surface);
+    border-top: 1px solid rgba(var(--ww), 0.1);
+    border-bottom: 1px solid rgba(var(--ww), 0.1);
   }
 
   .site-footer {
@@ -72,29 +67,13 @@
   .atmo-perspective {
     background: radial-gradient(ellipse 50% 60% at 80% 50%, rgba(224,92,40,0.05) 0%, transparent 60%);
   }
-  .atmo-hero {
-    background:
-      radial-gradient(ellipse 70% 60% at 70% 48%, rgba(80,110,210,0.22) 0%, transparent 56%),
-      radial-gradient(ellipse 52% 45% at 16% 78%, rgba(50,70,160,0.12) 0%, transparent 52%);
-  }
+  .atmo-hero { background: none; }
 
-  .atmo-artifacts {
-    background:
-      radial-gradient(ellipse 60% 50% at 20% 40%, rgba(224,92,40,0.06) 0%, transparent 60%),
-      radial-gradient(ellipse 40% 50% at 80% 70%, rgba(80,110,210,0.04) 0%, transparent 60%);
-  }
+  .atmo-artifacts { background: none; }
 
-  .atmo-thesis {
-    background:
-      radial-gradient(ellipse 50% 60% at 30% 50%, rgba(224,92,40,0.07) 0%, transparent 60%),
-      radial-gradient(ellipse 40% 50% at 75% 60%, rgba(180,60,18,0.04) 0%, transparent 60%);
-  }
+  .atmo-thesis { background: none; }
 
-  .atmo-cta {
-    background:
-      radial-gradient(ellipse 60% 70% at 15% 85%, rgba(80,120,240,0.14) 0%, transparent 52%),
-      radial-gradient(ellipse 42% 52% at 88% 15%, rgba(120,160,255,0.10) 0%, transparent 50%);
-  }
+  .atmo-cta { background: none; }
   .atmo-case-hero {
     background:
       radial-gradient(ellipse 80% 60% at 70% 55%, rgba(80,110,210,0.28) 0%, transparent 56%),
@@ -139,15 +118,17 @@
 
   /* Shared case card geometry */
   .card-case {
-    border-radius: 1.75rem;
+    border-radius: 0;
     overflow: hidden;
+    border: 1px solid rgba(var(--ww), 0.12);
+    background: var(--color-surface);
   }
   .card-case--lg { min-height: 640px; }
   .card-case--sm { min-height: 520px; }
 
   /* Inner ring — matches card border-radius */
   .card-ring {
-    border-radius: 1.75rem;
+    border-radius: 0;
     z-index: 10;
   }
 
@@ -234,8 +215,8 @@
     transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.55s cubic-bezier(0.22, 1, 0.36, 1);
   }
   .card-lift:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 32px 80px rgba(0,0,0,0.28);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
   }
   html[data-theme="light"] .card-lift:hover {
     box-shadow: 0 28px 64px rgba(98, 78, 58, 0.14);

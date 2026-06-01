@@ -2,6 +2,7 @@ console.log('product.js loaded');
 
 let currentProduct = null;
 let currentVariant = null;
+let currentQuantity = 1;
 
 window.handleBuyClick = function(e) {
   console.log('=== HANDLE BUY CLICK CALLED ===');
@@ -14,12 +15,9 @@ window.handleBuyClick = function(e) {
   const sizeSelect = document.getElementById('size-select');
 
   if (!sizeSelect || !sizeSelect.value) {
-    console.log('❌ No size selected - NOT REDIRECTING');
-    if (sizeSelect) {
-      sizeSelect.classList.add('border-brand', 'bg-brand/5');
-      setTimeout(() => sizeSelect.classList.remove('border-brand', 'bg-brand/5'), 2000);
-    }
-    return false; // Prevent any further action
+    console.log('❌ No size selected');
+    alert('Please select a size');
+    return false;
   }
 
   if (!currentVariant) {
@@ -33,9 +31,6 @@ window.handleBuyClick = function(e) {
     return false;
   }
 
-  const qtySelect = document.getElementById('quantity');
-  const quantity = qtySelect ? parseInt(qtySelect.value) || 1 : 1;
-
   const cartItem = {
     productId: currentProduct.id,
     variantId: currentVariant.id,
@@ -44,7 +39,7 @@ window.handleBuyClick = function(e) {
     size: currentVariant.size,
     color: currentVariant.color,
     price: currentVariant.price,
-    quantity: quantity,
+    quantity: currentQuantity,
     image: currentProduct.images[0] || '',
     options: currentVariant.options || []
   };
@@ -59,19 +54,15 @@ window.handleBuyClick = function(e) {
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('DOMContentLoaded - initializing product page');
 
-  const productForm = document.getElementById('product-form');
   const productName = document.getElementById('product-name');
   const productPrice = document.getElementById('product-price');
   const sizeSelect = document.getElementById('size-select');
   const buyButton = document.getElementById('buy-button');
-
-  console.log('Elements found:', { productForm: !!productForm, sizeSelect: !!sizeSelect, buyButton: !!buyButton });
-
-  if (!productForm) {
-    console.error('Product form not found');
-    return;
-  }
-
+  const colorSelector = document.getElementById('color-selector');
+  const qtyDisplay = document.getElementById('qty-display');
+  const qtyInput = document.getElementById('quantity');
+  const qtyMinus = document.getElementById('qty-minus');
+  const qtyPlus = document.getElementById('qty-plus');
 
   // Get product ID from URL
   const params = new URLSearchParams(window.location.search);
@@ -94,22 +85,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.title = currentProduct.name + ' — LEBE';
     productName.textContent = currentProduct.name;
 
+    // Update price from first variant
+    if (currentProduct.variants && currentProduct.variants.length > 0) {
+      currentVariant = currentProduct.variants[0];
+      productPrice.textContent = `$${currentVariant.price.toFixed(2)}`;
+    }
+
     // Render images
     if (currentProduct.images && currentProduct.images.length > 0) {
-      const imageSection = document.querySelector('div > img#product-image')?.parentElement;
-      if (imageSection) {
-        console.log('Rendering', currentProduct.images.length, 'images');
-
-        let html = `<div style="width: 100%; aspect-ratio: 1/1; background: #f8f8f8; border-radius: 8px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center;">`;
-        html += `<div style="width: 100%; height: 100%; position: relative;">`;
-
-        currentProduct.images.forEach((img, idx) => {
-          html += `<img src="${img}" alt="Product" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; ${idx === 0 ? '' : 'display: none;'}" data-index="${idx}">`;
-        });
-
-        html += `</div></div>`;
-        imageSection.innerHTML = html;
-        console.log('Images rendered');
+      const productImage = document.getElementById('product-image');
+      if (productImage) {
+        productImage.src = currentProduct.images[0];
+        productImage.alt = currentProduct.name;
       }
     }
 
@@ -127,11 +114,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
 
       sizeSelect.innerHTML = options;
-      console.log('Size select populated');
-
-      // Set initial variant and price
-      currentVariant = currentProduct.variants[0];
-      productPrice.textContent = `$${currentVariant.price.toFixed(2)}`;
 
       // Size change handler
       sizeSelect.addEventListener('change', (e) => {
@@ -145,6 +127,64 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     }
 
+    // Color selector
+    if (colorSelector && currentProduct.variants) {
+      colorSelector.innerHTML = currentProduct.variants.map((variant) => {
+        const isSelected = variant.syncVariantId === currentVariant?.syncVariantId;
+        const isWhite = variant.color === 'White' || variant.color === 'white';
+
+        return `
+          <button
+            type="button"
+            data-variant-id="${variant.syncVariantId}"
+            aria-label="Select ${variant.color}"
+            aria-pressed="${isSelected}"
+            class="flex h-9 w-9 items-center justify-center rounded-full border transition ${isSelected ? 'border-[#050505]' : 'border-[#050505]/25 hover:border-[#050505]'}"
+          >
+            <span class="h-6 w-6 rounded-full border border-[#050505]/20 ${isWhite ? 'bg-white' : 'bg-[#050505]'}"></span>
+          </button>
+        `;
+      }).join('');
+
+      // Color button handlers
+      colorSelector.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const variantId = btn.dataset.variantId;
+          const variant = currentProduct.variants.find(v => v.syncVariantId === variantId);
+          if (variant) {
+            currentVariant = variant;
+            productPrice.textContent = `$${variant.price.toFixed(2)}`;
+
+            // Update active state
+            colorSelector.querySelectorAll('button').forEach(b => {
+              b.classList.remove('border-[#050505]');
+              b.classList.add('border-[#050505]/25');
+            });
+            btn.classList.remove('border-[#050505]/25');
+            btn.classList.add('border-[#050505]');
+          }
+        });
+      });
+    }
+
+    // Quantity controls
+    qtyMinus?.addEventListener('click', (e) => {
+      e.preventDefault();
+      currentQuantity = Math.max(1, currentQuantity - 1);
+      qtyDisplay.textContent = currentQuantity;
+      qtyInput.value = currentQuantity;
+    });
+
+    qtyPlus?.addEventListener('click', (e) => {
+      e.preventDefault();
+      currentQuantity += 1;
+      qtyDisplay.textContent = currentQuantity;
+      qtyInput.value = currentQuantity;
+    });
+
+    // Buy button click
+    buyButton?.addEventListener('click', window.handleBuyClick);
 
   } catch (error) {
     console.error('Error loading product:', error);

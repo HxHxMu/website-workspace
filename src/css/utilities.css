@@ -1,4 +1,110 @@
 @layer utilities {
+  .site-header {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 60 !important;
+    height: 86px;
+    padding: 0 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(var(--ww), 0.14) !important;
+    background: rgba(247, 246, 242, 0.95);
+    backdrop-filter: blur(6px);
+  }
+
+  .monogram {
+    position: static !important;
+    font-family: var(--font-serif);
+    font-size: 3rem !important;
+    font-style: italic;
+    letter-spacing: -0.02em;
+    color: var(--color-warm-white) !important;
+  }
+
+  .bag-button {
+    width: 56px;
+    height: 56px;
+    border-radius: 999px;
+    border: 1px solid rgba(var(--ww), 0.26);
+    font-size: 1.1rem;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #1b1b1b;
+    background: transparent;
+  }
+  .bag-button svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .site-footer {
+    margin-top: 6rem;
+    border-top: 1px solid rgba(var(--ww), 0.14);
+    padding: 0 2.5rem 2.5rem;
+  }
+  .footer-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 3.25rem 0;
+  }
+  .footer-top p {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.9rem, 2.4vw, 3.1rem);
+    letter-spacing: -0.02em;
+  }
+  .footer-social {
+    width: 52px;
+    height: 52px;
+    border-radius: 999px;
+    border: 1px solid rgba(var(--ww), 0.42);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .footer-social svg {
+    width: 20px;
+    height: 20px;
+  }
+  .footer-bottom {
+    border-top: 1px solid rgba(var(--ww), 0.14);
+    padding-top: 1.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    font-size: 0.82rem;
+    letter-spacing: 0.28em;
+    color: var(--color-warm-dim);
+  }
+  .footer-bottom nav {
+    display: flex;
+    gap: 2.2rem;
+  }
+
+  .tracking-label,
+  .footer-bottom a,
+  .footer-bottom p {
+    letter-spacing: 0.3em !important;
+    text-transform: uppercase;
+  }
+  main, .home-page {
+    padding-top: 86px;
+  }
+
+  #theme-toggle,
+  #sidebar,
+  #menu-btn,
+  #menu-overlay,
+  #intro-overlay {
+    display: none !important;
+  }
 
   /* ── Navigation hover animations ── */
   @keyframes link-underline {

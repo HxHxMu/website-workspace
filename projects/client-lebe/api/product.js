@@ -2,6 +2,15 @@ import productsData from '../src/data/products.json' assert { type: 'json' };
 
 const PRINTFUL_API_BASE = 'https://api.printful.com';
 
+function normalizeLocalAssetPath(value) {
+  if (!value) return value;
+  const raw = String(value).trim();
+  if (/^(https?:)?\/\//i.test(raw) || raw.startsWith('data:')) {
+    return raw;
+  }
+  return raw.replace(/^\.\//, '').replace(/^\/+/, '');
+}
+
 async function fetchFromPrintful(endpoint, apiKey) {
   const response = await fetch(`${PRINTFUL_API_BASE}${endpoint}`, {
     headers: {
@@ -46,7 +55,9 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: 'Product not found' });
     }
 
-    const customImages = imageMap[syncProduct.external_id];
+    const customImages = (imageMap[syncProduct.external_id] || [])
+      .map(normalizeLocalAssetPath)
+      .filter(Boolean);
 
     const product = {
       id: syncProduct.id,

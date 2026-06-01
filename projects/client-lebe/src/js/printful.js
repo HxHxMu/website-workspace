@@ -1,3 +1,138 @@
+const FIXED_DESIGN_SLOTS = [
+  {
+    externalId: '64000b204a6de9',
+    type: 'leggings',
+    color: 'white',
+    displayName: 'SAGUANARI LEGGINGS',
+    images: [
+      'assets/images/9.jpg',
+      'assets/images/product-shots/saguanari_leggin_wht_1.jpg',
+    ],
+    swatch: 'white',
+  },
+  {
+    externalId: '64775fcaef5f21',
+    type: 'bra',
+    color: 'white',
+    displayName: 'SAGUANARI BRA',
+    images: [
+      'assets/images/11.jpg',
+      'assets/images/product-shots/saguanari_bra_wht_1.jpg',
+    ],
+    swatch: 'white',
+  },
+  {
+    externalId: '63ec714091ff89',
+    type: 'leggings',
+    color: 'black',
+    displayName: 'SAGUANARI LEGGINGS',
+    images: [
+      'assets/images/15.jpg',
+      'assets/images/product-shots/saguanari_leggin_blk_1.jpg',
+    ],
+    swatch: 'black',
+  },
+  {
+    externalId: '6477600e15cb73',
+    type: 'bra',
+    color: 'black',
+    displayName: 'SAGUANARI BRA',
+    images: [
+      'assets/images/17.jpg',
+      'assets/images/product-shots/saguanari_bra_blk_1.jpg',
+    ],
+    swatch: 'black',
+  },
+];
+
+const TRANSPARENT_PIXEL = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+function buildAssetPathVariants(path) {
+  const rawPath = String(path || '').trim();
+  if (!rawPath) return [];
+  if (/^(https?:)?\/\//i.test(rawPath) || rawPath.startsWith('data:')) return [rawPath];
+
+  const withoutDot = rawPath.replace(/^\.\//, '');
+  const normalized = withoutDot.replace(/^\/+/, '');
+  const runtimeBase = window.location.pathname === '/src' || window.location.pathname.startsWith('/src/')
+    ? '/src'
+    : '';
+
+  return [...new Set([
+    runtimeBase ? `${runtimeBase}/${normalized}` : '',
+    `/${normalized}`,
+    `./${normalized}`,
+    `/src/${normalized}`,
+  ].filter(Boolean))];
+}
+
+function collectSlotImageVariants(slot) {
+  const sources = Array.isArray(slot.images) ? slot.images : [];
+  const expanded = sources.flatMap((source) => buildAssetPathVariants(source));
+  return [...new Set(expanded)];
+}
+
+function handleImageFallback(imgEl) {
+  const variants = (imgEl?.dataset?.fallbackSrcs || '')
+    .split('|')
+    .map((value) => value.trim())
+    .filter(Boolean);
+
+  if (variants.length === 0) {
+    imgEl.onerror = null;
+    imgEl.src = TRANSPARENT_PIXEL;
+    return;
+  }
+
+  const currentIndex = Number.parseInt(imgEl.dataset.fallbackIndex || '0', 10);
+  const safeCurrent = Number.isFinite(currentIndex) ? currentIndex : 0;
+  const nextIndex = safeCurrent + 1;
+
+  if (nextIndex < variants.length) {
+    imgEl.dataset.fallbackIndex = String(nextIndex);
+    imgEl.src = variants[nextIndex];
+    return;
+  }
+
+  imgEl.onerror = null;
+  imgEl.src = TRANSPARENT_PIXEL;
+}
+
+window.__lebeHandleImageFallback = handleImageFallback;
+
+function slotMatch(product, slot) {
+  const haystack = `${product?.name || ''}`.toLowerCase();
+  return haystack.includes(slot.type) && haystack.includes(slot.color);
+}
+
+function mapProductsToSlots(products) {
+  const usedIds = new Set();
+  return FIXED_DESIGN_SLOTS.map((slot) => {
+    const byExternalId = products.find(
+      (product) =>
+        !usedIds.has(product.id) &&
+        String(product.externalId || '') === slot.externalId
+    );
+    const byTokens = byExternalId || products.find(
+      (product) => !usedIds.has(product.id) && slotMatch(product, slot)
+    );
+    const matched = byTokens || null;
+    if (matched) {
+      usedIds.add(matched.id);
+    }
+    return { __slot: slot, product: matched };
+  });
+}
+
 // Fetch products from API
 async function fetchProducts() {
   try {
@@ -20,153 +155,59 @@ async function renderProductGrid() {
   const products = await fetchProducts();
 
   if (products.length === 0) {
-    grid.innerHTML = '<p class="col-span-full text-center text-text-muted">No products available</p>';
+    grid.innerHTML = '<p class="col-span-full text-center text-[#050505]/50">No products available</p>';
     return;
   }
 
-  grid.innerHTML = products.slice(0, 6).map((product, idx) => {
-    const carouselId = `carousel-${idx}`;
-    const images = product.images || [];
+  const orderedSlots = mapProductsToSlots(products);
 
-    // Use first image as fallback if no images
-    const displayImages = images.length > 0 ? images : ['https://via.placeholder.com/400'];
+  grid.innerHTML = orderedSlots.map((slotEntry) => {
+    const { __slot: slot, product } = slotEntry;
+    const imageVariants = collectSlotImageVariants(slot);
+    const displayImage = imageVariants[0] || TRANSPARENT_PIXEL;
+    const fallbackSrcs = imageVariants.join('|');
+    const isWhite = slot.swatch === 'white';
+    const displayName = slot.displayName;
+    const numericPrice = Number(product?.price);
+    const displayPrice = Number.isFinite(numericPrice) ? `$${numericPrice.toFixed(0)}.` : '—';
+    const productHref = product ? `/product?id=${encodeURIComponent(product.id)}` : '#';
+    const productAlt = product?.name || displayName;
 
     return `
-      <div class="group" data-product-id="${product.id}">
-        <div class="carousel-container aspect-square bg-surface rounded overflow-hidden mb-3 relative">
-          <div id="${carouselId}" class="carousel w-full h-full relative">
-            ${displayImages.map((img, imgIdx) => `
-              <img
-                src="${img}"
-                alt="${product.name}"
-                class="product-card carousel-img w-full h-full object-cover absolute inset-0"
-                style="${imgIdx === 0 ? '' : 'display: none;'}"
-                loading="lazy"
-                data-index="${imgIdx}"
-              >
-            `).join('')}
+      <article class="group flex h-full flex-col">
+        <a href="${productHref}" class="block aspect-[4/5] overflow-hidden bg-neutral-100">
+          <img
+            src="${escapeHtml(displayImage)}"
+            data-fallback-srcs="${escapeHtml(fallbackSrcs)}"
+            data-fallback-index="0"
+            onerror="window.__lebeHandleImageFallback && window.__lebeHandleImageFallback(this)"
+            alt="${escapeHtml(productAlt)}"
+            class="h-full w-full object-cover transition duration-700 ease-out group-hover:scale-105"
+            loading="lazy"
+          />
+        </a>
+        <div class="flex min-h-[100px] flex-1 items-start justify-between gap-4 border-b border-[#050505]/15 py-5">
+          <div class="flex-1">
+            <h3 class="min-h-[3.25rem] text-base font-semibold uppercase leading-tight tracking-[-0.03em] text-[#050505] md:text-lg">
+              ${displayName}
+            </h3>
+            <div class="mt-2 flex items-center gap-3">
+              <span
+                class="inline-block h-3 w-3 rounded-full border border-[#050505]/30 ${isWhite ? 'bg-white' : 'bg-[#050505]'}"
+              ></span>
+              <p class="text-sm font-medium text-[#050505]/55">${displayPrice}</p>
+            </div>
           </div>
-
-          <!-- Arrow buttons (desktop only, hidden on mobile) -->
-          <button class="carousel-arrow carousel-prev hidden md:flex absolute left-3 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-20 bg-black/60 hover:bg-black text-white p-3 rounded-full items-center justify-center" aria-label="Previous image">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
-          </button>
-          <button class="carousel-arrow carousel-next hidden md:flex absolute right-3 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-20 bg-black/60 hover:bg-black text-white p-3 rounded-full items-center justify-center" aria-label="Next image">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
-          </button>
+          <a
+            href="${productHref}"
+            class="shrink-0 border border-[#050505] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.22em] transition duration-300 hover:bg-[#050505] hover:text-white"
+          >
+            view.
+          </a>
         </div>
-
-        <!-- Carousel dots (mobile visible, desktop hidden) -->
-        ${displayImages.length > 1 ? `
-          <div class="flex justify-center gap-2 mt-2 sm:hidden">
-            ${displayImages.map((_, imgIdx) => `
-              <button class="carousel-dot w-2 h-2 rounded-full transition-colors ${imgIdx === 0 ? 'bg-brand' : 'bg-text/30'}" data-index="${imgIdx}" aria-label="Image ${imgIdx + 1}"></button>
-            `).join('')}
-          </div>
-        ` : ''}
-
-        <h2 class="font-semibold text-base line-clamp-2 mt-3">${product.name}</h2>
-        <p class="text-text-muted text-sm mt-1">${product.description || ''}</p>
-        <div class="flex items-center gap-2 mt-2">
-          <span class="text-brand font-semibold">$${product.price ? product.price.toFixed(2) : 'N/A'}</span>
-        </div>
-        <button class="buy-btn text-brand font-semibold text-sm mt-2 cursor-pointer">View details →</button>
-      </div>
+      </article>
     `;
   }).join('');
-
-  // Add carousel handlers
-  document.querySelectorAll('.carousel-container').forEach(container => {
-    const carousel = container.querySelector('[id^="carousel-"]');
-    const parentCard = container.closest('[data-product-id]');
-    const dots = parentCard.querySelectorAll('.carousel-dot');
-    const images = carousel.querySelectorAll('.carousel-img');
-    const prevBtn = container.querySelector('.carousel-prev');
-    const nextBtn = container.querySelector('.carousel-next');
-    let currentIdx = 0;
-    let touchStartX = 0;
-
-    const showImage = (idx, direction = 'next') => {
-      const current = images[currentIdx];
-      const next = images[idx];
-
-      next.style.display = 'block';
-      void next.offsetWidth;
-
-      if (direction === 'next') {
-        current.style.animation = 'slideOutLeft 0.4s ease-in-out forwards';
-        next.style.animation = 'slideInRight 0.4s ease-in-out forwards';
-      } else {
-        current.style.animation = 'slideOutRight 0.4s ease-in-out forwards';
-        next.style.animation = 'slideInLeft 0.4s ease-in-out forwards';
-      }
-
-      setTimeout(() => {
-        current.style.animation = '';
-        current.style.display = 'none';
-      }, 400);
-
-      currentIdx = idx;
-
-      dots.forEach(d => {
-        d.classList.remove('bg-brand');
-        d.classList.add('bg-text/30');
-      });
-      if (dots[idx]) {
-        dots[idx].classList.remove('bg-text/30');
-        dots[idx].classList.add('bg-brand');
-      }
-    };
-
-    // Dot clicks (mobile)
-    dots.forEach((dot, idx) => {
-      dot.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        showImage(idx);
-      });
-    });
-
-    // Arrow buttons (desktop)
-    prevBtn?.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      showImage((currentIdx - 1 + images.length) % images.length, 'prev');
-    });
-
-    nextBtn?.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      showImage((currentIdx + 1) % images.length, 'next');
-    });
-
-    // Touch/swipe support for mobile
-    carousel.addEventListener('touchstart', (e) => {
-      touchStartX = e.touches[0].clientX;
-    });
-
-    carousel.addEventListener('touchend', (e) => {
-      const touchEndX = e.changedTouches[0].clientX;
-      const diff = touchStartX - touchEndX;
-
-      if (Math.abs(diff) > 50) {
-        if (diff > 0) {
-          showImage((currentIdx + 1) % images.length, 'next');
-        } else {
-          showImage((currentIdx - 1 + images.length) % images.length, 'prev');
-        }
-      }
-    });
-  });
-
-  // Buy button handlers
-  document.querySelectorAll('.buy-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const productCard = e.target.closest('[data-product-id]');
-      const productId = productCard.dataset.productId;
-      window.location.href = '/product?id=' + productId;
-    });
-  });
 }
 
 // Initialize on page load

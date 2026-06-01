@@ -7,10 +7,11 @@
   ─────────────────────────────────────────────── */
 
   .heading-hero {
-    font-size: clamp(32px, 6.5vw, 72px);
-    font-weight: 500;
-    letter-spacing: -0.02em;
-    line-height: 1.15;
+    font-family: var(--font-serif);
+    font-size: clamp(44px, 6.8vw, 94px);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 0.95;
   }
 
   #hero-headline {
@@ -53,6 +54,7 @@
     line-height: 0.96;
   }
   .heading-case-body {
+    font-family: var(--font-serif);
     font-size: clamp(28px, 4vw, 52px);
     font-weight: 600;
     letter-spacing: -0.025em;
@@ -63,10 +65,12 @@
     letter-spacing: -0.035em;
   }
   .heading-about-hero {
+    font-family: var(--font-serif);
     font-size: clamp(56px, 10vw, 128px);
     letter-spacing: -0.035em;
   }
   .heading-about-cta {
+    font-family: var(--font-serif);
     font-size: clamp(40px, 7vw, 96px);
     letter-spacing: -0.035em;
     max-width: 760px;
