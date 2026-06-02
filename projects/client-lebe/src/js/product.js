@@ -48,12 +48,56 @@ window.handleBuyClick = function(e) {
   return false;
 };
 
+// Color configuration for sublimation products (no variant color data in Printful)
+// Maps externalId -> color. Scales to support multiple POD providers.
+const PRODUCT_COLOR_MAP = {
+  '6477600e15cb73': 'Black',  // Saguanari Sports Bra Black
+  '64775fcaef5f21': 'White',  // Saguanari Sports Bra White
+  '64000b204a6de9': 'White',  // Saguanari Leggings White
+  '63ec714091ff89': 'Black',  // Saguanari Leggings Black
+};
+
 const findColorVariants = (productId) => {
   if (!allProducts) return null;
 
   const currentProd = allProducts.find(p => p.id === productId);
   if (!currentProd) return null;
 
+  const colorMap = {};
+
+  // Strategy 1: Check manual color map (for sublimation/single-product-per-color items)
+  const manualColor = PRODUCT_COLOR_MAP[currentProd.externalId];
+  if (manualColor) {
+    // Find all products with matching base name and map their colors from manual map
+    const baseNameWords = currentProd.name.toLowerCase()
+      .replace(/\b(black|white|color)\b/gi, '')
+      .trim()
+      .split(/\s+/);
+
+    const variants = allProducts.filter(p => {
+      const nameWords = p.name.toLowerCase()
+        .replace(/\b(black|white|color)\b/gi, '')
+        .trim()
+        .split(/\s+/);
+      return nameWords.length === baseNameWords.length &&
+             baseNameWords.every(word => nameWords.includes(word));
+    });
+
+    variants.forEach(v => {
+      const vColor = PRODUCT_COLOR_MAP[v.externalId];
+      if (vColor) {
+        colorMap[vColor] = v.id;
+      }
+    });
+
+    if (Object.keys(colorMap).length > 0) return colorMap;
+  }
+
+  // Strategy 2: Use variant color data (for products with actual variants)
+  // If current product has variants with color info, use those
+  // TODO: Implement if/when you add products with variant color data
+
+  // Strategy 3: Fall back to name parsing (legacy)
   const baseNameWords = currentProd.name.toLowerCase()
     .replace(/\b(black|white|color)\b/gi, '')
     .trim()
@@ -64,22 +108,18 @@ const findColorVariants = (productId) => {
       .replace(/\b(black|white|color)\b/gi, '')
       .trim()
       .split(/\s+/);
-
     return nameWords.length === baseNameWords.length &&
            baseNameWords.every(word => nameWords.includes(word));
   });
 
-  const colorMap = {};
   variants.forEach(v => {
     const colorMatch = v.name.match(/\b(Black|White)\b/i);
     let color = colorMatch ? colorMatch[1] : null;
 
-    if (!color) {
-      if (variants.length === 2) {
-        const hasWhite = variants.some(p => p.name.match(/\bWhite\b/i));
-        if (hasWhite && !v.name.match(/\bWhite\b/i)) {
-          color = 'Black';
-        }
+    if (!color && variants.length === 2) {
+      const hasWhite = variants.some(p => p.name.match(/\bWhite\b/i));
+      if (hasWhite && !v.name.match(/\bWhite\b/i)) {
+        color = 'Black';
       }
     }
 
@@ -121,6 +161,12 @@ const loadProductData = async (productId) => {
       (variant) => String(variant.size || '').toUpperCase() === String(size || '').toUpperCase()
     );
 
+    const getVariantForSizeAndColor = (size, color) => currentProduct.variants.find(
+      (variant) =>
+        String(variant.size || '').toUpperCase() === String(size || '').toUpperCase() &&
+        String(variant.color || '').toLowerCase() === String(color || '').toLowerCase()
+    );
+
     const getPreferredDefaultVariant = () => {
       const preferredSizes = ['M', ...SIZE_ORDER.filter((size) => size !== 'M')];
       for (const size of preferredSizes) {
@@ -132,15 +178,7 @@ const loadProductData = async (productId) => {
 
     if (currentProduct.variants && currentProduct.variants.length > 0) {
       currentVariant = getPreferredDefaultVariant();
-
-      // Derive color from product name since variant color field may be unreliable
-      let colorFromName = null;
-      if (currentProduct.name.match(/\bBlack\b/i)) {
-        colorFromName = 'Black';
-      } else if (currentProduct.name.match(/\bWhite\b/i)) {
-        colorFromName = 'White';
-      }
-      currentColor = colorFromName || currentVariant?.color || currentProduct.variants[0].color;
+      currentColor = currentVariant?.color || currentProduct.variants[0].color;
 
       productPrice.textContent = `$${currentVariant.price.toFixed(2)}`;
     }
@@ -186,10 +224,11 @@ const loadProductData = async (productId) => {
       sizeSelector.querySelectorAll('button').forEach((btn) => {
         btn.addEventListener('click', () => {
           const nextSize = btn.dataset.size;
-          const preferredVariant = getFirstVariantForSize(nextSize);
+          const preferredVariant = getVariantForSizeAndColor(nextSize, currentColor) || getFirstVariantForSize(nextSize);
           if (!preferredVariant) return;
 
           currentVariant = preferredVariant;
+          currentColor = preferredVariant.color || currentColor;
           productPrice.textContent = `$${currentVariant.price.toFixed(2)}`;
 
           sizeSelector.querySelectorAll('button').forEach((b) => {
@@ -215,7 +254,7 @@ const loadProductData = async (productId) => {
       colorSelector.innerHTML = colorOrder
         .filter(color => colorVariants[color])
         .map((color) => {
-          const isSelected = color.toLowerCase() === (currentColor || '').toLowerCase();
+          const isSelected = currentProduct.id === colorVariants[color];
           const isWhite = color.toLowerCase() === 'white';
 
           return `
@@ -225,9 +264,10 @@ const loadProductData = async (productId) => {
               data-product-id="${colorVariants[color]}"
               aria-label="Select ${color}"
               aria-pressed="${isSelected}"
-              class="flex h-10 w-10 items-center justify-center rounded-full border transition md:h-10 md:w-10 ${isSelected ? 'border-[#050505]' : 'border-[#050505]/25 hover:border-[#050505]'}"
+              class="relative flex h-10 w-10 items-center justify-center rounded-full border border-[#050505]/20 transition hover:border-[#050505]/60"
+              style="${isSelected ? 'box-shadow: 0 0 0 2px #e9e9e9, 0 0 0 4px #050505;' : ''}"
             >
-              <span class="h-7 w-7 rounded-full border border-[#050505]/20 ${isWhite ? 'bg-white' : 'bg-[#050505]'}"></span>
+              <span class="h-7 w-7 rounded-full ${isWhite ? 'bg-white border border-[#050505]/15' : 'bg-[#050505]'}"></span>
             </button>
           `;
         }).join('');

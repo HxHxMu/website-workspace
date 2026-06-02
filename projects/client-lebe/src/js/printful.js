@@ -193,9 +193,9 @@ async function renderProductGrid() {
             </h3>
             <div class="mt-2 flex items-center gap-3">
               <span
-                class="inline-block h-3 w-3 rounded-full border border-[#050505]/30 ${isWhite ? 'bg-white' : 'bg-[#050505]'}"
+                style="width: 24px; height: 24px; background-color: ${isWhite ? '#ffffff' : '#050505'}; border: 1px solid rgba(5, 5, 5, 0.3); border-radius: 50%; display: inline-block;"
               ></span>
-              <p class="text-sm font-medium text-[#050505]/55">${displayPrice}</p>
+              <p class="text-base font-medium text-[#050505]/55">${displayPrice}</p>
             </div>
           </div>
           <a

@@ -23,7 +23,7 @@
 </header>
 
 <main class="bg-[#e9e9e9] text-[#050505]">
-  <section class="lebe-shell grid gap-10 px-0 pb-20 pt-28 md:grid-cols-[2fr_1fr] md:pb-28 md:pt-36">
+  <section class="lebe-shell grid grid-cols-1 gap-10 px-0 pb-20 pt-28 md:grid-cols-[1fr_1fr] lg:grid-cols-[2fr_1fr] md:pb-28 md:pt-36">
     <!-- Image Grid -->
     <div class="grid grid-cols-2 gap-3 md:gap-4">
       <div class="aspect-[4/5] overflow-hidden bg-neutral-100">
@@ -57,7 +57,12 @@
       </div>
 
       <!-- Color Selector -->
-      <div class="mt-10">
+      <div class="mt-10 fade-in">
+        <div class="mb-4">
+          <span class="text-[11px] font-bold tracking-[0.08em] text-[#050505]">
+            Color
+          </span>
+        </div>
         <div class="flex items-center gap-3" aria-label="Select color" id="color-selector">
           <!-- Color dots will be populated by JavaScript -->
         </div>
@@ -65,9 +70,9 @@
 
       <!-- Size Selector -->
       <div class="mt-10">
-        <div class="mb-4 flex items-center justify-end">
-          <span class="text-[11px] font-bold tracking-[0.08em] text-[#050505] underline underline-offset-4 transition hover:text-[#050505]/55">
-            Size.
+        <div class="mb-4">
+          <span class="text-[11px] font-bold tracking-[0.08em] text-[#050505] underline underline-offset-4">
+            Size guide
           </span>
         </div>
         <div class="flex flex-wrap gap-2" aria-label="Select size" id="size-selector">
