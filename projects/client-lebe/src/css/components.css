@@ -18,7 +18,7 @@
   .container-shell {
     margin-inline: auto;
     width: min(100%, calc(100% - 1.5rem));
-    max-width: 1344px;
+    max-width: 1280px;
     padding: 0 1.5rem;
   }
 
@@ -90,11 +90,13 @@
     z-index: 20;
     height: 92px;
     border-bottom: 1px solid rgba(10, 10, 10, 0.14);
-    background: var(--bg);
+    background: rgba(233, 233, 233, 0.82);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    backdrop-filter: blur(16px) saturate(140%);
   }
 
   .lebe-header--hero {
-    background: linear-gradient(180deg, rgba(38, 46, 58, 0.72) 0%, rgba(38, 46, 58, 0.28) 100%);
+    background: linear-gradient(180deg, rgba(38, 46, 58, 0.52) 0%, rgba(38, 46, 58, 0.24) 100%);
     border-bottom-color: rgba(255, 255, 255, 0.2);
     color: #fff;
   }
@@ -108,13 +110,13 @@
   }
 
   .lebe-shell {
-    width: min(100% - 3rem, 1440px);
+    width: min(100% - 3rem, 1280px);
     margin: 0 auto;
   }
 
   @media (min-width: 768px) {
     .lebe-shell {
-      width: min(100% - 5rem, 1440px);
+      width: min(100% - 5rem, 1280px);
     }
   }
 

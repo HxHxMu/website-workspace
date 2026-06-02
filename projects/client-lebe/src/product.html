@@ -23,7 +23,7 @@
 </header>
 
 <main class="bg-[#e9e9e9] text-[#050505]">
-  <section class="lebe-shell grid gap-10 px-0 pb-20 pt-32 md:grid-cols-[2fr_1fr] md:pb-28 md:pt-40">
+  <section class="lebe-shell grid gap-10 px-0 pb-20 pt-28 md:grid-cols-[2fr_1fr] md:pb-28 md:pt-36">
     <!-- Image Grid -->
     <div class="grid grid-cols-2 gap-3 md:gap-4">
       <div class="aspect-[4/5] overflow-hidden bg-neutral-100">
@@ -35,61 +35,58 @@
     </div>
 
     <!-- Product Info -->
-    <div class="flex h-fit flex-col justify-center border-y border-[#050505] py-10 md:sticky md:top-32">
-      <a href="/" class="mb-10 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.28em] text-[#050505]/55 hover:text-[#050505]">
-        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="flex h-fit flex-col justify-center border-t border-[#050505] py-10 md:sticky md:top-32">
+      <a href="/" class="mb-10 inline-flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.28em] text-[#7b7b7b] hover:text-[#050505]">
+        <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
         </svg>
         Back to edit
       </a>
 
-      <p class="mb-4 text-[11px] font-bold uppercase tracking-[0.42em] text-[#050505]/45">Saguanari capsule</p>
-      <h1 id="product-name" class="max-w-xl font-serif text-4xl font-bold leading-[0.96] tracking-[-0.04em] md:text-5xl"></h1>
-      <p id="product-price" class="mt-7 text-xl font-semibold"></p>
+      <p class="mb-4 text-[11px] font-bold uppercase tracking-[0.42em] text-[#9b9b9b]">Saguanari capsule</p>
+      <h1 id="product-name" class="max-w-xl font-serif text-4xl font-bold leading-[0.95] tracking-[-0.04em] md:text-5xl"></h1>
+      <p id="product-price" class="mt-8 text-xl font-semibold leading-none"></p>
 
       <!-- Description -->
-      <div class="mt-8 max-w-md space-y-5 text-sm leading-7 text-[#050505]/65">
+      <div class="mt-8 max-w-md space-y-5 text-[16px] leading-7 text-[#050505]/65">
         <p>Made-to-order. Ships in ~14 days.<br />Returns off Printful.<br />30-day returns. If it fades, we replace it.</p>
         <div>
-          <p class="font-serif text-lg text-[#050505]">Care.</p>
+          <p class="font-serif text-xl text-[#050505]">Care.</p>
           <p>Printful all-over-print. Cold wash, hang dry. Gold may soften with wear.</p>
         </div>
       </div>
 
       <!-- Color Selector -->
-      <div class="mt-9">
+      <div class="mt-10">
         <div class="flex items-center gap-3" aria-label="Select color" id="color-selector">
           <!-- Color dots will be populated by JavaScript -->
         </div>
       </div>
 
       <!-- Size Selector -->
-      <div class="mt-8">
-        <div class="mb-3 flex items-center justify-end">
-          <label for="size-select" class="text-[11px] font-bold tracking-[0.08em] text-[#050505] underline underline-offset-4 transition hover:text-[#050505]/55">
+      <div class="mt-10">
+        <div class="mb-4 flex items-center justify-end">
+          <span class="text-[11px] font-bold tracking-[0.08em] text-[#050505] underline underline-offset-4 transition hover:text-[#050505]/55">
             Size.
-          </label>
+          </span>
         </div>
-        <div class="flex flex-wrap gap-2" aria-label="Select size">
-          <select id="size-select" class="w-full border border-[#050505] px-4 py-3 text-sm font-bold uppercase tracking-[0.12em] transition bg-white text-[#050505]">
-            <option value="">Select a size</option>
-          </select>
+        <div class="flex flex-wrap gap-2" aria-label="Select size" id="size-selector">
         </div>
       </div>
 
       <!-- Quantity -->
-      <div class="mt-8">
-        <p class="mb-3 text-[11px] font-bold uppercase tracking-[0.32em] text-[#050505]/50">quantity</p>
-        <div class="inline-flex h-12 items-center border border-[#050505]" aria-label="Select quantity">
-          <button type="button" class="h-full w-12 text-xl leading-none transition hover:bg-[#050505] hover:text-white" id="qty-minus">−</button>
-          <span class="flex h-full w-14 items-center justify-center border-x border-[#050505] text-sm font-semibold" id="qty-display">1</span>
-          <button type="button" class="h-full w-12 text-xl leading-none transition hover:bg-[#050505] hover:text-white" id="qty-plus">+</button>
+      <div class="mt-10">
+        <p class="mb-4 text-[11px] font-bold uppercase tracking-[0.32em] text-[#969696]">QUANTITY</p>
+        <div class="inline-flex h-14 items-center border border-[#050505]" aria-label="Select quantity">
+          <button type="button" class="h-full w-14 text-2xl leading-none transition hover:bg-[#050505] hover:text-white" id="qty-minus">−</button>
+          <span class="flex h-full w-16 items-center justify-center border-x border-[#050505] text-base font-semibold" id="qty-display">1</span>
+          <button type="button" class="h-full w-14 text-2xl leading-none transition hover:bg-[#050505] hover:text-white" id="qty-plus">+</button>
         </div>
         <input type="hidden" id="quantity" value="1" />
       </div>
 
       <!-- Buttons -->
-      <div class="mt-10 flex flex-col gap-3 sm:flex-row">
+      <div class="mt-12 flex flex-col gap-3 sm:flex-row">
         <button id="buy-button" class="border border-[#050505] bg-[#050505] px-7 py-4 text-center text-[11px] font-bold uppercase tracking-[0.28em] text-white transition hover:bg-white hover:text-[#050505]">
           add.
         </button>
@@ -97,7 +94,7 @@
           bag.
         </a>
       </div>
-      <p class="mt-4 text-[11px] text-[#050505]/55">Ships in ~14 days.</p>
+      <p class="mt-4 text-[11px] text-[#6b6b6b]">Ships in ~14 days.</p>
     </div>
   </section>
 
