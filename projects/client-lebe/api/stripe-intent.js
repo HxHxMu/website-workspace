@@ -36,8 +36,8 @@ module.exports = async (req, res) => {
       }
 
       const data = await r.json();
-      const variant = data.result?.sync_variant;
-      if (!variant) throw new Error(`Variant not found: ${item.syncVariantId}`);
+      const variant = data.result;
+      if (!variant || !variant.retail_price) throw new Error(`Variant not found: ${item.syncVariantId}`);
 
       const price = parseFloat(variant.retail_price);
       if (!Number.isFinite(price) || price <= 0) {

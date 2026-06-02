@@ -3,3 +3,4 @@ src/index.html
 src/output.css
 .env.local
 .vercel
+.env
