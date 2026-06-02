@@ -131,6 +131,17 @@ const findColorVariants = (productId) => {
   return Object.keys(colorMap).length > 0 ? colorMap : null;
 };
 
+const updateCareInstructions = () => {
+  const careEl = document.getElementById('care-instructions');
+  if (!careEl) return;
+
+  if (currentColor && currentColor.toLowerCase() === 'black') {
+    careEl.textContent = 'Printful all-over-print. Cold wash only. Hang dry. Heat will fade the black.';
+  } else {
+    careEl.textContent = 'Printful all-over-print. Cold wash, hang dry. Gold may soften with wear.';
+  }
+};
+
 const loadProductData = async (productId) => {
   const productName = document.getElementById('product-name');
   const productPrice = document.getElementById('product-price');
@@ -181,6 +192,7 @@ const loadProductData = async (productId) => {
       currentColor = currentVariant?.color || currentProduct.variants[0].color;
 
       productPrice.textContent = `$${currentVariant.price.toFixed(2)}`;
+      updateCareInstructions();
     }
 
     if (currentProduct.images && currentProduct.images.length > 0) {
@@ -248,9 +260,53 @@ const loadProductData = async (productId) => {
       renderSizeButtons();
     }
 
-    if (colorSelector && colorVariants) {
-      const colorOrder = ['White', 'Black'];
+    // Client-side color switching (no page reload)
+    const switchProduct = async (newProductId) => {
+      try {
+        const response = await fetch(`/api/product?id=${newProductId}`);
+        if (!response.ok) throw new Error('Product not found');
+        const newProduct = await response.json();
 
+        // Update global state
+        currentProduct = newProduct;
+        currentVariant = getPreferredDefaultVariant() || newProduct.variants[0];
+        currentColor = currentVariant?.color || newProduct.variants[0].color;
+        currentQuantity = 1;
+
+        // Update URL without reload
+        window.history.replaceState({}, '', `/product?id=${newProductId}`);
+
+        // Update page title
+        document.title = newProduct.name + ' — LEBE';
+
+        // Update image with fade effect
+        const productImage = document.getElementById('product-image');
+        if (productImage && newProduct.images && newProduct.images.length > 0) {
+          productImage.style.opacity = '0.5';
+          productImage.src = newProduct.images[0];
+          productImage.alt = newProduct.name;
+          setTimeout(() => { productImage.style.opacity = '1'; }, 100);
+        }
+
+        // Update text content
+        productName.textContent = newProduct.name;
+        productPrice.textContent = `$${currentVariant.price.toFixed(2)}`;
+        qtyDisplay.textContent = '1';
+        qtyInput.value = '1';
+        updateCareInstructions();
+
+        // Re-render size and color selectors
+        renderSizeButtons();
+        renderColorSelectors();
+      } catch (error) {
+        console.error('Error switching product:', error);
+      }
+    };
+
+    const renderColorSelectors = () => {
+      if (!colorSelector || !colorVariants) return;
+
+      const colorOrder = ['White', 'Black'];
       colorSelector.innerHTML = colorOrder
         .filter(color => colorVariants[color])
         .map((color) => {
@@ -272,15 +328,20 @@ const loadProductData = async (productId) => {
           `;
         }).join('');
 
+      // Attach click handlers for client-side switching
       colorSelector.querySelectorAll('button').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.preventDefault();
           const newProductId = parseInt(btn.dataset.productId);
           if (newProductId !== currentProduct.id) {
-            window.location.href = `/product?id=${newProductId}`;
+            switchProduct(newProductId);
           }
         });
       });
+    };
+
+    if (colorSelector && colorVariants) {
+      renderColorSelectors();
     }
 
     qtyMinus?.addEventListener('click', (e) => {
