@@ -34,7 +34,7 @@ window.handleBuyClick = function(e) {
     syncVariantId: currentVariant.syncVariantId,
     name: currentProduct.name,
     size: currentVariant.size,
-    color: currentVariant.color,
+    color: currentColor || currentVariant.color,
     price: currentVariant.price,
     quantity: currentQuantity,
     image: currentProduct.images[0] || '',
@@ -215,7 +215,7 @@ const loadProductData = async (productId) => {
       colorSelector.innerHTML = colorOrder
         .filter(color => colorVariants[color])
         .map((color) => {
-          const isSelected = color.toLowerCase() === currentColor.toLowerCase();
+          const isSelected = color.toLowerCase() === (currentColor || '').toLowerCase();
           const isWhite = color.toLowerCase() === 'white';
 
           return `

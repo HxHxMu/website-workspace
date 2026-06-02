@@ -59,8 +59,8 @@ module.exports = async (req, res) => {
       },
       items: items.map(item => {
         const orderItem = {
-          sync_variant_id: item.syncVariantId,
-          quantity: item.quantity
+          sync_variant_id: Number(item.syncVariantId),
+          quantity: Number(item.quantity)
         };
         if (item.options && item.options.length > 0) {
           orderItem.options = {};
