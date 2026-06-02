@@ -132,7 +132,16 @@ const loadProductData = async (productId) => {
 
     if (currentProduct.variants && currentProduct.variants.length > 0) {
       currentVariant = getPreferredDefaultVariant();
-      currentColor = currentVariant?.color || currentProduct.variants[0].color;
+
+      // Derive color from product name since variant color field may be unreliable
+      let colorFromName = null;
+      if (currentProduct.name.match(/\bBlack\b/i)) {
+        colorFromName = 'Black';
+      } else if (currentProduct.name.match(/\bWhite\b/i)) {
+        colorFromName = 'White';
+      }
+      currentColor = colorFromName || currentVariant?.color || currentProduct.variants[0].color;
+
       productPrice.textContent = `$${currentVariant.price.toFixed(2)}`;
     }
 
