@@ -157,13 +157,15 @@ const loadProductData = async (productId) => {
         if (!variant) return;
 
         const isSelected = variant.syncVariantId === currentVariant?.syncVariantId;
+        const bgClass = isSelected ? 'bg-[#050505] text-white' : 'bg-white text-[#050505]';
+        const hoverClass = isSelected ? '' : 'hover:bg-[#050505] hover:text-white';
         buttons += `
           <button
             type="button"
             data-size="${size}"
             data-variant-id="${variant.syncVariantId}"
             aria-pressed="${isSelected}"
-            class="size-button flex h-14 min-w-14 items-center justify-center border border-[#050505] bg-white px-4 text-sm font-bold uppercase tracking-[0.12em] transition ${isSelected ? 'bg-[#050505] text-white' : 'text-[#050505] hover:bg-[#050505] hover:text-white'}"
+            class="size-button flex h-14 min-w-14 items-center justify-center border border-[#050505] px-4 text-sm font-bold uppercase tracking-[0.12em] transition ${bgClass} ${hoverClass}"
           >
             ${size}
           </button>
