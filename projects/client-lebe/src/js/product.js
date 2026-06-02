@@ -142,6 +142,21 @@ const updateCareInstructions = () => {
   }
 };
 
+const initMobileCarousel = () => {
+  if (window.innerWidth >= 768) return;
+  if (typeof Splide === 'undefined') return;
+  const carousel = document.getElementById('image-carousel');
+  if (!carousel) return;
+  new Splide('#image-carousel', {
+    type: 'slide',
+    perPage: 1,
+    arrows: false,
+    pagination: true,
+    drag: true,
+    rewind: true,
+  }).mount();
+};
+
 const loadProductData = async (productId) => {
   const productName = document.getElementById('product-name');
   const productPrice = document.getElementById('product-price');
@@ -200,6 +215,11 @@ const loadProductData = async (productId) => {
       if (productImage) {
         productImage.src = currentProduct.images[0];
         productImage.alt = currentProduct.name;
+      }
+      const carouselImage = document.getElementById('carousel-product-image');
+      if (carouselImage) {
+        carouselImage.src = currentProduct.images[0];
+        carouselImage.alt = currentProduct.name;
       }
     }
 
@@ -281,11 +301,16 @@ const loadProductData = async (productId) => {
 
         // Update image with fade effect
         const productImage = document.getElementById('product-image');
+        const carouselImage = document.getElementById('carousel-product-image');
         if (productImage && newProduct.images && newProduct.images.length > 0) {
           productImage.style.opacity = '0.5';
           productImage.src = newProduct.images[0];
           productImage.alt = newProduct.name;
           setTimeout(() => { productImage.style.opacity = '1'; }, 100);
+        }
+        if (carouselImage && newProduct.images && newProduct.images.length > 0) {
+          carouselImage.src = newProduct.images[0];
+          carouselImage.alt = newProduct.name;
         }
 
         // Update text content
@@ -384,6 +409,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('Color variants:', colorVariants);
 
     await loadProductData(id);
+    initMobileCarousel();
   } catch (error) {
     console.error('Error initializing:', error);
   }
