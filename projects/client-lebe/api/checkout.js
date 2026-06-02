@@ -1,3 +1,5 @@
+const Stripe = require('stripe');
+
 const PRINTFUL_API_BASE = 'https://api.printful.com';
 
 // Helper to make authenticated requests to Printful API
@@ -34,17 +36,26 @@ module.exports = async (req, res) => {
   }
 
   const PRINTFUL_API_KEY = process.env.PRINTFUL_API_KEY;
-  if (!PRINTFUL_API_KEY) {
-    return res.status(500).json({ error: 'PRINTFUL_API_KEY environment variable is not set' });
+  const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+
+  if (!PRINTFUL_API_KEY || !STRIPE_SECRET_KEY) {
+    return res.status(500).json({ error: 'Missing environment variables' });
   }
 
-  const { items, customer } = req.body;
+  const { items, customer, paymentIntentId } = req.body;
 
-  if (!items || !customer) {
-    return res.status(400).json({ error: 'Missing items or customer data' });
+  if (!items || !customer || !paymentIntentId) {
+    return res.status(400).json({ error: 'Missing items, customer, or paymentIntentId' });
   }
 
   try {
+    // Verify Stripe payment succeeded before touching Printful
+    const stripe = Stripe(STRIPE_SECRET_KEY);
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+    if (paymentIntent.status !== 'succeeded') {
+      return res.status(400).json({ error: 'Payment not confirmed' });
+    }
+
     // Create order in Printful
     const orderData = {
       recipient: {
@@ -71,7 +82,8 @@ module.exports = async (req, res) => {
         return orderItem;
       }),
       shipping: 'STANDARD',
-      currency: 'USD'
+      currency: 'USD',
+      confirm: true
     };
 
     console.log('📦 Sending order to Printful:', JSON.stringify(orderData, null, 2));

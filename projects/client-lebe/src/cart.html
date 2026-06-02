@@ -7,6 +7,7 @@
   <meta name="description" content="" />
   <link rel="icon" href="./assets/images/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="./output.css" />
+  <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body class="bg-[#e9e9e9] text-[#050505]">
 
@@ -157,8 +158,15 @@
           <input type="text" id="c-country" value="US" required class="w-full border border-[#050505] px-4 py-3 text-sm bg-white outline-none focus:bg-[#050505]/5 uppercase" />
         </div>
 
+        <!-- Payment -->
+        <div>
+          <p class="mb-3 text-[11px] font-bold uppercase tracking-[0.28em] text-[#050505]/50">Payment</p>
+          <p id="payment-loading" class="hidden text-sm text-[#050505]/50">Loading payment form...</p>
+          <div id="payment-element"></div>
+        </div>
+
         <!-- Submit -->
-        <button type="submit" class="mt-8 w-full bg-[#050505] px-7 py-4 text-[11px] font-bold uppercase tracking-[0.28em] text-white transition hover:bg-[#050505]/80">
+        <button type="submit" id="place-order-btn" class="mt-8 w-full bg-[#050505] px-7 py-4 text-[11px] font-bold uppercase tracking-[0.28em] text-white transition hover:bg-[#050505]/80 disabled:opacity-40 disabled:cursor-not-allowed">
           Place Order
         </button>
 
@@ -208,14 +216,11 @@
 <script src="js/cart.js" defer></script>
 <script src="js/main.js" defer></script>
 <script>
-// Initialize cart rendering and handlers
 document.addEventListener('DOMContentLoaded', () => {
   window.renderCart?.();
 
-  // Checkout toggle
-  document.getElementById('checkout-toggle')?.addEventListener('click', () => {
-    document.getElementById('checkout-form-section').classList.toggle('hidden');
-  });
+  let stripeInstance = null;
+  let stripeElements = null;
 
   // ZIP verification — returns {city, state} on success, null on failure
   async function verifyZip(zip) {
@@ -262,45 +267,129 @@ document.addEventListener('DOMContentLoaded', () => {
     await verifyZip(zip);
   });
 
+  // Mount Stripe Payment Element when checkout form opens
+  async function mountPaymentElement() {
+    const cart = Cart.getCart();
+    if (cart.length === 0) return;
+
+    const loadingEl = document.getElementById('payment-loading');
+    loadingEl.classList.remove('hidden');
+
+    try {
+      // Get publishable key from server
+      const configRes = await fetch('/api/stripe-config');
+      const { publishableKey } = await configRes.json();
+      stripeInstance = Stripe(publishableKey);
+
+      // Create PaymentIntent with server-side price calculation
+      const intentRes = await fetch('/api/stripe-intent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: cart })
+      });
+      const intentData = await intentRes.json();
+      if (!intentRes.ok) throw new Error(intentData.error || 'Payment setup failed');
+
+      stripeElements = stripeInstance.elements({
+        clientSecret: intentData.clientSecret,
+        appearance: {
+          theme: 'stripe',
+          variables: {
+            colorPrimary: '#050505',
+            colorBackground: '#ffffff',
+            colorText: '#050505',
+            colorDanger: '#dc2626',
+            fontFamily: 'DM Sans, system-ui, sans-serif',
+            fontSizeBase: '14px',
+            borderRadius: '0px',
+            spacingUnit: '4px'
+          },
+          rules: {
+            '.Input': { border: '1px solid #050505', boxShadow: 'none', padding: '12px 16px' },
+            '.Input:focus': { boxShadow: 'none', outline: 'none' },
+            '.Label': { fontWeight: '700', fontSize: '11px', letterSpacing: '0.28em', textTransform: 'uppercase', color: 'rgba(5,5,5,0.5)', marginBottom: '8px' }
+          }
+        }
+      });
+
+      const paymentElement = stripeElements.create('payment');
+      paymentElement.mount('#payment-element');
+    } catch (err) {
+      document.getElementById('checkout-error').textContent = err.message;
+      document.getElementById('checkout-error').classList.remove('hidden');
+    } finally {
+      loadingEl.classList.add('hidden');
+    }
+  }
+
+  // Checkout toggle — mount payment element on first open
+  document.getElementById('checkout-toggle')?.addEventListener('click', () => {
+    const section = document.getElementById('checkout-form-section');
+    section.classList.toggle('hidden');
+    if (!section.classList.contains('hidden') && !stripeElements) {
+      mountPaymentElement();
+    }
+  });
+
   // Form submission
   document.getElementById('checkout-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const cart = Cart.getCart();
-    if (cart.length === 0) {
-      alert('Cart is empty');
+    if (cart.length === 0) { alert('Cart is empty'); return; }
+
+    if (!stripeElements) {
+      document.getElementById('checkout-error').textContent = 'Payment form not ready — please wait a moment and try again.';
+      document.getElementById('checkout-error').classList.remove('hidden');
       return;
     }
 
-    // Always re-derive state from the ZIP at submit time so a typed or stale
-    // state field can't cause a Printful "state and ZIP don't match" rejection
-    const zip = document.getElementById('c-zip').value.trim();
-    const verified = await verifyZip(zip);
-    if (!verified) return;
+    const errorEl = document.getElementById('checkout-error');
+    errorEl.classList.add('hidden');
 
-    const customer = {
-      name: document.getElementById('c-name').value,
-      email: document.getElementById('c-email').value,
-      address1: document.getElementById('c-address1').value,
-      city: verified.city,
-      state: verified.state,
-      zip,
-      country: document.getElementById('c-country').value,
-      phone: ''
-    };
+    const submitBtn = document.getElementById('place-order-btn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Processing...';
 
     try {
+      // 1. Re-derive state from ZIP — prevents Printful state/ZIP mismatch
+      const zip = document.getElementById('c-zip').value.trim();
+      const verified = await verifyZip(zip);
+      if (!verified) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Place Order';
+        return;
+      }
+
+      // 2. Confirm payment with Stripe
+      const { paymentIntent, error: stripeError } = await stripeInstance.confirmPayment({
+        elements: stripeElements,
+        redirect: 'if_required'
+      });
+
+      if (stripeError) throw new Error(stripeError.message);
+      if (paymentIntent.status !== 'succeeded') throw new Error('Payment was not completed — please try again.');
+
+      // 3. Create Printful order (server verifies payment before confirming)
+      const customer = {
+        name: document.getElementById('c-name').value,
+        email: document.getElementById('c-email').value,
+        address1: document.getElementById('c-address1').value,
+        city: verified.city,
+        state: verified.state,
+        zip,
+        country: document.getElementById('c-country').value,
+        phone: ''
+      };
+
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: cart, customer })
+        body: JSON.stringify({ items: cart, customer, paymentIntentId: paymentIntent.id })
       });
 
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Order failed');
-      }
+      if (!response.ok) throw new Error(data.message || 'Order failed');
 
       // Success
       Cart.clearCart();
@@ -310,8 +399,10 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('order-confirmation').classList.remove('hidden');
       document.getElementById('confirm-order-id').textContent = data.orderId;
     } catch (error) {
-      document.getElementById('checkout-error').textContent = error.message;
-      document.getElementById('checkout-error').classList.remove('hidden');
+      errorEl.textContent = error.message;
+      errorEl.classList.remove('hidden');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Place Order';
     }
   });
 });
