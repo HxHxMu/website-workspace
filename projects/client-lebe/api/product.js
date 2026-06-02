@@ -1,4 +1,4 @@
-import productsData from '../src/data/products.json' assert { type: 'json' };
+import productsData from '../src/data/products.json' with { type: 'json' };
 
 const PRINTFUL_API_BASE = 'https://api.printful.com';
 

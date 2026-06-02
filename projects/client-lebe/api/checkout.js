@@ -59,7 +59,7 @@ module.exports = async (req, res) => {
       },
       items: items.map(item => {
         const orderItem = {
-          variant_id: item.variantId || item.id,
+          sync_variant_id: item.syncVariantId,
           quantity: item.quantity
         };
         if (item.options && item.options.length > 0) {
@@ -83,7 +83,7 @@ module.exports = async (req, res) => {
 
     console.log('✓ Order created:', result);
 
-    const order = result.data;
+    const order = result.result;
 
     res.status(200).json({
       success: true,
