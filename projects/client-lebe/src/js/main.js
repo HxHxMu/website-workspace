@@ -72,7 +72,7 @@ window.renderCart = function() {
       const svid = btn.dataset.syncVariantId;
       const item = Cart.getCart().find(i => String(i.syncVariantId) === svid);
       if (item) {
-        Cart.updateQuantity(String(item.syncVariantId), item.quantity - 1);
+        Cart.updateQuantity(item.syncVariantId, item.quantity - 1);
         window.renderCart();
       }
     });
@@ -84,7 +84,7 @@ window.renderCart = function() {
       const svid = btn.dataset.syncVariantId;
       const item = Cart.getCart().find(i => String(i.syncVariantId) === svid);
       if (item) {
-        Cart.updateQuantity(String(item.syncVariantId), item.quantity + 1);
+        Cart.updateQuantity(item.syncVariantId, item.quantity + 1);
         window.renderCart();
       }
     });

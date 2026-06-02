@@ -29,6 +29,7 @@
 
     addItem(item) {
       const cart = getCart();
+      item = { ...item, syncVariantId: String(item.syncVariantId) };
       const existing = cart.find(i => i.syncVariantId === item.syncVariantId);
 
       if (existing) {
@@ -41,22 +42,24 @@
     },
 
     removeItem(syncVariantId) {
+      const svid = String(syncVariantId);
       const cart = getCart();
-      const filtered = cart.filter(i => i.syncVariantId !== syncVariantId);
+      const filtered = cart.filter(i => String(i.syncVariantId) !== svid);
       saveCart(filtered);
     },
 
     updateQuantity(syncVariantId, quantity) {
       console.log('updateQuantity called:', syncVariantId, 'qty:', quantity);
+      const svid = String(syncVariantId);
       const cart = getCart();
 
       if (quantity <= 0) {
         console.log('Quantity <= 0, removing item');
-        this.removeItem(syncVariantId);
+        this.removeItem(svid);
         return;
       }
 
-      const item = cart.find(i => i.syncVariantId === syncVariantId);
+      const item = cart.find(i => String(i.syncVariantId) === svid);
       console.log('Found item:', item);
       if (item) {
         console.log('Updating quantity from', item.quantity, 'to', quantity);
