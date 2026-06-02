@@ -3,6 +3,11 @@ console.log('product.js loaded');
 let currentProduct = null;
 let currentVariant = null;
 let currentQuantity = 1;
+let currentColor = null;
+let colorVariants = null;
+let allProducts = null;
+
+const SIZE_ORDER = ['XS', 'S', 'M', 'L', 'XL'];
 
 window.handleBuyClick = function(e) {
   console.log('=== HANDLE BUY CLICK CALLED ===');
@@ -10,14 +15,6 @@ window.handleBuyClick = function(e) {
   if (e) {
     e.preventDefault();
     e.stopPropagation();
-  }
-
-  const sizeSelect = document.getElementById('size-select');
-
-  if (!sizeSelect || !sizeSelect.value) {
-    console.log('❌ No size selected');
-    alert('Please select a size');
-    return false;
   }
 
   if (!currentVariant) {
@@ -51,12 +48,53 @@ window.handleBuyClick = function(e) {
   return false;
 };
 
-document.addEventListener('DOMContentLoaded', async () => {
-  console.log('DOMContentLoaded - initializing product page');
+const findColorVariants = (productId) => {
+  if (!allProducts) return null;
 
+  const currentProd = allProducts.find(p => p.id === productId);
+  if (!currentProd) return null;
+
+  const baseNameWords = currentProd.name.toLowerCase()
+    .replace(/\b(black|white|color)\b/gi, '')
+    .trim()
+    .split(/\s+/);
+
+  const variants = allProducts.filter(p => {
+    const nameWords = p.name.toLowerCase()
+      .replace(/\b(black|white|color)\b/gi, '')
+      .trim()
+      .split(/\s+/);
+
+    return nameWords.length === baseNameWords.length &&
+           baseNameWords.every(word => nameWords.includes(word));
+  });
+
+  const colorMap = {};
+  variants.forEach(v => {
+    const colorMatch = v.name.match(/\b(Black|White)\b/i);
+    let color = colorMatch ? colorMatch[1] : null;
+
+    if (!color) {
+      if (variants.length === 2) {
+        const hasWhite = variants.some(p => p.name.match(/\bWhite\b/i));
+        if (hasWhite && !v.name.match(/\bWhite\b/i)) {
+          color = 'Black';
+        }
+      }
+    }
+
+    if (color) {
+      colorMap[color] = v.id;
+    }
+  });
+
+  return Object.keys(colorMap).length > 0 ? colorMap : null;
+};
+
+const loadProductData = async (productId) => {
   const productName = document.getElementById('product-name');
   const productPrice = document.getElementById('product-price');
-  const sizeSelect = document.getElementById('size-select');
+  const sizeSelector = document.getElementById('size-selector');
   const buyButton = document.getElementById('buy-button');
   const colorSelector = document.getElementById('color-selector');
   const qtyDisplay = document.getElementById('qty-display');
@@ -64,34 +102,40 @@ document.addEventListener('DOMContentLoaded', async () => {
   const qtyMinus = document.getElementById('qty-minus');
   const qtyPlus = document.getElementById('qty-plus');
 
-  // Get product ID from URL
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get('id');
-
-  if (!id) {
-    productName.textContent = 'No product specified';
-    return;
-  }
-
-  console.log('Fetching product:', id);
-
   try {
-    const response = await fetch(`/api/product?id=${id}`);
+    const response = await fetch(`/api/product?id=${productId}`);
     if (!response.ok) throw new Error('Product not found');
     currentProduct = await response.json();
     console.log('Product loaded:', currentProduct);
 
-    // Update title and name
     document.title = currentProduct.name + ' — LEBE';
     productName.textContent = currentProduct.name;
 
-    // Update price from first variant
+    const getVariantFor = (size, color) => currentProduct.variants.find(
+      (variant) =>
+        String(variant.size || '').toUpperCase() === String(size || '').toUpperCase() &&
+        String(variant.color || '').toLowerCase() === String(color || '').toLowerCase()
+    );
+
+    const getFirstVariantForSize = (size) => currentProduct.variants.find(
+      (variant) => String(variant.size || '').toUpperCase() === String(size || '').toUpperCase()
+    );
+
+    const getPreferredDefaultVariant = () => {
+      const preferredSizes = ['M', ...SIZE_ORDER.filter((size) => size !== 'M')];
+      for (const size of preferredSizes) {
+        const match = getFirstVariantForSize(size);
+        if (match) return match;
+      }
+      return currentProduct.variants[0] || null;
+    };
+
     if (currentProduct.variants && currentProduct.variants.length > 0) {
-      currentVariant = currentProduct.variants[0];
+      currentVariant = getPreferredDefaultVariant();
+      currentColor = currentVariant?.color || currentProduct.variants[0].color;
       productPrice.textContent = `$${currentVariant.price.toFixed(2)}`;
     }
 
-    // Render images
     if (currentProduct.images && currentProduct.images.length > 0) {
       const productImage = document.getElementById('product-image');
       if (productImage) {
@@ -100,75 +144,94 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
 
-    // Populate size select
-    if (sizeSelect && currentProduct.variants && currentProduct.variants.length > 0) {
-      const sizes = [...new Set(currentProduct.variants.map(v => v.size))];
-      console.log('Populating sizes:', sizes);
+    const renderSizeButtons = () => {
+      if (!sizeSelector || !currentProduct.variants) return;
 
-      let options = '<option value="">Select a size</option>';
-      sizes.forEach(size => {
-        const variant = currentProduct.variants.find(v => v.size === size);
-        if (variant) {
-          options += `<option value="${variant.syncVariantId}" data-price="${variant.price}">${size}</option>`;
-        }
-      });
+      const availableSizes = SIZE_ORDER.filter((size) =>
+        currentProduct.variants.some((variant) => String(variant.size || '').toUpperCase() === size)
+      );
 
-      sizeSelect.innerHTML = options;
+      let buttons = '';
+      availableSizes.forEach((size) => {
+        const variant = getFirstVariantForSize(size);
+        if (!variant) return;
 
-      // Size change handler
-      sizeSelect.addEventListener('change', (e) => {
-        console.log('Size changed');
-        const variant = currentProduct.variants.find(v => v.syncVariantId === e.target.value);
-        if (variant) {
-          currentVariant = variant;
-          productPrice.textContent = `$${variant.price.toFixed(2)}`;
-          console.log('Price updated to:', variant.price);
-        }
-      });
-    }
-
-    // Color selector
-    if (colorSelector && currentProduct.variants) {
-      colorSelector.innerHTML = currentProduct.variants.map((variant) => {
         const isSelected = variant.syncVariantId === currentVariant?.syncVariantId;
-        const isWhite = variant.color === 'White' || variant.color === 'white';
-
-        return `
+        buttons += `
           <button
             type="button"
+            data-size="${size}"
             data-variant-id="${variant.syncVariantId}"
-            aria-label="Select ${variant.color}"
             aria-pressed="${isSelected}"
-            class="flex h-9 w-9 items-center justify-center rounded-full border transition ${isSelected ? 'border-[#050505]' : 'border-[#050505]/25 hover:border-[#050505]'}"
+            class="size-button flex h-14 min-w-14 items-center justify-center border border-[#050505] bg-white px-4 text-sm font-bold uppercase tracking-[0.12em] transition ${isSelected ? 'bg-[#050505] text-white' : 'text-[#050505] hover:bg-[#050505] hover:text-white'}"
           >
-            <span class="h-6 w-6 rounded-full border border-[#050505]/20 ${isWhite ? 'bg-white' : 'bg-[#050505]'}"></span>
+            ${size}
           </button>
         `;
-      }).join('');
+      });
 
-      // Color button handlers
+      sizeSelector.innerHTML = buttons;
+
+      sizeSelector.querySelectorAll('button').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const nextSize = btn.dataset.size;
+          const preferredVariant = getFirstVariantForSize(nextSize);
+          if (!preferredVariant) return;
+
+          currentVariant = preferredVariant;
+          productPrice.textContent = `$${currentVariant.price.toFixed(2)}`;
+
+          sizeSelector.querySelectorAll('button').forEach((b) => {
+            b.classList.remove('bg-[#050505]', 'text-white');
+            b.classList.add('bg-white', 'text-[#050505]');
+            b.setAttribute('aria-pressed', 'false');
+          });
+
+          btn.classList.add('bg-[#050505]', 'text-white');
+          btn.classList.remove('bg-white', 'text-[#050505]');
+          btn.setAttribute('aria-pressed', 'true');
+        });
+      });
+    };
+
+    if (sizeSelector && currentProduct.variants && currentProduct.variants.length > 0) {
+      renderSizeButtons();
+    }
+
+    if (colorSelector && colorVariants) {
+      const colorOrder = ['White', 'Black'];
+
+      colorSelector.innerHTML = colorOrder
+        .filter(color => colorVariants[color])
+        .map((color) => {
+          const isSelected = color.toLowerCase() === currentColor.toLowerCase();
+          const isWhite = color.toLowerCase() === 'white';
+
+          return `
+            <button
+              type="button"
+              data-color="${color}"
+              data-product-id="${colorVariants[color]}"
+              aria-label="Select ${color}"
+              aria-pressed="${isSelected}"
+              class="flex h-10 w-10 items-center justify-center rounded-full border transition md:h-10 md:w-10 ${isSelected ? 'border-[#050505]' : 'border-[#050505]/25 hover:border-[#050505]'}"
+            >
+              <span class="h-7 w-7 rounded-full border border-[#050505]/20 ${isWhite ? 'bg-white' : 'bg-[#050505]'}"></span>
+            </button>
+          `;
+        }).join('');
+
       colorSelector.querySelectorAll('button').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.preventDefault();
-          const variantId = btn.dataset.variantId;
-          const variant = currentProduct.variants.find(v => v.syncVariantId === variantId);
-          if (variant) {
-            currentVariant = variant;
-            productPrice.textContent = `$${variant.price.toFixed(2)}`;
-
-            // Update active state
-            colorSelector.querySelectorAll('button').forEach(b => {
-              b.classList.remove('border-[#050505]');
-              b.classList.add('border-[#050505]/25');
-            });
-            btn.classList.remove('border-[#050505]/25');
-            btn.classList.add('border-[#050505]');
+          const newProductId = parseInt(btn.dataset.productId);
+          if (newProductId !== currentProduct.id) {
+            window.location.href = `/product?id=${newProductId}`;
           }
         });
       });
     }
 
-    // Quantity controls
     qtyMinus?.addEventListener('click', (e) => {
       e.preventDefault();
       currentQuantity = Math.max(1, currentQuantity - 1);
@@ -183,11 +246,33 @@ document.addEventListener('DOMContentLoaded', async () => {
       qtyInput.value = currentQuantity;
     });
 
-    // Buy button click
     buyButton?.addEventListener('click', window.handleBuyClick);
 
   } catch (error) {
     console.error('Error loading product:', error);
     productName.textContent = 'Failed to load product';
+  }
+};
+
+document.addEventListener('DOMContentLoaded', async () => {
+  console.log('DOMContentLoaded - initializing product page');
+
+  const params = new URLSearchParams(window.location.search);
+  const id = parseInt(params.get('id'));
+
+  if (!id) {
+    document.getElementById('product-name').textContent = 'No product specified';
+    return;
+  }
+
+  try {
+    const productsRes = await fetch('/api/products');
+    allProducts = await productsRes.json();
+    colorVariants = findColorVariants(id);
+    console.log('Color variants:', colorVariants);
+
+    await loadProductData(id);
+  } catch (error) {
+    console.error('Error initializing:', error);
   }
 });

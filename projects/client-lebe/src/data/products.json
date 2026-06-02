@@ -42,5 +42,35 @@
         "assets/images/product-shots/saguanari_leggin_blk_1.jpg"
       ]
     }
-  ]
+  ],
+  "colorVariants": {
+    "309483674": {
+      "displayName": "Sanguanari Sports Bra",
+      "colors": [
+        { "name": "White", "productId": 309483674 },
+        { "name": "Black", "productId": 309483736 }
+      ]
+    },
+    "309483736": {
+      "displayName": "Sanguanari Sports Bra",
+      "colors": [
+        { "name": "White", "productId": 309483674 },
+        { "name": "Black", "productId": 309483736 }
+      ]
+    },
+    "301596573": {
+      "displayName": "Saguanari Yoga Leggings",
+      "colors": [
+        { "name": "White", "productId": 301596573 },
+        { "name": "Black", "productId": 300307426 }
+      ]
+    },
+    "300307426": {
+      "displayName": "Saguanari Yoga Leggings",
+      "colors": [
+        { "name": "White", "productId": 301596573 },
+        { "name": "Black", "productId": 300307426 }
+      ]
+    }
+  }
 }
