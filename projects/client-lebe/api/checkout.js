@@ -53,7 +53,7 @@ module.exports = async (req, res) => {
         phone: customer.phone || '',
         address1: customer.address1,
         city: customer.city,
-        state_code: customer.state.toUpperCase(),
+        state_code: (customer.state || '').toUpperCase(),
         zip_code: customer.zip,
         country_code: (customer.country || 'US').toUpperCase()
       },

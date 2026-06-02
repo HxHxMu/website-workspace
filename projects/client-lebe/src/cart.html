@@ -232,6 +232,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const data = await response.json();
+
+    if (!data.places || data.places.length === 0) {
+      statusEl.textContent = '❌ ZIP code not found';
+      statusEl.className = 'text-[11px] mt-2 text-red-600';
+      return;
+    }
+
     const place = data.places[0];
     const city = place['place name'];
     const state = place['state abbreviation'];
