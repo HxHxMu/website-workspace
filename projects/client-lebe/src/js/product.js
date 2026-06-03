@@ -343,20 +343,35 @@ const loadProductData = async (productId) => {
         // Update page title
         document.title = newProduct.name + ' — LEBE';
 
-        // Update image with fade effect
-        const productImage = document.getElementById('product-image');
-        const carouselImage = document.getElementById('carousel-product-image');
-        if (productImage && newProduct.images && newProduct.images.length > 0) {
-          productImage.style.opacity = '0.5';
-          productImage.src = newProduct.images[0];
-          productImage.alt = newProduct.name;
-          setTimeout(() => { productImage.style.opacity = '1'; }, 100);
+        // Update all images with fade effect
+        if (newProduct.images && newProduct.images.length > 0) {
+          // Fade out all images
+          const allImages = document.querySelectorAll('#image-grid img, #image-carousel img');
+          allImages.forEach(img => {
+            img.style.opacity = '0.5';
+            img.style.transition = 'opacity 0.1s ease-out';
+          });
+
+          // Update images
+          const productImage = document.getElementById('product-image');
+          const carouselImage = document.getElementById('carousel-product-image');
+          if (productImage) {
+            productImage.src = newProduct.images[0];
+            productImage.alt = newProduct.name;
+          }
+          if (carouselImage) {
+            carouselImage.src = newProduct.images[0];
+            carouselImage.alt = newProduct.name;
+          }
+          populateImageGallery(newProduct.images);
+
+          // Fade back in after a brief delay
+          setTimeout(() => {
+            allImages.forEach(img => {
+              img.style.opacity = '1';
+            });
+          }, 100);
         }
-        if (carouselImage && newProduct.images && newProduct.images.length > 0) {
-          carouselImage.src = newProduct.images[0];
-          carouselImage.alt = newProduct.name;
-        }
-        populateImageGallery(newProduct.images);
 
         // Update text content
         productName.textContent = newProduct.name;
