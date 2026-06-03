@@ -18,28 +18,33 @@
       "externalId": "6477600e15cb73",
       "images": [
         "assets/images/17.jpg",
-        "assets/images/product-shots/saguanari_bra_blk_1.jpg"
+        "assets/images/product-shots/saguanari_bra/saguanari_bra_blk_1.jpg",
+        "assets/images/product-shots/saguanari_bra/saguanari_bra_blk_2.jpg"
       ]
     },
     {
       "externalId": "64775fcaef5f21",
       "images": [
         "assets/images/11.jpg",
-        "assets/images/product-shots/saguanari_bra_wht_1.jpg"
+        "assets/images/product-shots/saguanari_bra/saguanari_bra_wht_1.jpg",
+        "assets/images/product-shots/saguanari_bra/saguanari_bra_wht_2.jpg"
       ]
     },
     {
       "externalId": "64000b204a6de9",
       "images": [
-        "assets/images/9.jpg",
-        "assets/images/product-shots/saguanari_leggin_wht_1.jpg"
+        "assets/images/product-shots/saguanari_leggings/saguanari_leggin_wht_1.jpg",
+        "assets/images/product-shots/saguanari_leggings/saguanari_leggin_wht_2.jpg",
+        "assets/images/product-shots/saguanari_leggings/saguanari_leggin_wht_3.png",
+        "assets/images/product-shots/saguanari_leggings/saguanari_leggin_wht_4.png",
+        "assets/images/product-shots/saguanari_leggings/saguanari_leggin_wht_5.jpg"
       ]
     },
     {
       "externalId": "63ec714091ff89",
       "images": [
-        "assets/images/15.jpg",
-        "assets/images/product-shots/saguanari_leggin_blk_1.jpg"
+        "assets/images/product-shots/saguanari_leggings/saguanari_leggin_blk_1.jpg",
+        "assets/images/product-shots/saguanari_leggings/saguanari_leggin_blk_2.jpg"
       ]
     }
   ],
