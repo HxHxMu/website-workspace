@@ -166,7 +166,12 @@ const populateImageGallery = (images) => {
       if (img) {
         img.src = images[index];
       } else if (index > 0) {
-        item.innerHTML = `<img src="${images[index]}" alt="" class="h-full w-full object-cover" />`;
+        const newImg = document.createElement('img');
+        newImg.src = images[index];
+        newImg.alt = '';
+        newImg.className = 'h-full w-full object-cover';
+        item.innerHTML = '';
+        item.appendChild(newImg);
       }
     }
   });
