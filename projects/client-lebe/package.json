@@ -5,7 +5,7 @@
   "scripts": {
     "build": "./build.sh && npm run build:css",
     "build:css": "tailwindcss -i ./src/input.css -o ./src/output.css --minify",
-    "serve": "python3 -m http.server 8080 -d ./src"
+    "serve": "node dev-server.js"
   },
   "dependencies": {
     "@splidejs/splide": "^4.1.4",
