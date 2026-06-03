@@ -21,12 +21,12 @@ async function testAddress(name, address, city, state, zip, country = 'US') {
       address1: address,
       city,
       state_code: state.toUpperCase(),
-      zip_code: zip,
+      zip: zip,
       country_code: country.toUpperCase()
     },
     items: [
       {
-        sync_variant_id: 6477600,  // From your Printful products
+        sync_variant_id: 3910804393,  // From your Printful products
         quantity: 1
       }
     ],
