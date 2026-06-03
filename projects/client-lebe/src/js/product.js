@@ -142,6 +142,36 @@ const updateCareInstructions = () => {
   }
 };
 
+const populateImageGallery = (images) => {
+  if (!images || images.length === 0) return;
+
+  // Populate carousel slides (mobile)
+  const carouselSlides = document.querySelectorAll('#image-carousel .splide__slide');
+  carouselSlides.forEach((slide, index) => {
+    if (index < images.length) {
+      const img = slide.querySelector('img');
+      if (!img) {
+        slide.innerHTML = `<div class="aspect-[4/5] overflow-hidden bg-neutral-100"><img src="${images[index]}" alt="" class="h-full w-full object-cover" /></div>`;
+      } else {
+        img.src = images[index];
+      }
+    }
+  });
+
+  // Populate grid items (desktop)
+  const gridItems = document.querySelectorAll('#image-grid > div');
+  gridItems.forEach((item, index) => {
+    if (index < images.length) {
+      const img = item.querySelector('img');
+      if (img) {
+        img.src = images[index];
+      } else if (index > 0) {
+        item.innerHTML = `<img src="${images[index]}" alt="" class="h-full w-full object-cover" />`;
+      }
+    }
+  });
+};
+
 const initMobileCarousel = () => {
   if (window.innerWidth >= 768) return;
   if (typeof Splide === 'undefined') return;
@@ -221,6 +251,7 @@ const loadProductData = async (productId) => {
         carouselImage.src = currentProduct.images[0];
         carouselImage.alt = currentProduct.name;
       }
+      populateImageGallery(currentProduct.images);
     }
 
     const renderSizeButtons = () => {
@@ -312,6 +343,7 @@ const loadProductData = async (productId) => {
           carouselImage.src = newProduct.images[0];
           carouselImage.alt = newProduct.name;
         }
+        populateImageGallery(newProduct.images);
 
         // Update text content
         productName.textContent = newProduct.name;
