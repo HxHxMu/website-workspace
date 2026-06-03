@@ -165,7 +165,7 @@
   /* Image grid gap override */
   #image-grid {
     column-gap: 0.75rem;
-    row-gap: 0.75rem;
+    row-gap: 0.25rem;
   }
 }
 
