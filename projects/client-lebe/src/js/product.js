@@ -143,13 +143,19 @@ const updateCareInstructions = () => {
 };
 
 const populateImageGallery = (images) => {
-  if (!images || images.length === 0) return;
+  console.log('populateImageGallery called with:', images);
+  if (!images || images.length === 0) {
+    console.warn('No images provided to populateImageGallery');
+    return;
+  }
 
   // Populate carousel slides (mobile)
   const carouselSlides = document.querySelectorAll('#image-carousel .splide__slide');
+  console.log('Found carousel slides:', carouselSlides.length);
   carouselSlides.forEach((slide, index) => {
     if (index < images.length) {
       const img = slide.querySelector('img');
+      console.log(`Slide ${index}: img exists?`, !!img, 'src:', images[index]);
       if (!img) {
         slide.innerHTML = `<div class="aspect-[4/5] overflow-hidden bg-neutral-100"><img src="${images[index]}" alt="" class="h-full w-full object-cover" /></div>`;
       } else {
@@ -160,9 +166,11 @@ const populateImageGallery = (images) => {
 
   // Populate grid items (desktop)
   const gridItems = document.querySelectorAll('#image-grid > div');
+  console.log('Found grid items:', gridItems.length);
   gridItems.forEach((item, index) => {
     if (index < images.length) {
       const img = item.querySelector('img');
+      console.log(`Grid item ${index}: img exists?`, !!img, 'src:', images[index]);
       if (img) {
         img.src = images[index];
       } else if (index > 0) {
