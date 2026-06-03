@@ -14,47 +14,99 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: 'Missing environment variables' });
   }
 
-  const { items } = req.body;
+  const { items, address, shippingMethod } = req.body;
   if (!Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ error: 'Missing or empty items' });
   }
 
+  if (!address || !address.address1 || !address.city || !address.state || !address.zip) {
+    return res.status(400).json({ error: 'Missing or incomplete shipping address' });
+  }
+
+  if (!shippingMethod || !shippingMethod.id) {
+    return res.status(400).json({ error: 'Missing shipping method' });
+  }
+
   try {
-    // Look up retail prices from Printful server-side so the client can't fake the amount
-    let totalCents = 0;
-    for (const item of items) {
-      const r = await fetch(`${PRINTFUL_API_BASE}/store/variants/${Number(item.syncVariantId)}`, {
-        headers: {
-          'Authorization': `Bearer ${PRINTFUL_API_KEY}`,
-          'Content-Type': 'application/json'
-        }
-      });
+    // 1. Call Printful estimate endpoint to get shipping, taxes, and subtotal securely on the server
+    const estimateData = {
+      recipient: {
+        name: address.name || 'Valued Customer',
+        email: address.email || 'customer@example.com',
+        phone: address.phone || '',
+        address1: address.address1,
+        city: address.city,
+        state_code: String(address.state).toUpperCase(),
+        zip: String(address.zip),
+        country_code: String(address.country || 'US').toUpperCase()
+      },
+      items: items.map(item => ({
+        sync_variant_id: Number(item.syncVariantId),
+        quantity: Number(item.quantity)
+      })),
+      shipping: shippingMethod.id,
+      currency: 'USD'
+    };
 
-      if (!r.ok) {
-        const text = await r.text();
-        throw new Error(`Variant lookup failed for ${item.syncVariantId}: ${text}`);
-      }
+    console.log('📦 Requesting Printful cost estimation:', JSON.stringify(estimateData, null, 2));
 
-      const data = await r.json();
-      const variant = data.result;
-      if (!variant || !variant.retail_price) throw new Error(`Variant not found: ${item.syncVariantId}`);
+    const estimateRes = await fetch(`${PRINTFUL_API_BASE}/orders/estimate-costs`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${PRINTFUL_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(estimateData)
+    });
 
-      const price = parseFloat(variant.retail_price);
-      if (!Number.isFinite(price) || price <= 0) {
-        throw new Error(`Invalid price for variant ${item.syncVariantId}`);
-      }
-
-      totalCents += Math.round(price * 100) * Math.max(1, Number(item.quantity));
+    if (!estimateRes.ok) {
+      const text = await estimateRes.text();
+      console.error('❌ Printful estimate failure response:', text);
+      let errorMsg = text;
+      try {
+        const errorJson = JSON.parse(text);
+        errorMsg = errorJson.result || errorJson.error?.message || text;
+      } catch (e) {}
+      throw new Error(`Shipping calculation failed: ${errorMsg}`);
     }
 
+    const estimate = await estimateRes.json();
+    const result = estimate.result;
+    if (!result || !result.costs || !result.retail_costs) {
+      throw new Error('Invalid response from shipping estimation');
+    }
+
+    // Extract costs
+    const subtotal = parseFloat(result.retail_costs.subtotal || 0);
+    const shipping = parseFloat(result.retail_costs.shipping ?? result.costs.shipping ?? 0);
+    const tax = parseFloat(result.retail_costs.tax ?? result.costs.tax ?? 0);
+
+    const finalTotal = subtotal + shipping + tax;
+    const finalCents = Math.round(finalTotal * 100);
+
+    console.log(`✓ Calculated costs: subtotal=${subtotal}, shipping=${shipping}, tax=${tax}, total=${finalTotal} (${finalCents} cents)`);
+
+    // 2. Create Stripe Payment Intent for the calculated final total (cents)
     const stripe = Stripe(STRIPE_SECRET_KEY);
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: totalCents,
+      amount: finalCents,
       currency: 'usd',
       automatic_payment_methods: { enabled: true }
     });
 
-    res.status(200).json({ clientSecret: paymentIntent.client_secret });
+    res.status(200).json({
+      clientSecret: paymentIntent.client_secret,
+      shippingMethod: {
+        id: shippingMethod.id,
+        label: shippingMethod.label || shippingMethod.id,
+        minDeliveryDays: shippingMethod.minDeliveryDays ?? null,
+        maxDeliveryDays: shippingMethod.maxDeliveryDays ?? null,
+      },
+      subtotal,
+      shipping,
+      tax,
+      total: finalTotal
+    });
   } catch (error) {
     console.error('stripe-intent error:', error);
     res.status(500).json({ error: error.message });

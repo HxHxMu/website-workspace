@@ -8,6 +8,8 @@ window.renderCart = function() {
   const cartContent = document.getElementById('cart-content');
   const cartItems = document.getElementById('cart-items');
   const cartSubtotal = document.getElementById('cart-subtotal');
+  const cartShipping = document.getElementById('cart-shipping');
+  const cartTax = document.getElementById('cart-tax');
   const cartTotal = document.getElementById('cart-total');
 
   if (!cartItems) return;
@@ -15,6 +17,7 @@ window.renderCart = function() {
   const cart = Cart.getCart();
 
   if (cart.length === 0) {
+    window.resetCheckoutState?.();
     cartEmpty.classList.remove('hidden');
     cartContent.classList.add('hidden');
     return;
@@ -63,6 +66,8 @@ window.renderCart = function() {
   // Update summary
   const subtotal = Cart.getSubtotal();
   cartSubtotal.textContent = `$${subtotal.toFixed(2)}`;
+  if (cartShipping) cartShipping.textContent = 'Calculated';
+  if (cartTax) cartTax.textContent = 'Calculated';
   cartTotal.textContent = `$${subtotal.toFixed(2)}`;
 
   // Event handlers — dataset values are always strings; compare with String() to handle numeric IDs
@@ -73,6 +78,7 @@ window.renderCart = function() {
       const item = Cart.getCart().find(i => String(i.syncVariantId) === svid);
       if (item) {
         Cart.updateQuantity(item.syncVariantId, item.quantity - 1);
+        window.resetCheckoutState?.();
         window.renderCart();
       }
     });
@@ -85,6 +91,7 @@ window.renderCart = function() {
       const item = Cart.getCart().find(i => String(i.syncVariantId) === svid);
       if (item) {
         Cart.updateQuantity(item.syncVariantId, item.quantity + 1);
+        window.resetCheckoutState?.();
         window.renderCart();
       }
     });
@@ -96,6 +103,7 @@ window.renderCart = function() {
       const svid = btn.dataset.syncVariantId;
       const item = Cart.getCart().find(i => String(i.syncVariantId) === svid);
       if (item) Cart.removeItem(item.syncVariantId);
+      window.resetCheckoutState?.();
       window.renderCart();
     });
   });

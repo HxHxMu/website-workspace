@@ -11,7 +11,6 @@
 </head>
 <body class="bg-[#e9e9e9] text-[#050505]">
 
-<!-- Header -->
 <header class="lebe-header px-6 md:px-10">
   <nav class="lebe-shell h-full flex items-center justify-between">
     <a href="/" class="lebe-brand">lebe.</a>
@@ -27,8 +26,7 @@
 
 <main class="bg-[#e9e9e9] text-[#050505]">
   <section class="lebe-shell px-0 pb-20 pt-32 md:pb-28 md:pt-40">
-    <!-- Header -->
-    <div class="flex flex-col justify-between gap-6 border-b border-[#050505] pb-6 md:flex-row md:items-end">
+    <div id="bag-hero" class="flex flex-col justify-between gap-6 border-b border-[#050505] pb-6 md:flex-row md:items-end">
       <div>
         <p class="lebe-kicker mb-3">shopping bag</p>
         <h1 class="font-serif text-[32px] text-[#050505]">Bag.</h1>
@@ -38,7 +36,18 @@
       </a>
     </div>
 
-    <!-- Empty State -->
+    <div id="checkout-hero" class="hidden border-b border-[#050505] pb-6">
+      <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p id="checkout-step-kicker" class="lebe-kicker mb-4">STEP 1 OF 3</p>
+          <h1 id="checkout-step-title" class="font-serif text-[56px] leading-[0.94] tracking-[-0.04em] md:text-[72px]">Shipping Details.</h1>
+        </div>
+        <a href="/" class="w-fit text-[11px] font-bold uppercase tracking-[0.28em] underline underline-offset-4 transition hover:text-[#050505]/55">
+          CONTINUE SHOPPING
+        </a>
+      </div>
+    </div>
+
     <div id="cart-empty" class="flex min-h-[42vh] flex-col items-center justify-center text-center">
       <p class="text-[11px] font-bold uppercase tracking-[0.42em] text-[#050505]/45">Your bag is empty.</p>
       <a href="/" class="mt-8 border border-[#050505] px-7 py-4 text-[11px] font-bold uppercase tracking-[0.28em] transition hover:bg-[#050505] hover:text-white">
@@ -46,58 +55,170 @@
       </a>
     </div>
 
-    <!-- Cart Content -->
     <div id="cart-content" class="hidden">
-      <div class="grid gap-10 py-12 md:grid-cols-[1fr_0.42fr]">
-        <!-- Cart Items -->
-        <div id="cart-items" class="space-y-6">
-          <!-- Items rendered by JS -->
+      <div class="grid gap-10 py-12 md:grid-cols-[minmax(0,1fr)_420px] md:items-start">
+        <div>
+          <div id="cart-items-panel">
+            <div id="cart-items" class="space-y-6"></div>
+          </div>
+
+          <div id="checkout-panel" class="hidden max-w-[680px]">
+            <div id="shipping-step" class="space-y-8">
+              <div class="grid gap-6 md:grid-cols-2">
+                <div>
+                  <label for="c-name" class="mb-4 block text-[11px] font-bold uppercase tracking-[0.34em] text-[#050505]/50">Name</label>
+                  <input type="text" id="c-name" class="h-12 w-full border border-[#050505]/15 bg-white px-4 text-sm outline-none transition focus:border-[#050505]" />
+                </div>
+                <div>
+                  <label for="c-email" class="mb-4 block text-[11px] font-bold uppercase tracking-[0.34em] text-[#050505]/50">Email</label>
+                  <input type="email" id="c-email" class="h-12 w-full border border-[#050505]/15 bg-white px-4 text-sm outline-none transition focus:border-[#050505]" />
+                </div>
+              </div>
+
+              <div>
+                <label for="c-address1" class="mb-4 block text-[11px] font-bold uppercase tracking-[0.34em] text-[#050505]/50">Address</label>
+                <input type="text" id="c-address1" class="h-12 w-full border border-[#050505]/15 bg-white px-4 text-sm outline-none transition focus:border-[#050505]" />
+              </div>
+
+              <div class="grid gap-6 md:grid-cols-2">
+                <div>
+                  <label for="c-city" class="mb-4 block text-[11px] font-bold uppercase tracking-[0.34em] text-[#050505]/50">City</label>
+                  <input type="text" id="c-city" class="h-12 w-full border border-[#050505]/15 bg-white px-4 text-sm outline-none transition focus:border-[#050505]" />
+                </div>
+                <div>
+                  <label for="c-state" class="mb-4 block text-[11px] font-bold uppercase tracking-[0.34em] text-[#050505]/50">State</label>
+                  <input type="text" id="c-state" maxlength="2" class="h-12 w-full border border-[#050505]/15 bg-white px-4 text-sm uppercase outline-none transition focus:border-[#050505]" />
+                </div>
+              </div>
+
+              <div class="grid gap-6 md:grid-cols-2">
+                <div>
+                  <label for="c-zip" class="mb-4 block text-[11px] font-bold uppercase tracking-[0.34em] text-[#050505]/50">ZIP Code</label>
+                  <input type="text" id="c-zip" class="h-12 w-full border border-[#050505]/15 bg-white px-4 text-sm outline-none transition focus:border-[#050505]" />
+                </div>
+                <div>
+                  <label for="c-country" class="mb-4 block text-[11px] font-bold uppercase tracking-[0.34em] text-[#050505]/50">Country</label>
+                  <input type="text" id="c-country" value="US" class="h-12 w-full border border-[#050505]/15 bg-white px-4 text-sm uppercase outline-none transition focus:border-[#050505]" />
+                </div>
+              </div>
+
+              <div id="zip-status-box" class="border border-[#050505]/12 bg-white px-5 py-6 text-[13px] leading-7 text-[#050505]/60">
+                ZIP verification runs quietly after entry. We’ll confirm rates once your address is ready.
+              </div>
+
+              <button type="button" id="continue-to-methods-btn" class="inline-flex min-h-12 items-center justify-center bg-[#050505] px-8 py-4 text-[11px] font-bold uppercase tracking-[0.28em] text-white transition hover:bg-[#050505]/80 disabled:cursor-not-allowed disabled:opacity-40">
+                Continue to Payment
+              </button>
+            </div>
+
+            <div id="shipping-method-step" class="hidden space-y-8">
+              <div class="space-y-5 text-[18px] leading-8 text-[#050505]/70">
+                <p>Choose how quickly you’d like your order delivered once it ships.</p>
+                <p>Made-to-order items still require fulfillment time. Faster shipping speeds up delivery after production, not the production timeline itself.</p>
+              </div>
+
+              <div id="shipping-method-options" class="space-y-4"></div>
+
+              <div id="shipping-loading-box" class="hidden border border-[#050505]/12 bg-white px-5 py-6 text-[13px] leading-7 text-[#050505]/60">
+                Calculating Printful rates for your address.
+              </div>
+
+              <div id="shipping-error-box" class="hidden border border-[#050505]/12 bg-white px-5 py-6 text-[13px] leading-7 text-[#050505]/60"></div>
+
+              <div class="flex flex-wrap items-center gap-6">
+                <button type="button" id="continue-to-payment-btn" class="inline-flex min-h-12 items-center justify-center bg-[#050505] px-8 py-4 text-[11px] font-bold uppercase tracking-[0.28em] text-white transition hover:bg-[#050505]/80 disabled:cursor-not-allowed disabled:opacity-40">
+                  Continue to Payment
+                </button>
+                <button type="button" id="edit-address-btn" class="text-[11px] font-bold uppercase tracking-[0.28em] text-[#050505]/50 underline underline-offset-4 transition hover:text-[#050505]">
+                  Edit Shipping Address
+                </button>
+              </div>
+            </div>
+
+            <div id="payment-step" class="hidden space-y-8">
+              <div id="selected-shipping-card" class="border border-[#050505] bg-[#f5efe8] px-6 py-6 md:px-7">
+                <div class="mb-3 flex items-start justify-between gap-6">
+                  <p class="text-[11px] font-bold uppercase tracking-[0.34em] text-[#050505]/50">Selected Shipping</p>
+                  <p id="selected-shipping-price" class="text-[18px] font-semibold">$0.00</p>
+                </div>
+                <p id="selected-shipping-label" class="max-w-[520px] font-serif text-[30px] leading-[1.08] tracking-[-0.03em]">Express shipping · 2–3 business days after fulfillment</p>
+              </div>
+
+              <form id="payment-form" class="space-y-8">
+                <div class="border border-[#050505]/12 bg-white px-6 py-6 md:px-7">
+                  <p class="mb-5 text-[11px] font-bold uppercase tracking-[0.34em] text-[#050505]/50">Stripe Payment</p>
+                  <p id="payment-loading" class="hidden text-sm text-[#050505]/55">Loading payment form...</p>
+                  <div id="payment-element"></div>
+                </div>
+
+                <div id="checkout-error" class="hidden border border-[#050505]/12 bg-white px-5 py-5 text-[13px] leading-7 text-[#050505]/60"></div>
+
+                <div class="space-y-3 text-[13px] leading-8 text-[#050505]/60">
+                  <p class="flex items-center gap-3">
+                    <svg class="h-4 w-4 shrink-0" stroke="currentColor" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                    Secure checkout.
+                  </p>
+                  <p>Made-to-order. Ships in ~14 days.</p>
+                  <p>You’ll receive tracking once your order ships.</p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-6">
+                  <button type="submit" id="place-order-btn" class="inline-flex min-h-12 items-center justify-center bg-[#050505] px-8 py-4 text-[11px] font-bold uppercase tracking-[0.28em] text-white transition hover:bg-[#050505]/80 disabled:cursor-not-allowed disabled:opacity-40">
+                    Place Order
+                  </button>
+                  <button type="button" id="edit-shipping-btn" class="text-[11px] font-bold uppercase tracking-[0.28em] text-[#050505]/50 underline underline-offset-4 transition hover:text-[#050505]">
+                    Edit Shipping
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
 
-        <!-- Order Summary Sidebar -->
-        <aside class="h-fit border border-[#050505] p-6 md:sticky md:top-28">
-          <h2 class="border-b border-[#050505] pb-4 text-sm font-bold uppercase tracking-[0.28em]">order summary</h2>
-          <div class="space-y-3 border-b border-[#050505]/15 py-5 text-sm">
-            <div class="flex justify-between">
-              <span class="text-[#050505]/60">subtotal</span>
-              <span id="cart-subtotal" class="font-semibold">$0.</span>
+        <aside class="border border-[#050505] p-7 md:sticky md:top-28">
+          <h2 class="border-b border-[#050505] pb-5 text-sm font-bold uppercase tracking-[0.28em]">Order Summary</h2>
+
+          <div class="space-y-4 border-b border-[#050505]/12 py-6 text-[16px] leading-8">
+            <div class="flex justify-between gap-6">
+              <span class="text-[#050505]/60">Subtotal</span>
+              <span id="cart-subtotal" class="font-semibold">$0.00</span>
             </div>
-            <div class="flex justify-between">
-              <span class="text-[#050505]/60">shipping</span>
-              <span class="font-semibold">Calculated</span>
+            <div class="flex justify-between gap-6">
+              <span class="text-[#050505]/60">Shipping</span>
+              <span id="cart-shipping" class="font-semibold">Calculated</span>
             </div>
-            <div class="flex justify-between">
-              <span class="text-[#050505]/60">estimated tax</span>
-              <span class="font-semibold">Calculated</span>
+            <div class="flex justify-between gap-6">
+              <span class="text-[#050505]/60">Estimated tax</span>
+              <span id="cart-tax" class="font-semibold">Calculated</span>
             </div>
           </div>
 
-          <!-- Promo Code -->
-          <label for="promo" class="mt-5 block text-[11px] font-bold uppercase tracking-[0.28em] text-[#050505]/50">
-            Code.
-          </label>
-          <div class="mt-3 flex border border-[#050505]">
-            <input id="promo" type="text" placeholder="code" class="min-w-0 flex-1 bg-white px-4 py-3 text-sm uppercase outline-none placeholder:text-[#050505]/30" />
-            <button type="button" class="border-l border-[#050505] px-4 text-[11px] font-bold uppercase tracking-[0.22em] transition hover:bg-[#050505] hover:text-white">
-              apply.
-            </button>
+          <div id="summary-copy" class="border-b border-[#050505]/12 py-6 text-[13px] leading-8 text-[#050505]/60">
+            Shipping and tax are calculated after your address is verified.
           </div>
 
-          <p class="mt-5 text-[11px] text-[#050505]/60">Made-to-order. Ships in ~14 days.</p>
+          <div class="cart-only">
+            <label for="promo" class="mt-6 block text-[11px] font-bold uppercase tracking-[0.28em] text-[#050505]/50">Code.</label>
+            <div class="mt-3 flex border border-[#050505]">
+              <input id="promo" type="text" placeholder="code" class="min-w-0 flex-1 bg-white px-4 py-3 text-sm uppercase outline-none placeholder:text-[#050505]/30" />
+              <button type="button" class="border-l border-[#050505] px-4 text-[11px] font-bold uppercase tracking-[0.22em] transition hover:bg-[#050505] hover:text-white">
+                apply.
+              </button>
+            </div>
 
-          <!-- Total -->
-          <div class="mt-6 flex justify-between text-lg font-bold uppercase tracking-[0.12em]">
-            <span>total</span>
-            <span id="cart-total">$0.</span>
+            <p class="mt-5 text-[11px] text-[#050505]/60">Made-to-order. Ships in ~14 days.</p>
           </div>
 
-          <!-- Checkout Button -->
-          <button id="checkout-toggle" class="mt-6 h-12 w-full bg-[#050505] px-7 py-0 text-[11px] font-bold uppercase tracking-[0.28em] text-white transition hover:bg-[#050505]/80">
+          <div class="mt-6 flex justify-between text-[20px] font-bold uppercase tracking-[0.12em]">
+            <span>Total</span>
+            <span id="cart-total">$0.00</span>
+          </div>
+
+          <button id="checkout-toggle" class="cart-only mt-6 inline-flex min-h-12 w-full items-center justify-center bg-[#050505] px-7 py-4 text-[11px] font-bold uppercase tracking-[0.28em] text-white transition hover:bg-[#050505]/80">
             buy.
           </button>
 
-          <!-- Security Info -->
-          <div class="mt-6 space-y-3 border-t border-[#050505]/15 pt-5 text-[11px] leading-5 text-[#050505]/60">
+          <div class="cart-only mt-6 space-y-3 border-t border-[#050505]/15 pt-5 text-[11px] leading-5 text-[#050505]/60">
             <p class="flex items-center gap-2">
               <svg class="h-4 w-4" stroke="currentColor" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
               Secure checkout.
@@ -108,92 +229,23 @@
       </div>
     </div>
 
-    <!-- Checkout Form Section (hidden by default) -->
-    <div id="checkout-form-section" class="hidden max-w-2xl">
-      <h2 class="mt-12 mb-6 font-serif text-2xl border-b border-[#050505] pb-4">Shipping Details.</h2>
-      <form id="checkout-form" class="space-y-6">
-        <!-- Name -->
-        <div>
-          <label for="c-name" class="block text-[11px] font-bold uppercase tracking-[0.28em] text-[#050505]/50 mb-2">Name</label>
-          <input type="text" id="c-name" required class="w-full border border-[#050505] px-4 py-3 text-sm bg-white outline-none focus:bg-[#050505]/5" />
+    <div id="order-confirmation" class="hidden min-h-[70vh] items-center justify-center pt-8 text-center">
+      <div class="mx-auto max-w-[620px]">
+        <div class="mx-auto mb-8 flex h-[58px] w-[58px] items-center justify-center rounded-full border border-[#050505]">
+          <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M5 12.5l4.2 4.2L19 7.2" /></svg>
         </div>
-
-        <!-- Email -->
-        <div>
-          <label for="c-email" class="block text-[11px] font-bold uppercase tracking-[0.28em] text-[#050505]/50 mb-2">Email</label>
-          <input type="email" id="c-email" required class="w-full border border-[#050505] px-4 py-3 text-sm bg-white outline-none focus:bg-[#050505]/5" />
-        </div>
-
-        <!-- Address -->
-        <div>
-          <label for="c-address1" class="block text-[11px] font-bold uppercase tracking-[0.28em] text-[#050505]/50 mb-2">Address</label>
-          <input type="text" id="c-address1" required class="w-full border border-[#050505] px-4 py-3 text-sm bg-white outline-none focus:bg-[#050505]/5" />
-        </div>
-
-        <!-- City and State -->
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label for="c-city" class="block text-[11px] font-bold uppercase tracking-[0.28em] text-[#050505]/50 mb-2">City</label>
-            <input type="text" id="c-city" required class="w-full border border-[#050505] px-4 py-3 text-sm bg-white outline-none focus:bg-[#050505]/5" />
-          </div>
-          <div>
-            <label for="c-state" class="block text-[11px] font-bold uppercase tracking-[0.28em] text-[#050505]/50 mb-2">State</label>
-            <input type="text" id="c-state" required maxlength="2" placeholder="CA" class="w-full border border-[#050505] px-4 py-3 text-sm bg-white outline-none focus:bg-[#050505]/5 uppercase" />
-          </div>
-        </div>
-
-        <!-- ZIP -->
-        <div>
-          <label for="c-zip" class="block text-[11px] font-bold uppercase tracking-[0.28em] text-[#050505]/50 mb-2">ZIP Code</label>
-          <div class="flex gap-2">
-            <input type="text" id="c-zip" required class="flex-1 border border-[#050505] px-4 py-3 text-sm bg-white outline-none focus:bg-[#050505]/5" />
-            <button type="button" id="verify-zip" class="px-6 py-3 border border-[#050505] text-[11px] font-bold uppercase tracking-[0.22em] transition hover:bg-[#050505] hover:text-white">
-              verify.
-            </button>
-          </div>
-          <p id="zip-status" class="text-[11px] mt-2"></p>
-        </div>
-
-        <!-- Country -->
-        <div>
-          <label for="c-country" class="block text-[11px] font-bold uppercase tracking-[0.28em] text-[#050505]/50 mb-2">Country</label>
-          <input type="text" id="c-country" value="US" required class="w-full border border-[#050505] px-4 py-3 text-sm bg-white outline-none focus:bg-[#050505]/5 uppercase" />
-        </div>
-
-        <!-- Payment -->
-        <div>
-          <p class="mb-3 text-[11px] font-bold uppercase tracking-[0.28em] text-[#050505]/50">Payment</p>
-          <p id="payment-loading" class="hidden text-sm text-[#050505]/50">Loading payment form...</p>
-          <div id="payment-element"></div>
-        </div>
-
-        <!-- Submit -->
-        <button type="submit" id="place-order-btn" class="mt-8 w-full bg-[#050505] px-7 py-4 text-[11px] font-bold uppercase tracking-[0.28em] text-white transition hover:bg-[#050505]/80 disabled:opacity-40 disabled:cursor-not-allowed">
-          Place Order
-        </button>
-
-        <!-- Error -->
-        <p id="checkout-error" class="hidden text-red-600 text-sm text-center"></p>
-      </form>
-    </div>
-
-    <!-- Order Confirmation -->
-    <div id="order-confirmation" class="hidden max-w-2xl mt-12">
-      <div class="border-t border-[#050505] pt-12 text-center">
-        <p class="text-[11px] font-bold uppercase tracking-[0.42em] text-[#050505]/50 mb-4">✓ success</p>
-        <h2 class="font-serif text-4xl mb-6">Order placed.</h2>
-        <div class="space-y-3 text-sm text-[#050505]/65 mb-8">
-          <p>Order ID: <span id="confirm-order-id" class="font-mono font-semibold text-[#050505]"></span></p>
-          <p>You'll receive a confirmation email shortly with tracking information.</p>
-        </div>
-        <a href="/" class="inline-block border border-[#050505] px-7 py-4 text-[11px] font-bold uppercase tracking-[0.28em] transition hover:bg-[#050505] hover:text-white">
-          Continue Shopping
+        <p class="mb-5 text-[11px] font-bold uppercase tracking-[0.42em] text-[#050505]/50">Order <span id="confirm-order-id-kicker">#LEBE-2026-000</span></p>
+        <h2 class="font-serif text-[60px] leading-[0.95] tracking-[-0.05em] md:text-[72px]">Order placed.</h2>
+        <p class="mx-auto mt-8 max-w-[620px] text-[18px] leading-10 text-[#050505]/65">
+          Your confirmation has been sent by email. We’ll send tracking once your made-to-order piece ships.
+        </p>
+        <a href="/" class="mt-12 inline-flex min-h-12 items-center justify-center bg-[#050505] px-8 py-4 text-[11px] font-bold uppercase tracking-[0.28em] text-white transition hover:bg-[#050505]/80">
+          Return to shopping
         </a>
       </div>
     </div>
   </section>
 
-  <!-- Footer -->
   <footer class="border-t border-[#050505]/20 bg-[#e9e9e9] px-6 md:px-10 mt-12">
     <div class="mx-auto flex max-w-7xl flex-col items-center justify-center gap-5 py-14 text-center md:py-16">
       <p class="font-serif text-lg text-[#050505]">Made-to-order. Ships in ~14 days.</p>
@@ -221,96 +273,388 @@
 document.addEventListener('DOMContentLoaded', () => {
   window.renderCart?.();
 
+  const state = {
+    mode: 'cart',
+    step: 1,
+    verifiedAddress: null,
+    shippingRates: [],
+    selectedShipping: null,
+    paymentSetup: null,
+  };
+
   let stripeInstance = null;
   let stripeElements = null;
+  let paymentElementInstance = null;
 
-  // ZIP verification — validates against zippopotam and derives state
-  // Returns {city, state} on success, null on failure
-  async function verifyZip(zip) {
-    const statusEl = document.getElementById('zip-status');
-    const cleanZip = (zip || '').trim();
+  const refs = {
+    bagHero: document.getElementById('bag-hero'),
+    checkoutHero: document.getElementById('checkout-hero'),
+    stepKicker: document.getElementById('checkout-step-kicker'),
+    stepTitle: document.getElementById('checkout-step-title'),
+    cartItemsPanel: document.getElementById('cart-items-panel'),
+    checkoutPanel: document.getElementById('checkout-panel'),
+    cartContent: document.getElementById('cart-content'),
+    emptyState: document.getElementById('cart-empty'),
+    shippingStep: document.getElementById('shipping-step'),
+    shippingMethodStep: document.getElementById('shipping-method-step'),
+    paymentStep: document.getElementById('payment-step'),
+    checkoutToggle: document.getElementById('checkout-toggle'),
+    shippingOptions: document.getElementById('shipping-method-options'),
+    shippingLoadingBox: document.getElementById('shipping-loading-box'),
+    shippingErrorBox: document.getElementById('shipping-error-box'),
+    continueToMethodsBtn: document.getElementById('continue-to-methods-btn'),
+    continueToPaymentBtn: document.getElementById('continue-to-payment-btn'),
+    editAddressBtn: document.getElementById('edit-address-btn'),
+    editShippingBtn: document.getElementById('edit-shipping-btn'),
+    paymentForm: document.getElementById('payment-form'),
+    paymentLoading: document.getElementById('payment-loading'),
+    paymentElement: document.getElementById('payment-element'),
+    checkoutError: document.getElementById('checkout-error'),
+    placeOrderBtn: document.getElementById('place-order-btn'),
+    summaryCopy: document.getElementById('summary-copy'),
+    subtotal: document.getElementById('cart-subtotal'),
+    shipping: document.getElementById('cart-shipping'),
+    tax: document.getElementById('cart-tax'),
+    total: document.getElementById('cart-total'),
+    promoSections: Array.from(document.querySelectorAll('.cart-only')),
+    selectedShippingLabel: document.getElementById('selected-shipping-label'),
+    selectedShippingPrice: document.getElementById('selected-shipping-price'),
+    zipStatusBox: document.getElementById('zip-status-box'),
+    orderConfirmation: document.getElementById('order-confirmation'),
+    confirmOrderIdKicker: document.getElementById('confirm-order-id-kicker'),
+    name: document.getElementById('c-name'),
+    email: document.getElementById('c-email'),
+    address1: document.getElementById('c-address1'),
+    city: document.getElementById('c-city'),
+    state: document.getElementById('c-state'),
+    zip: document.getElementById('c-zip'),
+    country: document.getElementById('c-country'),
+  };
 
+  const stepTitles = {
+    1: 'Shipping Details.',
+    2: 'Shipping Method.',
+    3: 'Payment Details.',
+  };
+
+  function formatMoney(value) {
+    const amount = Number(value) || 0;
+    return `$${amount.toFixed(2)}`;
+  }
+
+  function formatOrderId(id) {
+    const raw = String(id || 'LEBE-2026-000');
+    return raw.startsWith('#') ? raw : `#${raw}`;
+  }
+
+  function formatTransitLabel(rate) {
+    const min = Number(rate.minDeliveryDays);
+    const max = Number(rate.maxDeliveryDays);
+
+    if (Number.isFinite(min) && Number.isFinite(max)) {
+      if (min === max) {
+        return `${min} business day${min === 1 ? '' : 's'} after fulfillment`;
+      }
+      return `${min}–${max} business days after fulfillment`;
+    }
+
+    return 'Fastest available delivery after fulfillment';
+  }
+
+  function getSummaryNote() {
+    if (state.mode === 'cart') {
+      return 'Shipping and tax are calculated after your address is verified.';
+    }
+
+    if (state.step === 1) {
+      return 'Shipping and tax are calculated after your address is verified.';
+    }
+
+    if (state.step === 2) {
+      return 'Shipping rates are calculated live based on your address and items. Fulfillment typically takes around 2–5 business days before shipment. You’ll receive tracking as soon as your order ships.';
+    }
+
+    return 'Made-to-order. Ships in ~14 days. You’ll receive tracking once your order ships.';
+  }
+
+  function resetCartSummary() {
+    const subtotal = Cart.getSubtotal();
+    refs.subtotal.textContent = formatMoney(subtotal);
+    refs.shipping.textContent = 'Calculated';
+    refs.tax.textContent = 'Calculated';
+    refs.total.textContent = formatMoney(subtotal);
+    refs.summaryCopy.textContent = getSummaryNote();
+  }
+
+  function applyCalculatedSummary(summary) {
+    refs.subtotal.textContent = formatMoney(summary.subtotal);
+    refs.shipping.textContent = formatMoney(summary.shipping);
+    refs.tax.textContent = formatMoney(summary.tax);
+    refs.total.textContent = formatMoney(summary.total);
+    refs.summaryCopy.textContent = getSummaryNote();
+  }
+
+  function setCheckoutMode(mode) {
+    state.mode = mode;
+
+    const isCheckout = mode === 'checkout';
+    const isSuccess = mode === 'success';
+
+    refs.bagHero.classList.toggle('hidden', isCheckout || isSuccess);
+    refs.checkoutHero.classList.toggle('hidden', !isCheckout);
+    refs.cartItemsPanel.classList.toggle('hidden', isCheckout || isSuccess);
+    refs.checkoutPanel.classList.toggle('hidden', !isCheckout);
+    refs.cartContent.classList.toggle('hidden', isSuccess);
+    refs.orderConfirmation.classList.toggle('hidden', !isSuccess);
+    refs.orderConfirmation.classList.toggle('flex', isSuccess);
+
+    refs.promoSections.forEach((section) => {
+      section.classList.toggle('hidden', isCheckout || isSuccess);
+    });
+
+    refs.summaryCopy.textContent = getSummaryNote();
+  }
+
+  function setStep(step) {
+    state.step = step;
+    refs.stepKicker.textContent = `STEP ${step} OF 3`;
+    refs.stepTitle.textContent = stepTitles[step];
+
+    refs.shippingStep.classList.toggle('hidden', step !== 1);
+    refs.shippingMethodStep.classList.toggle('hidden', step !== 2);
+    refs.paymentStep.classList.toggle('hidden', step !== 3);
+    refs.summaryCopy.textContent = getSummaryNote();
+  }
+
+  function setShippingFormDisabled(disabled) {
+    [refs.name, refs.email, refs.address1, refs.city, refs.state, refs.zip, refs.country].forEach((input) => {
+      input.disabled = disabled;
+    });
+    refs.continueToMethodsBtn.disabled = disabled;
+    refs.continueToMethodsBtn.textContent = disabled ? 'Calculating...' : 'Continue to Payment';
+  }
+
+  function showStep2State({ loading = false, error = '' } = {}) {
+    refs.shippingLoadingBox.classList.toggle('hidden', !loading);
+    refs.shippingErrorBox.classList.toggle('hidden', !error);
+    refs.shippingErrorBox.textContent = error;
+  }
+
+  function clearPaymentElement() {
+    if (paymentElementInstance) {
+      paymentElementInstance.unmount();
+      paymentElementInstance = null;
+    }
+
+    stripeElements = null;
+    refs.paymentElement.innerHTML = '';
+  }
+
+  function getAddressFromForm() {
+    return {
+      name: refs.name.value.trim(),
+      email: refs.email.value.trim(),
+      address1: refs.address1.value.trim(),
+      city: refs.city.value.trim(),
+      state: refs.state.value.trim(),
+      zip: refs.zip.value.trim(),
+      country: refs.country.value.trim() || 'US',
+      phone: '',
+    };
+  }
+
+  async function verifyZip(zipValue) {
+    const cleanZip = (zipValue || '').trim();
     if (!cleanZip) {
-      statusEl.textContent = '❌ Enter a ZIP code';
-      statusEl.className = 'text-[11px] mt-2 text-red-600';
+      refs.zipStatusBox.textContent = 'Please enter your ZIP code so we can verify your address and load rates.';
       return null;
     }
 
     try {
       const response = await fetch(`https://api.zippopotam.us/us/${encodeURIComponent(cleanZip)}`);
       if (!response.ok) {
-        statusEl.textContent = '❌ ZIP code not found';
-        statusEl.className = 'text-[11px] mt-2 text-red-600';
+        refs.zipStatusBox.textContent = 'We could not verify that ZIP code. Please check it and try again.';
         return null;
       }
+
       const data = await response.json();
-      if (!data.places || data.places.length === 0) {
-        statusEl.textContent = '❌ ZIP code not found';
-        statusEl.className = 'text-[11px] mt-2 text-red-600';
+      const place = data?.places?.[0];
+      if (!place) {
+        refs.zipStatusBox.textContent = 'We could not verify that ZIP code. Please check it and try again.';
         return null;
       }
 
-      const place = data.places[0];
-      const city = place['place name'];
-      const state = place['state abbreviation'];
+      refs.city.value = place['place name'];
+      refs.state.value = place['state abbreviation'];
+      refs.zipStatusBox.textContent = `ZIP verified for ${place['place name']}, ${place['state abbreviation']}. We’ll confirm your available rates next.`;
 
-      // Only use verified values, never user-edited fields
-      const result = { city, state, zip: cleanZip };
-
-      // Update form display but these are not used for submission
-      document.getElementById('c-city').value = city;
-      document.getElementById('c-state').value = state;
-      statusEl.textContent = `✓ ${city}, ${state}`;
-      statusEl.className = 'text-[11px] mt-2 text-green-600';
-
-      return result;
-    } catch (e) {
-      statusEl.textContent = '❌ Could not verify ZIP — check your connection';
-      statusEl.className = 'text-[11px] mt-2 text-red-600';
+      return {
+        city: place['place name'],
+        state: place['state abbreviation'],
+        zip: cleanZip,
+      };
+    } catch (error) {
+      refs.zipStatusBox.textContent = 'ZIP verification is unavailable right now. Please check your connection and try again.';
       return null;
     }
   }
 
-  // Clear city/state display when ZIP is edited
-  document.getElementById('c-zip')?.addEventListener('input', () => {
-    document.getElementById('c-city').value = '';
-    document.getElementById('c-state').value = '';
-    const statusEl = document.getElementById('zip-status');
-    if (statusEl) { statusEl.textContent = ''; statusEl.className = 'text-[11px] mt-2'; }
-  });
+  function resetPreparedCheckout() {
+    state.shippingRates = [];
+    state.selectedShipping = null;
+    state.paymentSetup = null;
+    clearPaymentElement();
+    refs.checkoutError.classList.add('hidden');
+    refs.checkoutError.textContent = '';
+    refs.shippingOptions.innerHTML = '';
+    refs.selectedShippingLabel.textContent = 'Select a shipping method to continue.';
+    refs.selectedShippingPrice.textContent = formatMoney(0);
+    refs.continueToPaymentBtn.disabled = true;
+    resetCartSummary();
+  }
 
-  // Verify button is optional for UX, but verification is mandatory on submit
-  document.getElementById('verify-zip')?.addEventListener('click', async (e) => {
-    e.preventDefault();
-    const zip = document.getElementById('c-zip').value.trim();
-    await verifyZip(zip);
-  });
+  function resetCheckoutState() {
+    state.verifiedAddress = null;
+    resetPreparedCheckout();
+    setShippingFormDisabled(false);
+    setCheckoutMode('cart');
+    setStep(1);
+    refs.placeOrderBtn.disabled = false;
+    refs.placeOrderBtn.textContent = 'Place Order';
+  }
 
-  // Mount Stripe Payment Element when checkout form opens
-  async function mountPaymentElement() {
+  window.resetCheckoutState = resetCheckoutState;
+
+  async function fetchShippingRates(address) {
     const cart = Cart.getCart();
-    if (cart.length === 0) return;
+    const response = await fetch('/api/shipping-rates', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items: cart, address }),
+    });
 
-    const loadingEl = document.getElementById('payment-loading');
-    loadingEl.classList.remove('hidden');
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || 'We couldn’t load shipping options right now. Please try again.');
+    }
+
+    return Array.isArray(data.rates) ? data.rates : [];
+  }
+
+  function renderShippingRates() {
+    if (state.shippingRates.length === 0) {
+      refs.shippingOptions.innerHTML = '';
+      refs.continueToPaymentBtn.disabled = true;
+      return;
+    }
+
+    refs.shippingOptions.innerHTML = state.shippingRates.map((rate) => {
+      const isSelected = state.selectedShipping?.id === rate.id;
+      const borderClass = isSelected ? 'border-[#050505] bg-[#f5efe8]' : 'border-[#050505]/12 bg-white';
+      const indicator = isSelected
+        ? '<span class="mt-1.5 inline-block h-3.5 w-3.5 rounded-full bg-[#050505]"></span>'
+        : '<span class="mt-1.5 inline-block h-3.5 w-3.5 rounded-full border border-[#050505]/35 bg-transparent"></span>';
+
+      return `
+        <button
+          type="button"
+          class="shipping-rate-btn flex w-full items-start justify-between gap-6 border px-6 py-6 text-left transition hover:border-[#050505] ${borderClass}"
+          data-rate-id="${rate.id}"
+        >
+          <span class="flex items-start gap-4">
+            ${indicator}
+            <span>
+              <span class="block font-serif text-[30px] leading-[1.08] tracking-[-0.03em]">${rate.name}</span>
+              <span class="mt-3 block text-[13px] leading-7 text-[#050505]/60">${formatTransitLabel(rate)}</span>
+            </span>
+          </span>
+          <span class="shrink-0 text-[18px] font-semibold">${formatMoney(rate.rate)}</span>
+        </button>
+      `;
+    }).join('');
+
+    refs.shippingOptions.querySelectorAll('.shipping-rate-btn').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const rate = state.shippingRates.find((item) => item.id === button.dataset.rateId);
+        if (!rate) return;
+        state.selectedShipping = {
+          id: rate.id,
+          label: rate.name,
+          rate: rate.rate,
+          minDeliveryDays: rate.minDeliveryDays,
+          maxDeliveryDays: rate.maxDeliveryDays,
+        };
+        renderShippingRates();
+        await preparePaymentSetup();
+      });
+    });
+  }
+
+  async function preparePaymentSetup() {
+    if (!state.verifiedAddress || !state.selectedShipping) {
+      return;
+    }
+
+    refs.continueToPaymentBtn.disabled = true;
+    refs.continueToPaymentBtn.textContent = 'Calculating...';
+    showStep2State({ loading: true, error: '' });
+    refs.checkoutError.classList.add('hidden');
+    refs.checkoutError.textContent = '';
+    clearPaymentElement();
+    state.paymentSetup = null;
 
     try {
-      // Get publishable key from server
-      const configRes = await fetch('/api/stripe-config');
-      const { publishableKey } = await configRes.json();
-      stripeInstance = Stripe(publishableKey);
-
-      // Create PaymentIntent with server-side price calculation
-      const intentRes = await fetch('/api/stripe-intent', {
+      const response = await fetch('/api/stripe-intent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: cart })
+        body: JSON.stringify({
+          items: Cart.getCart(),
+          address: state.verifiedAddress,
+          shippingMethod: state.selectedShipping,
+        }),
       });
-      const intentData = await intentRes.json();
-      if (!intentRes.ok) throw new Error(intentData.error || 'Payment setup failed');
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'We couldn’t calculate this shipping method right now.');
+      }
+
+      state.paymentSetup = data;
+      applyCalculatedSummary(data);
+      refs.selectedShippingPrice.textContent = formatMoney(data.shipping);
+      refs.selectedShippingLabel.textContent = `${state.selectedShipping.label} · ${formatTransitLabel(state.selectedShipping)}`;
+      refs.continueToPaymentBtn.disabled = false;
+    } catch (error) {
+      showStep2State({ loading: false, error: `${error.message}\n\nThis shipping method is no longer available for your address or items.` });
+      resetCartSummary();
+      return;
+    }
+
+    showStep2State({ loading: false, error: '' });
+    refs.continueToPaymentBtn.textContent = 'Continue to Payment';
+  }
+
+  async function mountPaymentElement() {
+    if (!state.paymentSetup?.clientSecret) {
+      refs.checkoutError.textContent = 'Payment form not ready. Please select a shipping method again.';
+      refs.checkoutError.classList.remove('hidden');
+      return;
+    }
+
+    refs.paymentLoading.classList.remove('hidden');
+    refs.checkoutError.classList.add('hidden');
+
+    try {
+      if (!stripeInstance) {
+        const configResponse = await fetch('/api/stripe-config');
+        const configData = await configResponse.json();
+        stripeInstance = Stripe(configData.publishableKey);
+      }
+
+      clearPaymentElement();
 
       stripeElements = stripeInstance.elements({
-        clientSecret: intentData.clientSecret,
+        clientSecret: state.paymentSetup.clientSecret,
         appearance: {
           theme: 'stripe',
           variables: {
@@ -324,109 +668,182 @@ document.addEventListener('DOMContentLoaded', () => {
             spacingUnit: '4px'
           },
           rules: {
-            '.Input': { border: '1px solid #050505', boxShadow: 'none', padding: '12px 16px' },
+            '.Input': { border: '1px solid rgba(5, 5, 5, 0.14)', boxShadow: 'none', padding: '12px 16px' },
             '.Input:focus': { boxShadow: 'none', outline: 'none' },
             '.Label': { fontWeight: '700', fontSize: '11px', letterSpacing: '0.28em', textTransform: 'uppercase', color: 'rgba(5,5,5,0.5)', marginBottom: '8px' }
           }
         }
       });
 
-      const paymentElement = stripeElements.create('payment');
-      paymentElement.mount('#payment-element');
-    } catch (err) {
-      document.getElementById('checkout-error').textContent = err.message;
-      document.getElementById('checkout-error').classList.remove('hidden');
+      paymentElementInstance = stripeElements.create('payment');
+      paymentElementInstance.mount('#payment-element');
+    } catch (error) {
+      refs.checkoutError.textContent = error.message;
+      refs.checkoutError.classList.remove('hidden');
     } finally {
-      loadingEl.classList.add('hidden');
+      refs.paymentLoading.classList.add('hidden');
     }
   }
 
-  // Checkout toggle — mount payment element on first open
-  document.getElementById('checkout-toggle')?.addEventListener('click', () => {
-    const section = document.getElementById('checkout-form-section');
-    section.classList.toggle('hidden');
-    if (!section.classList.contains('hidden') && !stripeElements) {
-      mountPaymentElement();
-    }
-  });
-
-  // Form submission
-  document.getElementById('checkout-form')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const cart = Cart.getCart();
-    if (cart.length === 0) { alert('Cart is empty'); return; }
-
-    if (!stripeElements) {
-      document.getElementById('checkout-error').textContent = 'Payment form not ready — please wait a moment and try again.';
-      document.getElementById('checkout-error').classList.remove('hidden');
+  async function openShippingMethods() {
+    const address = getAddressFromForm();
+    if (!address.name || !address.email || !address.address1 || !address.zip) {
+      refs.zipStatusBox.textContent = 'Please fill out your name, email, address, and ZIP code before continuing.';
       return;
     }
 
-    const errorEl = document.getElementById('checkout-error');
-    errorEl.classList.add('hidden');
+    setShippingFormDisabled(true);
+    resetPreparedCheckout();
 
-    const submitBtn = document.getElementById('place-order-btn');
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Processing...';
+    const verified = await verifyZip(address.zip);
+    if (!verified) {
+      setShippingFormDisabled(false);
+      return;
+    }
+
+    state.verifiedAddress = {
+      ...address,
+      city: verified.city,
+      state: verified.state,
+      zip: verified.zip,
+    };
+
+    setStep(2);
+    showStep2State({ loading: true, error: '' });
 
     try {
-      // 1. Mandatory ZIP verification — state must match the verified ZIP
-      const zip = document.getElementById('c-zip').value.trim();
-      if (!zip) throw new Error('ZIP code is required');
-
-      const verified = await verifyZip(zip);
-      if (!verified) {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Place Order';
-        return;
+      const rates = await fetchShippingRates(state.verifiedAddress);
+      if (rates.length === 0) {
+        throw new Error('We couldn’t load shipping options right now. Please try again.');
       }
 
-      // 2. Confirm payment with Stripe
+      state.shippingRates = rates;
+      state.selectedShipping = {
+        id: rates[0].id,
+        label: rates[0].name,
+        rate: rates[0].rate,
+        minDeliveryDays: rates[0].minDeliveryDays,
+        maxDeliveryDays: rates[0].maxDeliveryDays,
+      };
+
+      renderShippingRates();
+      await preparePaymentSetup();
+    } catch (error) {
+      showStep2State({ loading: false, error: `${error.message}\n\nThis shipping method is no longer available for your address or items.` });
+    } finally {
+      setShippingFormDisabled(false);
+    }
+  }
+
+  refs.checkoutToggle?.addEventListener('click', () => {
+    setCheckoutMode('checkout');
+    setStep(1);
+    resetCartSummary();
+  });
+
+  refs.continueToMethodsBtn?.addEventListener('click', async (event) => {
+    event.preventDefault();
+    await openShippingMethods();
+  });
+
+  refs.continueToPaymentBtn?.addEventListener('click', async (event) => {
+    event.preventDefault();
+    if (!state.paymentSetup) return;
+    setStep(3);
+    await mountPaymentElement();
+  });
+
+  refs.editAddressBtn?.addEventListener('click', (event) => {
+    event.preventDefault();
+    state.verifiedAddress = null;
+    resetPreparedCheckout();
+    setStep(1);
+  });
+
+  refs.editShippingBtn?.addEventListener('click', async (event) => {
+    event.preventDefault();
+    clearPaymentElement();
+    refs.checkoutError.classList.add('hidden');
+    refs.checkoutError.textContent = '';
+    setStep(2);
+    renderShippingRates();
+    if (state.selectedShipping) {
+      await preparePaymentSetup();
+    }
+  });
+
+  refs.zip?.addEventListener('blur', async () => {
+    if (!refs.zip.value.trim()) return;
+    await verifyZip(refs.zip.value.trim());
+  });
+
+  refs.zip?.addEventListener('input', () => {
+    refs.city.value = '';
+    refs.state.value = '';
+    refs.zipStatusBox.textContent = 'ZIP verification runs quietly after entry. We’ll confirm rates once your address is ready.';
+    state.verifiedAddress = null;
+    resetPreparedCheckout();
+    if (state.mode === 'checkout' && state.step > 1) {
+      setStep(1);
+    }
+  });
+
+  refs.paymentForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    if (!stripeInstance || !stripeElements || !state.selectedShipping || !state.verifiedAddress) {
+      refs.checkoutError.textContent = 'Payment form not ready. Please review your shipping details and try again.';
+      refs.checkoutError.classList.remove('hidden');
+      return;
+    }
+
+    refs.checkoutError.classList.add('hidden');
+    refs.placeOrderBtn.disabled = true;
+    refs.placeOrderBtn.textContent = 'Processing...';
+
+    try {
       const { paymentIntent, error: stripeError } = await stripeInstance.confirmPayment({
         elements: stripeElements,
         redirect: 'if_required'
       });
 
       if (stripeError) throw new Error(stripeError.message);
-      if (paymentIntent.status !== 'succeeded') throw new Error('Payment was not completed — please try again.');
+      if (paymentIntent.status !== 'succeeded') {
+        throw new Error('Payment was not completed. Please try again.');
+      }
 
-      // 3. Create Printful order with verified address (server verifies payment before confirming)
-      // Always use ZIP-derived state, never user-edited fields, to prevent Printful mismatch errors
       const customer = {
-        name: document.getElementById('c-name').value.trim(),
-        email: document.getElementById('c-email').value.trim(),
-        address1: document.getElementById('c-address1').value.trim(),
-        city: verified.city,
-        state: verified.state,
-        zip: verified.zip,
-        country: document.getElementById('c-country').value.trim() || 'US',
-        phone: ''
+        ...state.verifiedAddress,
       };
 
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: cart, customer, paymentIntentId: paymentIntent.id })
+        body: JSON.stringify({
+          items: Cart.getCart(),
+          customer,
+          paymentIntentId: paymentIntent.id,
+          shippingMethod: state.selectedShipping,
+        })
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || 'Order failed');
+      if (!response.ok) {
+        throw new Error(data.message || 'Order failed');
+      }
 
-      // Success
       Cart.clearCart();
-      document.getElementById('checkout-form-section').classList.add('hidden');
-      document.getElementById('checkout-toggle').classList.add('hidden');
-      document.getElementById('cart-content').classList.add('hidden');
-      document.getElementById('order-confirmation').classList.remove('hidden');
-      document.getElementById('confirm-order-id').textContent = data.orderId;
+      refs.confirmOrderIdKicker.textContent = formatOrderId(data.orderId);
+      setCheckoutMode('success');
     } catch (error) {
-      errorEl.textContent = error.message;
-      errorEl.classList.remove('hidden');
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Place Order';
+      refs.checkoutError.textContent = error.message;
+      refs.checkoutError.classList.remove('hidden');
+      refs.placeOrderBtn.disabled = false;
+      refs.placeOrderBtn.textContent = 'Place Order';
     }
   });
+
+  resetCartSummary();
 });
 </script>
 

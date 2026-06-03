@@ -42,10 +42,10 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: 'Missing environment variables' });
   }
 
-  const { items, customer, paymentIntentId } = req.body;
+  const { items, customer, paymentIntentId, shippingMethod } = req.body;
 
-  if (!items || !customer || !paymentIntentId) {
-    return res.status(400).json({ error: 'Missing items, customer, or paymentIntentId' });
+  if (!items || !customer || !paymentIntentId || !shippingMethod || !shippingMethod.id) {
+    return res.status(400).json({ error: 'Missing items, customer, paymentIntentId, or shippingMethod' });
   }
 
   try {
@@ -81,7 +81,7 @@ module.exports = async (req, res) => {
         }
         return orderItem;
       }),
-      shipping: 'STANDARD',
+      shipping: shippingMethod.id,
       currency: 'USD',
       confirm: true
     };
