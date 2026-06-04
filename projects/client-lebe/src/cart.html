@@ -317,8 +317,39 @@
         <p class="mb-5 text-[11px] font-bold uppercase tracking-[0.42em] text-[#050505]/50">Order <span id="confirm-order-id-kicker">#LEBE-2026-000</span></p>
         <h2 class="font-serif text-[60px] leading-[0.95] tracking-[-0.05em] md:text-[72px]">Order placed.</h2>
         <p class="mx-auto mt-8 max-w-[620px] text-[18px] leading-10 text-[#050505]/65">
-          Your confirmation has been sent by email. We’ll send tracking once your made-to-order piece ships.
+          A confirmation email has been sent. Your made-to-order piece is now being produced.
         </p>
+        <div id="delivery-timeline" class="mx-auto mt-10 max-w-[500px] space-y-4 text-left">
+          <div class="flex gap-4">
+            <div class="flex flex-col items-center">
+              <div class="flex h-8 w-8 items-center justify-center rounded-full border border-[#050505] text-[11px] font-bold">✓</div>
+              <div class="h-8 w-0.5 bg-[#050505]/20"></div>
+            </div>
+            <div>
+              <p class="text-[12px] font-bold uppercase tracking-[0.1em] text-[#050505]">Order confirmed</p>
+              <p class="text-[13px] text-[#050505]/60">Payment processed, order submitted</p>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <div class="flex flex-col items-center">
+              <div class="flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#050505] text-[11px] font-bold">→</div>
+              <div class="h-8 w-0.5 bg-[#050505]/20"></div>
+            </div>
+            <div>
+              <p class="text-[12px] font-bold uppercase tracking-[0.1em] text-[#050505]">Production</p>
+              <p class="text-[13px] text-[#050505]/60">~7–14 days (made-to-order)</p>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <div class="flex flex-col items-center">
+              <div class="flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#050505]/40 text-[11px] font-bold text-[#050505]/40">→</div>
+            </div>
+            <div>
+              <p class="text-[12px] font-bold uppercase tracking-[0.1em] text-[#050505]/60">Shipping + tracking</p>
+              <p id="estimated-delivery" class="text-[13px] text-[#050505]/60">Expected delivery: <span class="font-bold">—</span></p>
+            </div>
+          </div>
+        </div>
         <a href="/" class="mt-12 inline-flex min-h-12 items-center justify-center bg-[#050505] px-8 py-4 text-[11px] font-bold uppercase tracking-[0.28em] text-white transition hover:bg-[#050505]/80">
           Return to shopping
         </a>
@@ -1176,6 +1207,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
       Cart.clearCart();
       refs.confirmOrderIdKicker.textContent = formatOrderId(data.orderId);
+
+      if (data.estimatedDelivery) {
+        try {
+          const deliveryDate = new Date(data.estimatedDelivery);
+          if (!isNaN(deliveryDate.getTime())) {
+            const formatted = deliveryDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            const deliveryEl = document.getElementById('estimated-delivery');
+            if (deliveryEl) {
+              const span = deliveryEl.querySelector('span');
+              if (span) {
+                span.textContent = formatted;
+              }
+            }
+          }
+        } catch (e) {
+          console.warn('Error formatting delivery date:', e);
+        }
+      }
+
       setCheckoutMode('success');
     } catch (error) {
       refs.checkoutError.textContent = error.message;
