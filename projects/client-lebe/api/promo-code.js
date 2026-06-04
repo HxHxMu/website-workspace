@@ -38,7 +38,7 @@ module.exports = async (req, res) => {
     });
 
     const promotionCode = result.data?.[0];
-    if (!promotionCode || !promotionCode.active || !promotionCode.coupon?.valid) {
+    if (!promotionCode || !promotionCode.active || !promotionCode.coupon) {
       return res.status(404).json({ error: 'This discount code is invalid or expired.' });
     }
 

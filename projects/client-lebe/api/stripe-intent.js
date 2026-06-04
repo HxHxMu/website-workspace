@@ -143,7 +143,7 @@ module.exports = async (req, res) => {
       });
 
       const promotionCode = promoResult.data?.[0];
-      if (!promotionCode || !promotionCode.active || !promotionCode.coupon?.valid) {
+      if (!promotionCode || !promotionCode.active || !promotionCode.coupon) {
         throw new Error('This discount code is invalid or expired.');
       }
 
