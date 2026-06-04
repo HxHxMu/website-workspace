@@ -4,9 +4,7 @@
   function getCart() {
     try {
       const cart = localStorage.getItem(CART_KEY);
-      console.log('Reading from localStorage:', CART_KEY, '=', cart);
       const parsed = cart ? JSON.parse(cart) : [];
-      console.log('Parsed cart:', parsed);
       return parsed;
     } catch (e) {
       console.error('Error reading cart:', e);

@@ -76,6 +76,11 @@
               </div>
 
               <div>
+                <label for="c-phone" class="mb-4 block text-[11px] font-bold uppercase tracking-[0.34em] text-[#050505]/50">Phone</label>
+                <input type="tel" id="c-phone" class="h-12 w-full border border-[#050505]/15 bg-white px-4 text-sm outline-none transition focus:border-[#050505]" />
+              </div>
+
+              <div>
                 <label for="c-address1" class="mb-4 block text-[11px] font-bold uppercase tracking-[0.34em] text-[#050505]/50">Address</label>
                 <input type="text" id="c-address1" class="h-12 w-full border border-[#050505]/15 bg-white px-4 text-sm outline-none transition focus:border-[#050505]" />
               </div>
@@ -146,9 +151,79 @@
 
               <form id="payment-form" class="space-y-8">
                 <div class="border border-[#050505]/12 bg-white px-6 py-6 md:px-7">
+                  <label class="flex items-center gap-3 text-[13px] font-medium text-[#050505]">
+                    <input type="checkbox" id="billing-same-as-shipping" checked class="h-4 w-4 border border-[#050505]/20 accent-[#050505]" />
+                    <span>Billing address same as shipping</span>
+                  </label>
+                  <p class="mt-3 text-[13px] leading-7 text-[#050505]/60">
+                    Uncheck this if the cardholder details or billing address are different from your shipping information.
+                  </p>
+
+                  <div id="billing-form" class="mt-6 hidden space-y-6">
+                    <div class="grid gap-6 md:grid-cols-2">
+                      <div>
+                        <label for="b-name" class="mb-4 block text-[11px] font-bold uppercase tracking-[0.34em] text-[#050505]/50">Billing Name</label>
+                        <input type="text" id="b-name" class="h-12 w-full border border-[#050505]/15 bg-white px-4 text-sm outline-none transition focus:border-[#050505]" />
+                      </div>
+                      <div>
+                        <label for="b-email" class="mb-4 block text-[11px] font-bold uppercase tracking-[0.34em] text-[#050505]/50">Billing Email</label>
+                        <input type="email" id="b-email" class="h-12 w-full border border-[#050505]/15 bg-white px-4 text-sm outline-none transition focus:border-[#050505]" />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label for="b-phone" class="mb-4 block text-[11px] font-bold uppercase tracking-[0.34em] text-[#050505]/50">Billing Phone</label>
+                      <input type="tel" id="b-phone" class="h-12 w-full border border-[#050505]/15 bg-white px-4 text-sm outline-none transition focus:border-[#050505]" />
+                    </div>
+
+                    <div>
+                      <label for="b-address1" class="mb-4 block text-[11px] font-bold uppercase tracking-[0.34em] text-[#050505]/50">Billing Address</label>
+                      <input type="text" id="b-address1" class="h-12 w-full border border-[#050505]/15 bg-white px-4 text-sm outline-none transition focus:border-[#050505]" />
+                    </div>
+
+                    <div class="grid gap-6 md:grid-cols-2">
+                      <div>
+                        <label for="b-city" class="mb-4 block text-[11px] font-bold uppercase tracking-[0.34em] text-[#050505]/50">Billing City</label>
+                        <input type="text" id="b-city" class="h-12 w-full border border-[#050505]/15 bg-white px-4 text-sm outline-none transition focus:border-[#050505]" />
+                      </div>
+                      <div>
+                        <label for="b-state" class="mb-4 block text-[11px] font-bold uppercase tracking-[0.34em] text-[#050505]/50">Billing State</label>
+                        <input type="text" id="b-state" maxlength="2" class="h-12 w-full border border-[#050505]/15 bg-white px-4 text-sm uppercase outline-none transition focus:border-[#050505]" />
+                      </div>
+                    </div>
+
+                    <div class="grid gap-6 md:grid-cols-2">
+                      <div>
+                        <label for="b-zip" class="mb-4 block text-[11px] font-bold uppercase tracking-[0.34em] text-[#050505]/50">Billing ZIP Code</label>
+                        <input type="text" id="b-zip" class="h-12 w-full border border-[#050505]/15 bg-white px-4 text-sm outline-none transition focus:border-[#050505]" />
+                      </div>
+                      <div>
+                        <label for="b-country" class="mb-4 block text-[11px] font-bold uppercase tracking-[0.34em] text-[#050505]/50">Billing Country</label>
+                        <input type="text" id="b-country" value="US" class="h-12 w-full border border-[#050505]/15 bg-white px-4 text-sm uppercase outline-none transition focus:border-[#050505]" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="border border-[#050505]/12 bg-white px-6 py-6 md:px-7">
                   <p class="mb-5 text-[11px] font-bold uppercase tracking-[0.34em] text-[#050505]/50">Stripe Payment</p>
                   <p id="payment-loading" class="hidden text-sm text-[#050505]/55">Loading payment form...</p>
-                  <div id="payment-element"></div>
+                  <div class="space-y-5">
+                    <div>
+                      <label class="mb-4 block text-[11px] font-bold uppercase tracking-[0.34em] text-[#050505]/50">Card Number</label>
+                      <div id="card-number-element" class="min-h-12 border border-[#050505]/15 bg-white px-4 py-[14px]"></div>
+                    </div>
+                    <div class="grid gap-5 md:grid-cols-2">
+                      <div>
+                        <label class="mb-4 block text-[11px] font-bold uppercase tracking-[0.34em] text-[#050505]/50">Expiration Date</label>
+                        <div id="card-expiry-element" class="min-h-12 border border-[#050505]/15 bg-white px-4 py-[14px]"></div>
+                      </div>
+                      <div>
+                        <label class="mb-4 block text-[11px] font-bold uppercase tracking-[0.34em] text-[#050505]/50">Security Code</label>
+                        <div id="card-cvc-element" class="min-h-12 border border-[#050505]/15 bg-white px-4 py-[14px]"></div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <div id="checkout-error" class="hidden border border-[#050505]/12 bg-white px-5 py-5 text-[13px] leading-7 text-[#050505]/60"></div>
@@ -214,7 +289,7 @@
             <span id="cart-total">$0.00</span>
           </div>
 
-          <button id="checkout-toggle" class="cart-only mt-6 inline-flex min-h-12 w-full items-center justify-center bg-[#050505] px-7 py-4 text-[11px] font-bold uppercase tracking-[0.28em] text-white transition hover:bg-[#050505]/80">
+          <button id="checkout-toggle" class="cart-only mt-6 inline-flex min-h-12 w-full items-center justify-center bg-[#050505] px-7 py-4 text-[11px] font-bold uppercase tracking-[0.28em] text-white transition hover:bg-[#050505]/80" data-cart-only>
             buy.
           </button>
 
@@ -284,7 +359,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let stripeInstance = null;
   let stripeElements = null;
-  let paymentElementInstance = null;
+  let cardNumberElementInstance = null;
+  let cardExpiryElementInstance = null;
+  let cardCvcElementInstance = null;
 
   const refs = {
     bagHero: document.getElementById('bag-hero'),
@@ -307,8 +384,12 @@ document.addEventListener('DOMContentLoaded', () => {
     editAddressBtn: document.getElementById('edit-address-btn'),
     editShippingBtn: document.getElementById('edit-shipping-btn'),
     paymentForm: document.getElementById('payment-form'),
+    billingSameAsShipping: document.getElementById('billing-same-as-shipping'),
+    billingForm: document.getElementById('billing-form'),
     paymentLoading: document.getElementById('payment-loading'),
-    paymentElement: document.getElementById('payment-element'),
+    cardNumberElement: document.getElementById('card-number-element'),
+    cardExpiryElement: document.getElementById('card-expiry-element'),
+    cardCvcElement: document.getElementById('card-cvc-element'),
     checkoutError: document.getElementById('checkout-error'),
     placeOrderBtn: document.getElementById('place-order-btn'),
     summaryCopy: document.getElementById('summary-copy'),
@@ -317,6 +398,7 @@ document.addEventListener('DOMContentLoaded', () => {
     tax: document.getElementById('cart-tax'),
     total: document.getElementById('cart-total'),
     promoSections: Array.from(document.querySelectorAll('.cart-only')),
+    cartOnlyElements: Array.from(document.querySelectorAll('[data-cart-only]')),
     selectedShippingLabel: document.getElementById('selected-shipping-label'),
     selectedShippingPrice: document.getElementById('selected-shipping-price'),
     zipStatusBox: document.getElementById('zip-status-box'),
@@ -324,11 +406,20 @@ document.addEventListener('DOMContentLoaded', () => {
     confirmOrderIdKicker: document.getElementById('confirm-order-id-kicker'),
     name: document.getElementById('c-name'),
     email: document.getElementById('c-email'),
+    phone: document.getElementById('c-phone'),
     address1: document.getElementById('c-address1'),
     city: document.getElementById('c-city'),
     state: document.getElementById('c-state'),
     zip: document.getElementById('c-zip'),
     country: document.getElementById('c-country'),
+    billingName: document.getElementById('b-name'),
+    billingEmail: document.getElementById('b-email'),
+    billingPhone: document.getElementById('b-phone'),
+    billingAddress1: document.getElementById('b-address1'),
+    billingCity: document.getElementById('b-city'),
+    billingState: document.getElementById('b-state'),
+    billingZip: document.getElementById('b-zip'),
+    billingCountry: document.getElementById('b-country'),
   };
 
   const stepTitles = {
@@ -359,6 +450,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     return 'Fastest available delivery after fulfillment';
+  }
+
+  function formatShippingLabel(rate) {
+    const rawName = String(rate.name || rate.label || '').trim();
+    const normalized = rawName
+      .replace(/\s*\(Estimated delivery:[^)]+\)\s*/gi, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (/carbon offset/i.test(normalized)) {
+      return 'Standard + Carbon Offset';
+    }
+
+    if (/flat rate/i.test(normalized) || /^standard$/i.test(normalized)) {
+      return 'Standard';
+    }
+
+    return normalized || 'Shipping';
   }
 
   function getSummaryNote() {
@@ -412,6 +521,11 @@ document.addEventListener('DOMContentLoaded', () => {
       section.classList.toggle('hidden', isCheckout || isSuccess);
     });
 
+    refs.cartOnlyElements.forEach((element) => {
+      element.classList.toggle('hidden', isCheckout || isSuccess);
+      element.style.display = isCheckout || isSuccess ? 'none' : '';
+    });
+
     refs.summaryCopy.textContent = getSummaryNote();
   }
 
@@ -427,7 +541,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function setShippingFormDisabled(disabled) {
-    [refs.name, refs.email, refs.address1, refs.city, refs.state, refs.zip, refs.country].forEach((input) => {
+    [refs.name, refs.email, refs.phone, refs.address1, refs.city, refs.state, refs.zip, refs.country].forEach((input) => {
       input.disabled = disabled;
     });
     refs.continueToMethodsBtn.disabled = disabled;
@@ -441,26 +555,81 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function clearPaymentElement() {
-    if (paymentElementInstance) {
-      paymentElementInstance.unmount();
-      paymentElementInstance = null;
-    }
+    [cardNumberElementInstance, cardExpiryElementInstance, cardCvcElementInstance].forEach((elementInstance) => {
+      if (elementInstance) {
+        elementInstance.unmount();
+      }
+    });
+    cardNumberElementInstance = null;
+    cardExpiryElementInstance = null;
+    cardCvcElementInstance = null;
 
     stripeElements = null;
-    refs.paymentElement.innerHTML = '';
+    refs.cardNumberElement.innerHTML = '';
+    refs.cardExpiryElement.innerHTML = '';
+    refs.cardCvcElement.innerHTML = '';
   }
 
   function getAddressFromForm() {
     return {
       name: refs.name.value.trim(),
       email: refs.email.value.trim(),
+      phone: refs.phone.value.trim(),
       address1: refs.address1.value.trim(),
       city: refs.city.value.trim(),
       state: refs.state.value.trim(),
       zip: refs.zip.value.trim(),
       country: refs.country.value.trim() || 'US',
-      phone: '',
     };
+  }
+
+  function syncBillingFormFromShipping() {
+    refs.billingName.value = refs.name.value.trim();
+    refs.billingEmail.value = refs.email.value.trim();
+    refs.billingPhone.value = refs.phone.value.trim();
+    refs.billingAddress1.value = refs.address1.value.trim();
+    refs.billingCity.value = refs.city.value.trim();
+    refs.billingState.value = refs.state.value.trim();
+    refs.billingZip.value = refs.zip.value.trim();
+    refs.billingCountry.value = refs.country.value.trim() || 'US';
+  }
+
+  function getBillingDetails() {
+    if (refs.billingSameAsShipping.checked) {
+      return {
+        name: refs.name.value.trim(),
+        email: refs.email.value.trim(),
+        phone: refs.phone.value.trim(),
+        address: {
+          line1: refs.address1.value.trim(),
+          city: refs.city.value.trim(),
+          state: refs.state.value.trim(),
+          postal_code: refs.zip.value.trim(),
+          country: refs.country.value.trim() || 'US',
+        }
+      };
+    }
+
+    return {
+      name: refs.billingName.value.trim(),
+      email: refs.billingEmail.value.trim(),
+      phone: refs.billingPhone.value.trim(),
+      address: {
+        line1: refs.billingAddress1.value.trim(),
+        city: refs.billingCity.value.trim(),
+        state: refs.billingState.value.trim(),
+        postal_code: refs.billingZip.value.trim(),
+        country: refs.billingCountry.value.trim() || 'US',
+      }
+    };
+  }
+
+  function validateBillingDetails() {
+    const billing = getBillingDetails();
+    if (!billing.name || !billing.email || !billing.phone || !billing.address.line1 || !billing.address.city || !billing.address.state || !billing.address.postal_code || !billing.address.country) {
+      return 'Please complete your billing details before placing the order.';
+    }
+    return '';
   }
 
   async function verifyZip(zipValue) {
@@ -510,6 +679,8 @@ document.addEventListener('DOMContentLoaded', () => {
     refs.selectedShippingLabel.textContent = 'Select a shipping method to continue.';
     refs.selectedShippingPrice.textContent = formatMoney(0);
     refs.continueToPaymentBtn.disabled = true;
+    refs.billingSameAsShipping.checked = true;
+    refs.billingForm.classList.add('hidden');
     resetCartSummary();
   }
 
@@ -564,7 +735,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <span class="flex items-start gap-4">
             ${indicator}
             <span>
-              <span class="block font-serif text-[30px] leading-[1.08] tracking-[-0.03em]">${rate.name}</span>
+              <span class="block font-serif text-[30px] leading-[1.08] tracking-[-0.03em]">${formatShippingLabel(rate)}</span>
               <span class="mt-3 block text-[13px] leading-7 text-[#050505]/60">${formatTransitLabel(rate)}</span>
             </span>
           </span>
@@ -579,7 +750,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!rate) return;
         state.selectedShipping = {
           id: rate.id,
-          label: rate.name,
+          label: formatShippingLabel(rate),
           rate: rate.rate,
           minDeliveryDays: rate.minDeliveryDays,
           maxDeliveryDays: rate.maxDeliveryDays,
@@ -622,7 +793,7 @@ document.addEventListener('DOMContentLoaded', () => {
       state.paymentSetup = data;
       applyCalculatedSummary(data);
       refs.selectedShippingPrice.textContent = formatMoney(data.shipping);
-      refs.selectedShippingLabel.textContent = `${state.selectedShipping.label} · ${formatTransitLabel(state.selectedShipping)}`;
+      refs.selectedShippingLabel.textContent = `${formatShippingLabel(state.selectedShipping)} · ${formatTransitLabel(state.selectedShipping)}`;
       refs.continueToPaymentBtn.disabled = false;
     } catch (error) {
       showStep2State({ loading: false, error: `${error.message}\n\nThis shipping method is no longer available for your address or items.` });
@@ -664,19 +835,67 @@ document.addEventListener('DOMContentLoaded', () => {
             colorDanger: '#dc2626',
             fontFamily: 'DM Sans, system-ui, sans-serif',
             fontSizeBase: '14px',
+            colorIcon: '#050505',
             borderRadius: '0px',
             spacingUnit: '4px'
           },
           rules: {
-            '.Input': { border: '1px solid rgba(5, 5, 5, 0.14)', boxShadow: 'none', padding: '12px 16px' },
+            '.Input': { border: 'none', boxShadow: 'none', padding: '0px' },
             '.Input:focus': { boxShadow: 'none', outline: 'none' },
-            '.Label': { fontWeight: '700', fontSize: '11px', letterSpacing: '0.28em', textTransform: 'uppercase', color: 'rgba(5,5,5,0.5)', marginBottom: '8px' }
+            '.Label': { fontWeight: '700', fontSize: '11px', letterSpacing: '0.28em', textTransform: 'uppercase', color: 'rgba(5,5,5,0.5)', marginBottom: '8px' },
+            '.Block': { boxShadow: 'none', backgroundColor: '#ffffff' }
           }
         }
       });
 
-      paymentElementInstance = stripeElements.create('payment');
-      paymentElementInstance.mount('#payment-element');
+      const baseCardStyle = {
+        style: {
+          base: {
+            color: '#050505',
+            fontFamily: 'DM Sans, system-ui, sans-serif',
+            fontSize: '14px',
+            '::placeholder': {
+              color: 'rgba(5, 5, 5, 0.34)'
+            },
+            iconColor: '#050505'
+          },
+          invalid: {
+            color: '#dc2626',
+            iconColor: '#dc2626'
+          }
+        }
+      };
+
+      cardNumberElementInstance = stripeElements.create('cardNumber', {
+        ...baseCardStyle,
+        placeholder: '1234 1234 1234 1234',
+      });
+      cardExpiryElementInstance = stripeElements.create('cardExpiry', {
+        ...baseCardStyle,
+        placeholder: 'MM / YY',
+      });
+      cardCvcElementInstance = stripeElements.create('cardCvc', {
+        ...baseCardStyle,
+        placeholder: 'CVC',
+      });
+
+      const handleCardChange = (event) => {
+        if (event.error) {
+          refs.checkoutError.textContent = event.error.message;
+          refs.checkoutError.classList.remove('hidden');
+        } else if (!refs.checkoutError.dataset.persisted) {
+          refs.checkoutError.textContent = '';
+          refs.checkoutError.classList.add('hidden');
+        }
+      };
+
+      cardNumberElementInstance.on('change', handleCardChange);
+      cardExpiryElementInstance.on('change', handleCardChange);
+      cardCvcElementInstance.on('change', handleCardChange);
+
+      cardNumberElementInstance.mount('#card-number-element');
+      cardExpiryElementInstance.mount('#card-expiry-element');
+      cardCvcElementInstance.mount('#card-cvc-element');
     } catch (error) {
       refs.checkoutError.textContent = error.message;
       refs.checkoutError.classList.remove('hidden');
@@ -687,8 +906,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function openShippingMethods() {
     const address = getAddressFromForm();
-    if (!address.name || !address.email || !address.address1 || !address.zip) {
-      refs.zipStatusBox.textContent = 'Please fill out your name, email, address, and ZIP code before continuing.';
+    if (!address.name || !address.email || !address.phone || !address.address1 || !address.zip) {
+      refs.zipStatusBox.textContent = 'Please fill out your name, email, phone, address, and ZIP code before continuing.';
       return;
     }
 
@@ -720,7 +939,7 @@ document.addEventListener('DOMContentLoaded', () => {
       state.shippingRates = rates;
       state.selectedShipping = {
         id: rates[0].id,
-        label: rates[0].name,
+        label: formatShippingLabel(rates[0]),
         rate: rates[0].rate,
         minDeliveryDays: rates[0].minDeliveryDays,
         maxDeliveryDays: rates[0].maxDeliveryDays,
@@ -788,10 +1007,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  refs.billingSameAsShipping?.addEventListener('change', () => {
+    const sameAsShipping = refs.billingSameAsShipping.checked;
+    refs.billingForm.classList.toggle('hidden', sameAsShipping);
+    if (sameAsShipping) {
+      syncBillingFormFromShipping();
+    }
+  });
+
   refs.paymentForm?.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    if (!stripeInstance || !stripeElements || !state.selectedShipping || !state.verifiedAddress) {
+    if (!stripeInstance || !stripeElements || !cardNumberElementInstance || !state.selectedShipping || !state.verifiedAddress) {
       refs.checkoutError.textContent = 'Payment form not ready. Please review your shipping details and try again.';
       refs.checkoutError.classList.remove('hidden');
       return;
@@ -802,10 +1029,20 @@ document.addEventListener('DOMContentLoaded', () => {
     refs.placeOrderBtn.textContent = 'Processing...';
 
     try {
-      const { paymentIntent, error: stripeError } = await stripeInstance.confirmPayment({
-        elements: stripeElements,
-        redirect: 'if_required'
-      });
+      const billingValidationError = validateBillingDetails();
+      if (billingValidationError) {
+        throw new Error(billingValidationError);
+      }
+
+      const { paymentIntent, error: stripeError } = await stripeInstance.confirmCardPayment(
+        state.paymentSetup.clientSecret,
+        {
+          payment_method: {
+            card: cardNumberElementInstance,
+            billing_details: getBillingDetails(),
+          },
+        },
+      );
 
       if (stripeError) throw new Error(stripeError.message);
       if (paymentIntent.status !== 'succeeded') {

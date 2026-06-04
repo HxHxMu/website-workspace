@@ -429,22 +429,6 @@ const loadProductData = async (productId) => {
       renderColorSelectors();
     }
 
-    qtyMinus?.addEventListener('click', (e) => {
-      e.preventDefault();
-      currentQuantity = Math.max(1, currentQuantity - 1);
-      qtyDisplay.textContent = currentQuantity;
-      qtyInput.value = currentQuantity;
-    });
-
-    qtyPlus?.addEventListener('click', (e) => {
-      e.preventDefault();
-      currentQuantity += 1;
-      qtyDisplay.textContent = currentQuantity;
-      qtyInput.value = currentQuantity;
-    });
-
-    buyButton?.addEventListener('click', window.handleBuyClick);
-
   } catch (error) {
     console.error('Error loading product:', error);
     productName.textContent = 'Failed to load product';
@@ -454,6 +438,12 @@ const loadProductData = async (productId) => {
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('DOMContentLoaded - initializing product page');
 
+  const buyButton = document.getElementById('buy-button');
+  const qtyDisplay = document.getElementById('qty-display');
+  const qtyInput = document.getElementById('quantity');
+  const qtyMinus = document.getElementById('qty-minus');
+  const qtyPlus = document.getElementById('qty-plus');
+
   const params = new URLSearchParams(window.location.search);
   const id = parseInt(params.get('id'));
 
@@ -462,13 +452,39 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  try {
-    const productsRes = await fetch('/api/products');
-    allProducts = await productsRes.json();
-    colorVariants = findColorVariants(id);
-    console.log('Color variants:', colorVariants);
+  buyButton?.addEventListener('click', window.handleBuyClick);
 
+  qtyMinus?.addEventListener('click', (e) => {
+    e.preventDefault();
+    currentQuantity = Math.max(1, currentQuantity - 1);
+    if (qtyDisplay) qtyDisplay.textContent = String(currentQuantity);
+    if (qtyInput) qtyInput.value = String(currentQuantity);
+  });
+
+  qtyPlus?.addEventListener('click', (e) => {
+    e.preventDefault();
+    currentQuantity += 1;
+    if (qtyDisplay) qtyDisplay.textContent = String(currentQuantity);
+    if (qtyInput) qtyInput.value = String(currentQuantity);
+  });
+
+  try {
     await loadProductData(id);
+
+    try {
+      const productsRes = await fetch('/api/products');
+      if (!productsRes.ok) throw new Error(`Products bootstrap failed: ${productsRes.status}`);
+      allProducts = await productsRes.json();
+      colorVariants = findColorVariants(id);
+      console.log('Color variants:', colorVariants);
+
+      if (colorVariants) {
+        await loadProductData(id);
+      }
+    } catch (bootstrapError) {
+      console.warn('Optional PDP bootstrap failed:', bootstrapError);
+    }
+
     initMobileCarousel();
   } catch (error) {
     console.error('Error initializing:', error);
