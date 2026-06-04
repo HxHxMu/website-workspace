@@ -32,6 +32,7 @@ const imageMap = {};
 productsData.products.forEach(p => {
   imageMap[p.externalId] = p.images;
 });
+const colorVariantMap = productsData.colorVariants || {};
 
 module.exports = async (req, res) => {
   if (req.method !== 'GET') {
@@ -74,7 +75,8 @@ module.exports = async (req, res) => {
         images: customImages.length > 0
           ? customImages
           : [product.thumbnail_url].filter(Boolean),
-        variantCount: product.variants
+        variantCount: product.variants,
+        colorVariants: colorVariantMap[String(product.id)]?.colors || null
       };
     }));
 

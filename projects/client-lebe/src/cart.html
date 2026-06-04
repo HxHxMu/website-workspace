@@ -258,6 +258,10 @@
               <span class="text-[#050505]/60">Subtotal</span>
               <span id="cart-subtotal" class="font-semibold">$0.00</span>
             </div>
+            <div id="discount-row" class="hidden flex justify-between gap-6">
+              <span class="text-[#050505]/60">Discount</span>
+              <span id="cart-discount" class="font-semibold">-$0.00</span>
+            </div>
             <div class="flex justify-between gap-6">
               <span class="text-[#050505]/60">Shipping</span>
               <span id="cart-shipping" class="font-semibold">Calculated</span>
@@ -272,14 +276,15 @@
             Shipping and tax are calculated after your address is verified.
           </div>
 
-          <div class="cart-only">
+          <div id="promo-section">
             <label for="promo" class="mt-6 block text-[11px] font-bold uppercase tracking-[0.28em] text-[#050505]/50">Code.</label>
             <div class="mt-3 flex border border-[#050505]">
               <input id="promo" type="text" placeholder="code" class="min-w-0 flex-1 bg-white px-4 py-3 text-sm uppercase outline-none placeholder:text-[#050505]/30" />
-              <button type="button" class="border-l border-[#050505] px-4 text-[11px] font-bold uppercase tracking-[0.22em] transition hover:bg-[#050505] hover:text-white">
+              <button id="promo-apply-btn" type="button" class="border-l border-[#050505] px-4 text-[11px] font-bold uppercase tracking-[0.22em] transition hover:bg-[#050505] hover:text-white">
                 apply.
               </button>
             </div>
+            <p id="promo-status" class="mt-3 hidden text-[11px] leading-5 text-[#050505]/60"></p>
 
             <p class="mt-5 text-[11px] text-[#050505]/60">Made-to-order. Ships in ~14 days.</p>
           </div>
@@ -355,6 +360,8 @@ document.addEventListener('DOMContentLoaded', () => {
     shippingRates: [],
     selectedShipping: null,
     paymentSetup: null,
+    promoCode: '',
+    appliedDiscount: null,
   };
 
   let stripeInstance = null;
@@ -394,6 +401,8 @@ document.addEventListener('DOMContentLoaded', () => {
     placeOrderBtn: document.getElementById('place-order-btn'),
     summaryCopy: document.getElementById('summary-copy'),
     subtotal: document.getElementById('cart-subtotal'),
+    discountRow: document.getElementById('discount-row'),
+    discount: document.getElementById('cart-discount'),
     shipping: document.getElementById('cart-shipping'),
     tax: document.getElementById('cart-tax'),
     total: document.getElementById('cart-total'),
@@ -420,6 +429,10 @@ document.addEventListener('DOMContentLoaded', () => {
     billingState: document.getElementById('b-state'),
     billingZip: document.getElementById('b-zip'),
     billingCountry: document.getElementById('b-country'),
+    promoInput: document.getElementById('promo'),
+    promoApplyBtn: document.getElementById('promo-apply-btn'),
+    promoStatus: document.getElementById('promo-status'),
+    promoSection: document.getElementById('promo-section'),
   };
 
   const stepTitles = {
@@ -489,18 +502,29 @@ document.addEventListener('DOMContentLoaded', () => {
   function resetCartSummary() {
     const subtotal = Cart.getSubtotal();
     refs.subtotal.textContent = formatMoney(subtotal);
+    refs.discountRow.classList.toggle('hidden', !(Number(state.appliedDiscount?.amount) > 0));
+    refs.discount.textContent = `-${formatMoney(state.appliedDiscount?.amount || 0)}`;
     refs.shipping.textContent = 'Calculated';
     refs.tax.textContent = 'Calculated';
-    refs.total.textContent = formatMoney(subtotal);
+    refs.total.textContent = formatMoney(Math.max(0, subtotal - (state.appliedDiscount?.amount || 0)));
     refs.summaryCopy.textContent = getSummaryNote();
   }
 
   function applyCalculatedSummary(summary) {
     refs.subtotal.textContent = formatMoney(summary.subtotal);
+    refs.discountRow.classList.toggle('hidden', !(Number(summary.discount) > 0));
+    refs.discount.textContent = `-${formatMoney(summary.discount || 0)}`;
     refs.shipping.textContent = formatMoney(summary.shipping);
     refs.tax.textContent = formatMoney(summary.tax);
     refs.total.textContent = formatMoney(summary.total);
     refs.summaryCopy.textContent = getSummaryNote();
+  }
+
+  function setPromoStatus(message = '', isError = false) {
+    refs.promoStatus.classList.toggle('hidden', !message);
+    refs.promoStatus.textContent = message;
+    refs.promoStatus.classList.toggle('text-[#050505]/60', !isError);
+    refs.promoStatus.classList.toggle('text-[#8a1f1f]', !!isError);
   }
 
   function setCheckoutMode(mode) {
@@ -790,6 +814,7 @@ document.addEventListener('DOMContentLoaded', () => {
           address: state.verifiedAddress,
           shippingMethod: state.selectedShipping,
           previousPaymentIntentId: state.paymentSetup?.paymentIntentId || null,
+          promoCode: state.promoCode || null,
         }),
       });
 
@@ -799,10 +824,18 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       state.paymentSetup = data;
+      state.appliedDiscount = data.appliedDiscount
+        ? { ...data.appliedDiscount, amount: Number(data.discount || 0) }
+        : null;
       applyCalculatedSummary(data);
       refs.selectedShippingPrice.textContent = formatMoney(data.shipping);
       refs.selectedShippingLabel.textContent = `${formatShippingLabel(state.selectedShipping)} · ${formatTransitLabel(state.selectedShipping)}`;
       refs.continueToPaymentBtn.disabled = false;
+      if (state.appliedDiscount) {
+        setPromoStatus(`${state.appliedDiscount.code} applied.`, false);
+      } else if (state.promoCode) {
+        setPromoStatus('No discount was applied.', true);
+      }
     } catch (error) {
       showStep2State({ loading: false, error: `${error.message}\n\nThis shipping method is no longer available for your address or items.` });
       resetCartSummary();
@@ -1020,6 +1053,63 @@ document.addEventListener('DOMContentLoaded', () => {
     refs.billingForm.classList.toggle('hidden', sameAsShipping);
     if (sameAsShipping) {
       syncBillingFormFromShipping();
+    }
+  });
+
+  refs.promoApplyBtn?.addEventListener('click', async () => {
+    const code = String(refs.promoInput.value || '').trim().toUpperCase();
+    refs.promoInput.value = code;
+
+    if (!code) {
+      state.promoCode = '';
+      state.appliedDiscount = null;
+      setPromoStatus('Please enter a discount code.', true);
+      resetCartSummary();
+      if (state.selectedShipping && state.verifiedAddress) {
+        await preparePaymentSetup();
+      }
+      return;
+    }
+
+    refs.promoApplyBtn.disabled = true;
+    refs.promoApplyBtn.textContent = '...';
+    setPromoStatus('Checking code...', false);
+
+    try {
+      const response = await fetch('/api/promo-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'We couldn’t validate that discount code.');
+      }
+
+      state.promoCode = code;
+      state.appliedDiscount = { ...data.discount, amount: 0 };
+      setPromoStatus(`${code} applied.`, false);
+
+      if (state.selectedShipping && state.verifiedAddress) {
+        await preparePaymentSetup();
+      } else {
+        resetCartSummary();
+      }
+    } catch (error) {
+      state.promoCode = '';
+      state.appliedDiscount = null;
+      setPromoStatus(error.message, true);
+      resetCartSummary();
+    } finally {
+      refs.promoApplyBtn.disabled = false;
+      refs.promoApplyBtn.textContent = 'apply.';
+    }
+  });
+
+  refs.promoInput?.addEventListener('keydown', async (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      await refs.promoApplyBtn?.click();
     }
   });
 

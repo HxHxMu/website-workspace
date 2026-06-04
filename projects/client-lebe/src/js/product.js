@@ -60,8 +60,17 @@ const PRODUCT_COLOR_MAP = {
 const findColorVariants = (productId) => {
   if (!allProducts) return null;
 
-  const currentProd = allProducts.find(p => p.id === productId);
+  const targetId = String(productId);
+  const currentProd = allProducts.find((p) => String(p.id) === targetId);
   if (!currentProd) return null;
+
+  if (Array.isArray(currentProd.colorVariants) && currentProd.colorVariants.length > 0) {
+    return currentProd.colorVariants.reduce((acc, entry) => {
+      if (!entry?.name || !entry?.productId) return acc;
+      acc[String(entry.name).trim()] = Number(entry.productId);
+      return acc;
+    }, {});
+  }
 
   const colorMap = {};
 
@@ -245,6 +254,10 @@ const loadProductData = async (productId) => {
 
       productPrice.textContent = `$${currentVariant.price.toFixed(2)}`;
       updateCareInstructions();
+      buyButton?.removeAttribute('disabled');
+    } else {
+      currentVariant = null;
+      buyButton?.setAttribute('disabled', 'disabled');
     }
 
     if (currentProduct.images && currentProduct.images.length > 0) {
@@ -332,6 +345,7 @@ const loadProductData = async (productId) => {
 
         // Update global state
         currentProduct = newProduct;
+        colorVariants = findColorVariants(newProductId);
         currentVariant = getPreferredDefaultVariant() || newProduct.variants[0];
         currentColor = currentVariant?.color || newProduct.variants[0].color;
         currentQuantity = 1;
@@ -375,8 +389,8 @@ const loadProductData = async (productId) => {
         // Update text content
         productName.textContent = newProduct.name;
         productPrice.textContent = `$${currentVariant.price.toFixed(2)}`;
-        qtyDisplay.textContent = '1';
-        qtyInput.value = '1';
+        if (qtyDisplay) qtyDisplay.textContent = '1';
+        if (qtyInput) qtyInput.value = '1';
         updateCareInstructions();
 
         // Re-render size and color selectors
@@ -394,7 +408,7 @@ const loadProductData = async (productId) => {
       colorSelector.innerHTML = colorOrder
         .filter(color => colorVariants[color])
         .map((color) => {
-          const isSelected = currentProduct.id === colorVariants[color];
+          const isSelected = String(currentProduct.id) === String(colorVariants[color]);
           const isWhite = color.toLowerCase() === 'white';
 
           return `
@@ -416,8 +430,8 @@ const loadProductData = async (productId) => {
       colorSelector.querySelectorAll('button').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.preventDefault();
-          const newProductId = parseInt(btn.dataset.productId);
-          if (newProductId !== currentProduct.id) {
+          const newProductId = Number(btn.dataset.productId);
+          if (String(newProductId) !== String(currentProduct.id)) {
             switchProduct(newProductId);
           }
         });
@@ -434,7 +448,7 @@ const loadProductData = async (productId) => {
   }
 };
 
-document.addEventListener('DOMContentLoaded', async () => {
+async function initProductPage() {
   console.log('DOMContentLoaded - initializing product page');
 
   const buyButton = document.getElementById('buy-button');
@@ -451,7 +465,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  buyButton?.addEventListener('click', window.handleBuyClick);
+  if (buyButton) {
+    buyButton.onclick = window.handleBuyClick;
+  }
 
   qtyMinus?.addEventListener('click', (e) => {
     e.preventDefault();
@@ -483,4 +499,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   } catch (error) {
     console.error('Error initializing:', error);
   }
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initProductPage, { once: true });
+} else {
+  initProductPage();
+}

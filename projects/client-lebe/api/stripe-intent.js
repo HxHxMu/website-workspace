@@ -12,6 +12,34 @@ function hashOrder(items, shippingId) {
     .digest('hex');
 }
 
+function summarizePromotionCode(promotionCode) {
+  const coupon = promotionCode?.coupon || {};
+  return {
+    promotionCodeId: promotionCode.id,
+    code: promotionCode.code,
+    couponId: coupon.id || null,
+    name: coupon.name || promotionCode.code,
+    percentOff: Number.isFinite(Number(coupon.percent_off)) ? Number(coupon.percent_off) : null,
+    amountOff: Number.isFinite(Number(coupon.amount_off)) ? Number(coupon.amount_off) / 100 : null,
+    currency: coupon.currency || 'usd',
+  };
+}
+
+function calculateDiscountAmount(subtotal, discount) {
+  const numericSubtotal = Number(subtotal) || 0;
+  if (!discount || numericSubtotal <= 0) return 0;
+
+  if (Number.isFinite(discount.percentOff) && discount.percentOff > 0) {
+    return Math.min(numericSubtotal, numericSubtotal * (discount.percentOff / 100));
+  }
+
+  if (Number.isFinite(discount.amountOff) && discount.amountOff > 0) {
+    return Math.min(numericSubtotal, discount.amountOff);
+  }
+
+  return 0;
+}
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -24,7 +52,7 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: 'Missing environment variables' });
   }
 
-  const { items, address, shippingMethod, previousPaymentIntentId } = req.body;
+  const { items, address, shippingMethod, previousPaymentIntentId, promoCode } = req.body;
   if (!Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ error: 'Missing or empty items' });
   }
@@ -38,10 +66,11 @@ module.exports = async (req, res) => {
   }
 
   try {
+    const stripe = Stripe(STRIPE_SECRET_KEY);
+
     // Cancel any previous unused intent for this session to avoid orphaned intents
     if (previousPaymentIntentId) {
       try {
-        const stripe = Stripe(STRIPE_SECRET_KEY);
         const prev = await stripe.paymentIntents.retrieve(previousPaymentIntentId);
         if (['requires_payment_method', 'requires_confirmation', 'requires_action'].includes(prev.status)) {
           await stripe.paymentIntents.cancel(previousPaymentIntentId);
@@ -102,18 +131,42 @@ module.exports = async (req, res) => {
     const shipping = parseFloat(result.retail_costs.shipping ?? result.costs.shipping ?? 0);
     const tax = parseFloat(result.retail_costs.tax ?? result.costs.tax ?? 0);
 
-    const finalTotal = subtotal + shipping + tax;
+    let appliedDiscount = null;
+    let discountAmount = 0;
+
+    if (String(promoCode || '').trim()) {
+      const promoResult = await stripe.promotionCodes.list({
+        code: String(promoCode).trim(),
+        active: true,
+        limit: 1,
+        expand: ['data.coupon'],
+      });
+
+      const promotionCode = promoResult.data?.[0];
+      if (!promotionCode || !promotionCode.active || !promotionCode.coupon?.valid) {
+        throw new Error('This discount code is invalid or expired.');
+      }
+
+      appliedDiscount = summarizePromotionCode(promotionCode);
+      discountAmount = calculateDiscountAmount(subtotal, appliedDiscount);
+    }
+
+    const discountedSubtotal = Math.max(0, subtotal - discountAmount);
+    const finalTotal = discountedSubtotal + shipping + tax;
     const finalCents = Math.round(finalTotal * 100);
 
-    console.log(`✓ Calculated costs: subtotal=${subtotal}, shipping=${shipping}, tax=${tax}, total=${finalTotal} (${finalCents} cents)`);
+    console.log(`✓ Calculated costs: subtotal=${subtotal}, discount=${discountAmount}, shipping=${shipping}, tax=${tax}, total=${finalTotal} (${finalCents} cents)`);
 
     // 2. Create Stripe Payment Intent for the calculated final total (cents)
-    const stripe = Stripe(STRIPE_SECRET_KEY);
     const paymentIntent = await stripe.paymentIntents.create({
       amount: finalCents,
       currency: 'usd',
       payment_method_types: ['card'],
-      metadata: { lebe_order_hash: hashOrder(items, shippingMethod.id) }
+      metadata: {
+        lebe_order_hash: hashOrder(items, shippingMethod.id),
+        promo_code: appliedDiscount?.code || '',
+        discount_amount: String(discountAmount.toFixed(2)),
+      }
     });
 
     res.status(200).json({
@@ -126,9 +179,12 @@ module.exports = async (req, res) => {
         maxDeliveryDays: shippingMethod.maxDeliveryDays ?? null,
       },
       subtotal,
+      discount: discountAmount,
+      discountedSubtotal,
       shipping,
       tax,
-      total: finalTotal
+      total: finalTotal,
+      appliedDiscount,
     });
   } catch (error) {
     console.error('stripe-intent error:', error);
