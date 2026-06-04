@@ -1087,7 +1087,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       state.promoCode = code;
-      state.appliedDiscount = { ...data.discount, amount: 0 };
+      const subtotal = Cart.getSubtotal();
+      let discountAmount = 0;
+      if (data.discount?.percentOff > 0) {
+        discountAmount = subtotal * (data.discount.percentOff / 100);
+      } else if (data.discount?.amountOff > 0) {
+        discountAmount = data.discount.amountOff;
+      }
+      state.appliedDiscount = { ...data.discount, amount: discountAmount };
       setPromoStatus(`${code} applied.`, false);
 
       if (state.selectedShipping && state.verifiedAddress) {
