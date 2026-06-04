@@ -663,8 +663,15 @@ document.addEventListener('DOMContentLoaded', () => {
         zip: cleanZip,
       };
     } catch (error) {
-      refs.zipStatusBox.textContent = 'ZIP verification is unavailable right now. Please check your connection and try again.';
-      return null;
+      // Network error — ZIP service unavailable. Allow proceeding if city/state are already filled.
+      const city = refs.city.value.trim();
+      const state = refs.state.value.trim();
+      if (!city || !state) {
+        refs.zipStatusBox.textContent = 'ZIP lookup is unavailable. Please type your city and state manually to continue.';
+        return null;
+      }
+      refs.zipStatusBox.textContent = 'ZIP lookup is unavailable. Continuing with the city and state you entered.';
+      return { city, state, zip: cleanZip };
     }
   }
 
@@ -782,6 +789,7 @@ document.addEventListener('DOMContentLoaded', () => {
           items: Cart.getCart(),
           address: state.verifiedAddress,
           shippingMethod: state.selectedShipping,
+          previousPaymentIntentId: state.paymentSetup?.paymentIntentId || null,
         }),
       });
 

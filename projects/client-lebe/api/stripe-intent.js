@@ -1,6 +1,16 @@
 const Stripe = require('stripe');
+const crypto = require('crypto');
 
 const PRINTFUL_API_BASE = 'https://api.printful.com';
+
+function hashOrder(items, shippingId) {
+  const normalized = items
+    .map(i => ({ id: String(i.syncVariantId), qty: Number(i.quantity) }))
+    .sort((a, b) => a.id.localeCompare(b.id));
+  return crypto.createHash('sha256')
+    .update(JSON.stringify({ items: normalized, shipping: shippingId }))
+    .digest('hex');
+}
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
@@ -14,7 +24,7 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: 'Missing environment variables' });
   }
 
-  const { items, address, shippingMethod } = req.body;
+  const { items, address, shippingMethod, previousPaymentIntentId } = req.body;
   if (!Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ error: 'Missing or empty items' });
   }
@@ -28,6 +38,17 @@ module.exports = async (req, res) => {
   }
 
   try {
+    // Cancel any previous unused intent for this session to avoid orphaned intents
+    if (previousPaymentIntentId) {
+      try {
+        const stripe = Stripe(STRIPE_SECRET_KEY);
+        const prev = await stripe.paymentIntents.retrieve(previousPaymentIntentId);
+        if (['requires_payment_method', 'requires_confirmation', 'requires_action'].includes(prev.status)) {
+          await stripe.paymentIntents.cancel(previousPaymentIntentId);
+        }
+      } catch (_) {}
+    }
+
     // 1. Call Printful estimate endpoint to get shipping, taxes, and subtotal securely on the server
     const estimateData = {
       recipient: {
@@ -76,8 +97,8 @@ module.exports = async (req, res) => {
       throw new Error('Invalid response from shipping estimation');
     }
 
-    // Extract costs
-    const subtotal = parseFloat(result.retail_costs.subtotal || 0);
+    // Extract costs — use ?? so explicit 0 values are preserved; fall back to costs fields for older API responses
+    const subtotal = parseFloat(result.retail_costs.subtotal ?? result.costs?.subtotal ?? 0);
     const shipping = parseFloat(result.retail_costs.shipping ?? result.costs.shipping ?? 0);
     const tax = parseFloat(result.retail_costs.tax ?? result.costs.tax ?? 0);
 
@@ -91,11 +112,13 @@ module.exports = async (req, res) => {
     const paymentIntent = await stripe.paymentIntents.create({
       amount: finalCents,
       currency: 'usd',
-      payment_method_types: ['card']
+      payment_method_types: ['card'],
+      metadata: { lebe_order_hash: hashOrder(items, shippingMethod.id) }
     });
 
     res.status(200).json({
       clientSecret: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id,
       shippingMethod: {
         id: shippingMethod.id,
         label: shippingMethod.label || shippingMethod.id,

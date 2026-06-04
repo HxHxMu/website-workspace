@@ -1,5 +1,7 @@
-import productsData from '../src/data/products.json' with { type: 'json' };
+const fs = require('fs');
+const path = require('path');
 
+const productsData = JSON.parse(fs.readFileSync(path.join(__dirname, '../src/data/products.json'), 'utf8'));
 const PRINTFUL_API_BASE = 'https://api.printful.com';
 
 function normalizeLocalAssetPath(value) {
@@ -11,7 +13,6 @@ function normalizeLocalAssetPath(value) {
   return raw.replace(/^\.\//, '').replace(/^\/+/, '');
 }
 
-// Helper to make authenticated requests to Printful API
 async function fetchFromPrintful(endpoint, apiKey) {
   const response = await fetch(`${PRINTFUL_API_BASE}${endpoint}`, {
     headers: {
@@ -27,13 +28,12 @@ async function fetchFromPrintful(endpoint, apiKey) {
   return response.json();
 }
 
-// Build image map for quick lookup by externalId
 const imageMap = {};
 productsData.products.forEach(p => {
   imageMap[p.externalId] = p.images;
 });
 
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -44,11 +44,9 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Fetch products from your store
     const data = await fetchFromPrintful('/store/products', PRINTFUL_API_KEY);
     const printfulProducts = data.result || [];
 
-    // Merge with custom images and resolve live retail price per product
     const products = await Promise.all(printfulProducts.map(async (product) => {
       const customImages = (imageMap[product.external_id] || [])
         .map(normalizeLocalAssetPath)
@@ -89,4 +87,4 @@ export default async function handler(req, res) {
       message: error.message
     });
   }
-}
+};

@@ -220,12 +220,6 @@ const loadProductData = async (productId) => {
     document.title = currentProduct.name + ' — LEBE';
     productName.textContent = currentProduct.name;
 
-    const getVariantFor = (size, color) => currentProduct.variants.find(
-      (variant) =>
-        String(variant.size || '').toUpperCase() === String(size || '').toUpperCase() &&
-        String(variant.color || '').toLowerCase() === String(color || '').toLowerCase()
-    );
-
     const getFirstVariantForSize = (size) => currentProduct.variants.find(
       (variant) => String(variant.size || '').toUpperCase() === String(size || '').toUpperCase()
     );
@@ -330,6 +324,11 @@ const loadProductData = async (productId) => {
         const response = await fetch(`/api/product?id=${newProductId}`);
         if (!response.ok) throw new Error('Product not found');
         const newProduct = await response.json();
+
+        if (!newProduct.variants || newProduct.variants.length === 0) {
+          console.error('Switched product has no variants:', newProduct.id);
+          return;
+        }
 
         // Update global state
         currentProduct = newProduct;
@@ -469,22 +468,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   try {
-    await loadProductData(id);
-
+    // Pre-load catalog so color selectors render on the single loadProductData call below
     try {
       const productsRes = await fetch('/api/products');
-      if (!productsRes.ok) throw new Error(`Products bootstrap failed: ${productsRes.status}`);
-      allProducts = await productsRes.json();
-      colorVariants = findColorVariants(id);
-      console.log('Color variants:', colorVariants);
-
-      if (colorVariants) {
-        await loadProductData(id);
+      if (productsRes.ok) {
+        allProducts = await productsRes.json();
+        colorVariants = findColorVariants(id);
+        console.log('Color variants:', colorVariants);
       }
-    } catch (bootstrapError) {
-      console.warn('Optional PDP bootstrap failed:', bootstrapError);
-    }
+    } catch (_) {}
 
+    await loadProductData(id);
     initMobileCarousel();
   } catch (error) {
     console.error('Error initializing:', error);

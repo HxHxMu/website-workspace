@@ -1,5 +1,7 @@
-import productsData from '../src/data/products.json' with { type: 'json' };
+const fs = require('fs');
+const path = require('path');
 
+const productsData = JSON.parse(fs.readFileSync(path.join(__dirname, '../src/data/products.json'), 'utf8'));
 const PRINTFUL_API_BASE = 'https://api.printful.com';
 
 function normalizeLocalAssetPath(value) {
@@ -31,7 +33,7 @@ productsData.products.forEach(p => {
   imageMap[p.externalId] = p.images;
 });
 
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -83,4 +85,4 @@ export default async function handler(req, res) {
       message: error.message
     });
   }
-}
+};
