@@ -105,15 +105,31 @@ module.exports = async (req, res) => {
       body: JSON.stringify(orderData)
     });
 
-    console.log('✓ Order created:', result);
+    console.log('✓ Order created:', JSON.stringify(result, null, 2));
 
     const order = result.result;
+    console.log('Order status:', order.status);
+    console.log('Order estimated_delivery:', order.estimated_delivery);
+    console.log('Order fulfillment_status:', order.fulfillment_status);
+
+    // If Printful didn't return estimated_delivery (draft orders in test mode),
+    // calculate it based on production time + shipping time
+    let estimatedDelivery = order.estimated_delivery;
+    if (!estimatedDelivery) {
+      const productionDays = 10; // typical made-to-order production
+      const shippingDays = shippingMethod.maxDeliveryDays || 5; // fallback to 5 days if not specified
+      const totalDays = productionDays + shippingDays;
+      const deliveryDate = new Date();
+      deliveryDate.setDate(deliveryDate.getDate() + totalDays);
+      estimatedDelivery = deliveryDate.toISOString().split('T')[0];
+      console.log(`ℹ Calculated estimated_delivery (no API data): ${estimatedDelivery} (${totalDays} days)`);
+    }
 
     res.status(200).json({
       success: true,
       orderId: order.id,
       externalId: order.external_id,
-      estimatedDelivery: order.estimated_delivery,
+      estimatedDelivery,
       totalCost: order.total_cost,
       shippingCost: order.shipping_cost
     });
