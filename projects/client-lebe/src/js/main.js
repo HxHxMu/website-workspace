@@ -107,6 +107,109 @@ window.renderCart = function() {
       window.renderCart();
     });
   });
+
+  // Upsell logic: suggest complementary products for incomplete sets
+  const upsellModule = document.getElementById('upsell-module');
+  if (upsellModule) {
+    checkAndShowUpsell(cart);
+  }
+};
+
+// Product set configuration
+const PRODUCT_SETS = {
+  saguanari: {
+    name: 'Saguanari',
+    products: [
+      { name: 'Bra', keywords: ['bra', 'sports bra'] },
+      { name: 'Leggings', keywords: ['leggings', 'yoga leggings'] }
+    ]
+  }
+};
+
+// Color-based product matching for upsell
+const PRODUCT_COLOR_UPSELL_MAP = {
+  // Saguanari Bra
+  '309483674': { productId: 301596573, name: 'Saguanari Leggings', description: 'Pair it with the matching leggings for the full Saguanari set.' },
+  '309483736': { productId: 300307426, name: 'Saguanari Leggings', description: 'Pair it with the matching leggings for the full Saguanari set.' },
+  // Saguanari Leggings
+  '301596573': { productId: 309483674, name: 'Saguanari Sports Bra', description: 'Pair it with the matching bra for the full Saguanari set.' },
+  '300307426': { productId: 309483736, name: 'Saguanari Sports Bra', description: 'Pair it with the matching bra for the full Saguanari set.' }
+};
+
+async function checkAndShowUpsell(cart) {
+  // Don't show upsell if cart is empty or has multiple different products
+  if (cart.length === 0) {
+    document.getElementById('upsell-module').classList.add('hidden');
+    return;
+  }
+
+  // Check if all items in cart are from the same set but incomplete
+  const firstItem = cart[0];
+  const upsellData = PRODUCT_COLOR_UPSELL_MAP[firstItem.productId];
+
+  if (!upsellData) {
+    document.getElementById('upsell-module').classList.add('hidden');
+    return;
+  }
+
+  // Check if complementary product is already in cart
+  const hasComplement = cart.some(item => String(item.productId) === String(upsellData.productId));
+  if (hasComplement) {
+    document.getElementById('upsell-module').classList.add('hidden');
+    return;
+  }
+
+  // Fetch complementary product details
+  try {
+    const response = await fetch(`/api/products`);
+    const products = await response.json();
+    const complementProduct = products.find(p => String(p.id) === String(upsellData.productId));
+
+    if (!complementProduct) {
+      document.getElementById('upsell-module').classList.add('hidden');
+      return;
+    }
+
+    // Show upsell module with complementary product
+    const upsellModule = document.getElementById('upsell-module');
+    document.getElementById('upsell-name').textContent = upsellData.name;
+    document.getElementById('upsell-description').textContent = upsellData.description;
+    document.getElementById('upsell-price').textContent = `$${complementProduct.price}`;
+    document.getElementById('upsell-image-src').src = complementProduct.images?.[0] || '';
+
+    // Store upsell product data for add button
+    const addBtn = document.getElementById('upsell-add-btn');
+    addBtn.dataset.productId = complementProduct.id;
+    addBtn.dataset.variantId = complementProduct.variants?.[0]?.id || '';
+    addBtn.dataset.syncVariantId = complementProduct.variants?.[0]?.syncVariantId || '';
+    addBtn.dataset.price = complementProduct.price;
+    addBtn.dataset.name = complementProduct.name;
+    addBtn.dataset.image = complementProduct.images?.[0] || '';
+
+    // Handle add button click
+    addBtn.onclick = (e) => {
+      e.preventDefault();
+      const cartItem = {
+        productId: Number(addBtn.dataset.productId),
+        variantId: Number(addBtn.dataset.variantId) || 0,
+        syncVariantId: addBtn.dataset.syncVariantId,
+        name: addBtn.dataset.name,
+        size: firstItem.size || 'M',
+        color: firstItem.color,
+        price: Number(addBtn.dataset.price),
+        quantity: 1,
+        image: addBtn.dataset.image,
+        options: []
+      };
+      Cart.addItem(cartItem);
+      window.renderCart();
+    };
+
+    upsellModule.classList.remove('hidden');
+  } catch (error) {
+    console.error('Error loading upsell product:', error);
+    document.getElementById('upsell-module').classList.add('hidden');
+  }
 };
 
 (function () {
