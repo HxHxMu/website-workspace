@@ -123,9 +123,18 @@
     margin: 0 auto;
   }
 
+  .lebe-main-shell {
+    width: min(100% - 3rem, 1024px);
+    margin: 0 auto;
+  }
+
   @media (min-width: 768px) {
     .lebe-shell {
       width: min(100% - 5rem, 1280px);
+    }
+
+    .lebe-main-shell {
+      width: min(100% - 5rem, 1024px);
     }
   }
 

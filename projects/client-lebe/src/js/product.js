@@ -57,12 +57,41 @@ const PRODUCT_COLOR_MAP = {
   '63ec714091ff89': 'Black',  // Saguanari Leggings Black
 };
 
+const PRODUCT_COLOR_GROUPS = [
+  {
+    White: '64775fcaef5f21',
+    Black: '6477600e15cb73',
+  },
+  {
+    White: '64000b204a6de9',
+    Black: '63ec714091ff89',
+  },
+];
+
 const findColorVariants = (productId) => {
   if (!allProducts) return null;
 
   const targetId = String(productId);
   const currentProd = allProducts.find((p) => String(p.id) === targetId);
   if (!currentProd) return null;
+
+  const explicitGroup = PRODUCT_COLOR_GROUPS.find((group) =>
+    Object.values(group).some((externalId) => String(externalId) === String(currentProd.externalId))
+  );
+
+  if (explicitGroup) {
+    const resolvedGroup = Object.entries(explicitGroup).reduce((acc, [color, externalId]) => {
+      const match = allProducts.find((product) => String(product.externalId) === String(externalId));
+      if (match) {
+        acc[color] = Number(match.id);
+      }
+      return acc;
+    }, {});
+
+    if (Object.keys(resolvedGroup).length > 0) {
+      return resolvedGroup;
+    }
+  }
 
   if (Array.isArray(currentProd.colorVariants) && currentProd.colorVariants.length > 0) {
     return currentProd.colorVariants.reduce((acc, entry) => {
@@ -138,6 +167,20 @@ const findColorVariants = (productId) => {
   });
 
   return Object.keys(colorMap).length > 0 ? colorMap : null;
+};
+
+const buildColorVariantMap = (product) => {
+  if (!Array.isArray(product?.colorVariants) || product.colorVariants.length === 0) {
+    return null;
+  }
+
+  const entries = product.colorVariants.reduce((acc, entry) => {
+    if (!entry?.name || !entry?.productId) return acc;
+    acc[String(entry.name).trim()] = Number(entry.productId);
+    return acc;
+  }, {});
+
+  return Object.keys(entries).length > 0 ? entries : null;
 };
 
 const updateCareInstructions = () => {
@@ -225,6 +268,7 @@ const loadProductData = async (productId) => {
     if (!response.ok) throw new Error('Product not found');
     currentProduct = await response.json();
     console.log('Product loaded:', currentProduct);
+    colorVariants = buildColorVariantMap(currentProduct) || colorVariants || findColorVariants(productId);
 
     document.title = currentProduct.name + ' — LEBE';
     productName.textContent = currentProduct.name;
@@ -345,7 +389,7 @@ const loadProductData = async (productId) => {
 
         // Update global state
         currentProduct = newProduct;
-        colorVariants = findColorVariants(newProductId);
+        colorVariants = buildColorVariantMap(newProduct) || findColorVariants(newProductId);
         currentVariant = getPreferredDefaultVariant() || newProduct.variants[0];
         currentColor = currentVariant?.color || newProduct.variants[0].color;
         currentQuantity = 1;

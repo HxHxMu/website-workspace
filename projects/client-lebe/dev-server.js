@@ -10,14 +10,54 @@ productsData.products.forEach(p => {
   imageMap[p.externalId] = p.images || [];
 });
 
+const COLOR_BY_EXTERNAL_ID = {
+  '6477600e15cb73': 'Black',
+  '64775fcaef5f21': 'White',
+  '64000b204a6de9': 'White',
+  '63ec714091ff89': 'Black',
+};
+
+const MOCK_COLOR_VARIANTS = {
+  3: [
+    { name: 'White', productId: 4 },
+    { name: 'Black', productId: 3 },
+  ],
+  4: [
+    { name: 'White', productId: 4 },
+    { name: 'Black', productId: 3 },
+  ],
+  5: [
+    { name: 'White', productId: 5 },
+    { name: 'Black', productId: 6 },
+  ],
+  6: [
+    { name: 'White', productId: 5 },
+    { name: 'Black', productId: 6 },
+  ],
+};
+
+const SIZE_ORDER = ['XS', 'S', 'M', 'L', 'XL'];
+
+function buildMockVariants(product) {
+  const color = COLOR_BY_EXTERNAL_ID[product.externalId] || 'Default';
+  return SIZE_ORDER.map((size, index) => ({
+    id: product.id * 100 + index + 1,
+    syncVariantId: `${product.id}-${size}`,
+    size,
+    color,
+    price: Number(product.price) || 0,
+    options: [],
+  }));
+}
+
 // Mock products with images from products.json
 const mockProducts = [
   { id: 1, externalId: '6a03a9f14842e6', name: 'Ainbo Bra - Terracotta', price: 89, images: imageMap['6a03a9f14842e6'] || [] },
   { id: 2, externalId: '6a03a9b1d61425', name: 'Ainbo Leggings - Terracotta', price: 129, images: imageMap['6a03a9b1d61425'] || [] },
   { id: 3, externalId: '6477600e15cb73', name: 'Saguanari Bra - Black', price: 95, images: imageMap['6477600e15cb73'] || [] },
   { id: 4, externalId: '64775fcaef5f21', name: 'Saguanari Bra - White', price: 95, images: imageMap['64775fcaef5f21'] || [] },
-  { id: 5, externalId: '64000b204a6de9', name: 'Saguanari Leggings - Black', price: 135, images: imageMap['64000b204a6de9'] || [] },
-  { id: 6, externalId: '63ec714091ff89', name: 'Saguanari Leggings - Tan', price: 135, images: imageMap['63ec714091ff89'] || [] },
+  { id: 5, externalId: '64000b204a6de9', name: 'Saguanari Leggings - White', price: 135, images: imageMap['64000b204a6de9'] || [] },
+  { id: 6, externalId: '63ec714091ff89', name: 'Saguanari Leggings - Black', price: 135, images: imageMap['63ec714091ff89'] || [] },
   { id: 7, externalId: '63d3c0f8bb5d12', name: 'Saguanari Tank - Black', price: 75, images: imageMap['63d3c0f8bb5d12'] || [] },
   { id: 8, externalId: '63d3c0f8bb5d13', name: 'Saguanari Tank - White', price: 75, images: imageMap['63d3c0f8bb5d13'] || [] },
   { id: 9, externalId: '63d3c0f8bb5d14', name: 'Saguanari Shorts - Black', price: 85, images: imageMap['63d3c0f8bb5d14'] || [] },
@@ -33,7 +73,11 @@ const server = http.createServer((req, res) => {
   // API endpoints
   if (req.url === '/api/products' && req.method === 'GET') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(mockProducts));
+    res.end(JSON.stringify(mockProducts.map((product) => ({
+      ...product,
+      variantCount: SIZE_ORDER.length,
+      colorVariants: MOCK_COLOR_VARIANTS[product.id] || null,
+    }))));
     return;
   }
 
@@ -44,7 +88,11 @@ const server = http.createServer((req, res) => {
 
     if (product) {
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(product));
+      res.end(JSON.stringify({
+        ...product,
+        colorVariants: MOCK_COLOR_VARIANTS[product.id] || null,
+        variants: buildMockVariants(product),
+      }));
     } else {
       res.writeHead(404, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'Product not found' }));

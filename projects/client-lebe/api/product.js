@@ -32,6 +32,7 @@ const imageMap = {};
 productsData.products.forEach(p => {
   imageMap[p.externalId] = p.images;
 });
+const colorVariantMap = productsData.colorVariants || {};
 
 module.exports = async (req, res) => {
   if (req.method !== 'GET') {
@@ -66,6 +67,7 @@ module.exports = async (req, res) => {
       externalId: syncProduct.external_id,
       name: syncProduct.name,
       images: customImages || [],
+      colorVariants: colorVariantMap[String(syncProduct.id)]?.colors || null,
       variants: syncVariants.map(v => ({
         id: v.variant_id,
         syncVariantId: v.id,
