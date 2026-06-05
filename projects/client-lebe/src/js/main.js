@@ -65,10 +65,14 @@ window.renderCart = function() {
 
   // Update summary
   const subtotal = Cart.getSubtotal();
-  cartSubtotal.textContent = `$${subtotal.toFixed(2)}`;
-  if (cartShipping) cartShipping.textContent = 'Calculated';
-  if (cartTax) cartTax.textContent = 'Calculated';
-  cartTotal.textContent = `$${subtotal.toFixed(2)}`;
+  if (typeof window.resetCartSummary === 'function') {
+    window.resetCartSummary();
+  } else {
+    cartSubtotal.textContent = `$${subtotal.toFixed(2)}`;
+    if (cartShipping) cartShipping.textContent = 'Calculated';
+    if (cartTax) cartTax.textContent = 'Calculated';
+    cartTotal.textContent = `$${subtotal.toFixed(2)}`;
+  }
 
   // Event handlers — dataset values are always strings; compare with String() to handle numeric IDs
   cartItems.querySelectorAll('.qty-minus').forEach(btn => {

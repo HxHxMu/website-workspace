@@ -3,12 +3,26 @@ const crypto = require('crypto');
 
 const PRINTFUL_API_BASE = 'https://api.printful.com';
 
-function hashOrder(items, shippingId) {
+function normalizeRecipientAddress(address) {
+  return {
+    name: String(address?.name || 'Valued Customer').trim(),
+    email: String(address?.email || 'customer@example.com').trim().toLowerCase(),
+    phone: String(address?.phone || '').trim(),
+    address1: String(address?.address1 || '').trim(),
+    city: String(address?.city || '').trim(),
+    state_code: String(address?.state || '').trim().toUpperCase(),
+    zip: String(address?.zip || '').trim(),
+    country_code: String(address?.country || 'US').trim().toUpperCase(),
+  };
+}
+
+function hashOrder(items, shippingId, address) {
   const normalized = items
     .map(i => ({ id: String(i.syncVariantId), qty: Number(i.quantity) }))
     .sort((a, b) => a.id.localeCompare(b.id));
+  const recipient = normalizeRecipientAddress(address);
   return crypto.createHash('sha256')
-    .update(JSON.stringify({ items: normalized, shipping: shippingId }))
+    .update(JSON.stringify({ items: normalized, shipping: shippingId, recipient }))
     .digest('hex');
 }
 
@@ -79,17 +93,10 @@ module.exports = async (req, res) => {
     }
 
     // 1. Call Printful estimate endpoint to get shipping, taxes, and subtotal securely on the server
+    const normalizedRecipient = normalizeRecipientAddress(address);
+
     const estimateData = {
-      recipient: {
-        name: address.name || 'Valued Customer',
-        email: address.email || 'customer@example.com',
-        phone: address.phone || '',
-        address1: address.address1,
-        city: address.city,
-        state_code: String(address.state).toUpperCase(),
-        zip: String(address.zip),
-        country_code: String(address.country || 'US').toUpperCase()
-      },
+      recipient: normalizedRecipient,
       items: items.map(item => ({
         sync_variant_id: Number(item.syncVariantId),
         quantity: Number(item.quantity)
@@ -158,12 +165,15 @@ module.exports = async (req, res) => {
     console.log(`✓ Calculated costs: subtotal=${subtotal}, discount=${discountAmount}, shipping=${shipping}, tax=${tax}, total=${finalTotal} (${finalCents} cents)`);
 
     // 2. Create Stripe Payment Intent for the calculated final total (cents)
+    const orderHash = hashOrder(items, shippingMethod.id, address);
+
     const paymentIntent = await stripe.paymentIntents.create({
       amount: finalCents,
       currency: 'usd',
       payment_method_types: ['card'],
       metadata: {
-        lebe_order_hash: hashOrder(items, shippingMethod.id),
+        lebe_order_hash: orderHash,
+        expected_amount_cents: String(finalCents),
         promo_code: appliedDiscount?.code || '',
         discount_amount: String(discountAmount.toFixed(2)),
       }
@@ -172,6 +182,7 @@ module.exports = async (req, res) => {
     res.status(200).json({
       clientSecret: paymentIntent.client_secret,
       paymentIntentId: paymentIntent.id,
+      orderHash,
       shippingMethod: {
         id: shippingMethod.id,
         label: shippingMethod.label || shippingMethod.id,

@@ -424,6 +424,7 @@ document.addEventListener('DOMContentLoaded', () => {
     shippingRates: [],
     selectedShipping: null,
     paymentSetup: null,
+    checkoutItems: null,
     promoCode: '',
     appliedDiscount: null,
   };
@@ -783,6 +784,7 @@ document.addEventListener('DOMContentLoaded', () => {
     state.shippingRates = [];
     state.selectedShipping = null;
     state.paymentSetup = null;
+    state.checkoutItems = null;
     clearPaymentElement();
     refs.checkoutError.classList.add('hidden');
     refs.checkoutError.textContent = '';
@@ -967,6 +969,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const cart = await hydrateMissingVariantIds(Cart.getCart());
+    state.checkoutItems = cart.map((item) => ({ ...item }));
 
     refs.continueToPaymentBtn.disabled = true;
     refs.continueToPaymentBtn.textContent = 'Calculating...';
@@ -1329,7 +1332,9 @@ document.addEventListener('DOMContentLoaded', () => {
         ...state.verifiedAddress,
       };
 
-      const cart = await hydrateMissingVariantIds(Cart.getCart());
+      const cart = Array.isArray(state.checkoutItems) && state.checkoutItems.length > 0
+        ? state.checkoutItems.map((item) => ({ ...item }))
+        : await hydrateMissingVariantIds(Cart.getCart());
 
       const response = await fetch('/api/checkout', {
         method: 'POST',
@@ -1339,12 +1344,13 @@ document.addEventListener('DOMContentLoaded', () => {
           customer,
           paymentIntentId: paymentIntent.id,
           shippingMethod: state.selectedShipping,
+          orderHash: state.paymentSetup?.orderHash || '',
         })
       });
 
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data.message || 'Order failed');
+        throw new Error(data.message || data.error || 'Order failed');
       }
 
       Cart.clearCart();
