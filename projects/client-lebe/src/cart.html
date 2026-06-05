@@ -305,7 +305,7 @@
             Shipping and tax are calculated after your address is verified.
           </div>
 
-          <div id="promo-section">
+          <div id="promo-section" class="cart-only" data-cart-only>
             <label for="promo" class="mt-6 block text-[11px] font-bold uppercase tracking-[0.28em] text-[#050505]/50">Code.</label>
             <div class="mt-3 flex border border-[#050505]">
               <input id="promo" type="text" placeholder="code" class="min-w-0 flex-1 bg-white px-4 py-3 text-sm uppercase outline-none placeholder:text-[#050505]/30" />
@@ -316,6 +316,10 @@
             <p id="promo-status" class="mt-3 hidden text-[11px] leading-5 text-[#050505]/60"></p>
 
             <p class="mt-5 text-[11px] text-[#050505]/60">Made-to-order. Ships in ~14 days.</p>
+          </div>
+
+          <div id="applied-promo-note" class="hidden mt-6 border-t border-[#050505]/15 pt-5 text-[11px] leading-5 text-[#050505]/60">
+            Discount code <span id="applied-promo-code" class="font-bold uppercase tracking-[0.18em] text-[#050505]"></span> applied.
           </div>
 
           <div class="mt-6 flex justify-between text-[20px] font-bold uppercase tracking-[0.12em]">
@@ -494,6 +498,8 @@ document.addEventListener('DOMContentLoaded', () => {
     promoApplyBtn: document.getElementById('promo-apply-btn'),
     promoStatus: document.getElementById('promo-status'),
     promoSection: document.getElementById('promo-section'),
+    appliedPromoNote: document.getElementById('applied-promo-note'),
+    appliedPromoCode: document.getElementById('applied-promo-code'),
   };
 
   const stepTitles = {
@@ -569,6 +575,7 @@ document.addEventListener('DOMContentLoaded', () => {
     refs.tax.textContent = 'Calculated';
     refs.total.textContent = formatMoney(Math.max(0, subtotal - (state.appliedDiscount?.amount || 0)));
     refs.summaryCopy.textContent = getSummaryNote();
+    renderAppliedPromoNote();
   }
 
   function applyCalculatedSummary(summary) {
@@ -579,6 +586,7 @@ document.addEventListener('DOMContentLoaded', () => {
     refs.tax.textContent = formatMoney(summary.tax);
     refs.total.textContent = formatMoney(summary.total);
     refs.summaryCopy.textContent = getSummaryNote();
+    renderAppliedPromoNote();
   }
 
   function setPromoStatus(message = '', isError = false) {
@@ -586,6 +594,14 @@ document.addEventListener('DOMContentLoaded', () => {
     refs.promoStatus.textContent = message;
     refs.promoStatus.classList.toggle('text-[#050505]/60', !isError);
     refs.promoStatus.classList.toggle('text-[#8a1f1f]', !!isError);
+  }
+
+  function renderAppliedPromoNote() {
+    const showNote = state.mode === 'checkout' && !!state.appliedDiscount?.code;
+    refs.appliedPromoNote?.classList.toggle('hidden', !showNote);
+    if (refs.appliedPromoCode) {
+      refs.appliedPromoCode.textContent = state.appliedDiscount?.code || '';
+    }
   }
 
   function setCheckoutMode(mode) {
@@ -613,6 +629,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     refs.summaryCopy.textContent = getSummaryNote();
+    renderAppliedPromoNote();
   }
 
   function setStep(step) {
@@ -624,6 +641,7 @@ document.addEventListener('DOMContentLoaded', () => {
     refs.shippingMethodStep.classList.toggle('hidden', step !== 2);
     refs.paymentStep.classList.toggle('hidden', step !== 3);
     refs.summaryCopy.textContent = getSummaryNote();
+    renderAppliedPromoNote();
   }
 
   function setShippingFormDisabled(disabled) {
