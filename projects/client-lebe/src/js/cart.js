@@ -74,6 +74,16 @@
       saveCart([]);
     },
 
+    replaceCart(items) {
+      const normalized = Array.isArray(items)
+        ? items.map((item) => ({
+            ...item,
+            syncVariantId: String(item.syncVariantId || ''),
+          }))
+        : [];
+      saveCart(normalized);
+    },
+
     getCount() {
       return getCart().reduce((sum, item) => sum + item.quantity, 0);
     },

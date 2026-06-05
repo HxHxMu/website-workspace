@@ -807,8 +807,97 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.resetCheckoutState = resetCheckoutState;
 
+  async function hydrateMissingVariantIds(items) {
+    const cartItems = Array.isArray(items) ? items : [];
+    const itemsNeedingRepair = cartItems.filter((item) => !Number(item.variantId) && item.productId);
+    if (itemsNeedingRepair.length === 0) {
+      return cartItems;
+    }
+
+    const detailCache = new Map();
+
+    const hydratedItems = await Promise.all(cartItems.map(async (item) => {
+      if (Number(item.variantId) || !item.productId) {
+        return item;
+      }
+
+      const productId = String(item.productId);
+      if (!detailCache.has(productId)) {
+        detailCache.set(productId, fetch(`/api/product?id=${encodeURIComponent(productId)}`).then(async (response) => {
+          const data = await response.json();
+          if (!response.ok) {
+            throw new Error(data.error || 'Unable to refresh product data.');
+          }
+          return data;
+        }));
+      }
+
+      try {
+        const product = await detailCache.get(productId);
+        const variants = Array.isArray(product?.variants) ? product.variants : [];
+        const normalizedItemSize = String(item.size || '').trim().toLowerCase();
+        const normalizedItemColor = String(item.color || '').trim().toLowerCase();
+        const normalizedItemName = String(item.name || '').trim().toLowerCase();
+
+        let matchingVariant = variants.find((variant) => (
+          item.syncVariantId && String(variant.syncVariantId) === String(item.syncVariantId)
+        ));
+
+        if (!matchingVariant) {
+          matchingVariant = variants.find((variant) => {
+            const sameSize = !normalizedItemSize || String(variant.size || '').trim().toLowerCase() === normalizedItemSize;
+            const sameColor = !normalizedItemColor || String(variant.color || '').trim().toLowerCase() === normalizedItemColor;
+            return sameSize && sameColor;
+          });
+        }
+
+        if (!matchingVariant) {
+          matchingVariant = variants.find((variant) => {
+            const sameSize = !normalizedItemSize || String(variant.size || '').trim().toLowerCase() === normalizedItemSize;
+            return sameSize;
+          });
+        }
+
+        if (!matchingVariant) {
+          matchingVariant = variants.find((variant) => {
+            const variantName = `${product?.name || ''} ${variant.size || ''} ${variant.color || ''}`.trim().toLowerCase();
+            return normalizedItemName && variantName.includes(normalizedItemName);
+          });
+        }
+
+        if (!matchingVariant && variants.length === 1) {
+          matchingVariant = variants[0];
+        }
+
+        if (!matchingVariant) {
+          return item;
+        }
+
+        return {
+          ...item,
+          variantId: Number(matchingVariant.id) || item.variantId,
+          syncVariantId: item.syncVariantId || String(matchingVariant.syncVariantId || ''),
+          size: item.size || matchingVariant.size || '',
+          color: item.color || matchingVariant.color || '',
+          price: Number(item.price) || Number(matchingVariant.price) || 0,
+          options: Array.isArray(item.options) && item.options.length > 0 ? item.options : (matchingVariant.options || []),
+        };
+      } catch (error) {
+        console.warn('Unable to hydrate missing variant id for cart item:', item, error);
+        return item;
+      }
+    }));
+
+    if (hydratedItems.some((item, index) => Number(item.variantId) !== Number(cartItems[index].variantId))) {
+      Cart.replaceCart(hydratedItems);
+      window.renderCart?.();
+    }
+
+    return hydratedItems;
+  }
+
   async function fetchShippingRates(address) {
-    const cart = Cart.getCart();
+    const cart = await hydrateMissingVariantIds(Cart.getCart());
     const response = await fetch('/api/shipping-rates', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -877,6 +966,8 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    const cart = await hydrateMissingVariantIds(Cart.getCart());
+
     refs.continueToPaymentBtn.disabled = true;
     refs.continueToPaymentBtn.textContent = 'Calculating...';
     showStep2State({ loading: true, error: '' });
@@ -890,7 +981,7 @@ document.addEventListener('DOMContentLoaded', () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          items: Cart.getCart(),
+          items: cart,
           address: state.verifiedAddress,
           shippingMethod: state.selectedShipping,
           previousPaymentIntentId: state.paymentSetup?.paymentIntentId || null,
@@ -1238,11 +1329,13 @@ document.addEventListener('DOMContentLoaded', () => {
         ...state.verifiedAddress,
       };
 
+      const cart = await hydrateMissingVariantIds(Cart.getCart());
+
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          items: Cart.getCart(),
+          items: cart,
           customer,
           paymentIntentId: paymentIntent.id,
           shippingMethod: state.selectedShipping,

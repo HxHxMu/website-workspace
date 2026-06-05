@@ -161,30 +161,40 @@ async function checkAndShowUpsell(cart) {
 
   // Fetch complementary product details
   try {
-    const response = await fetch(`/api/products`);
-    const products = await response.json();
-    const complementProduct = products.find(p => String(p.id) === String(upsellData.productId));
+    const response = await fetch(`/api/product?id=${encodeURIComponent(upsellData.productId)}`);
+    const complementProduct = await response.json();
 
-    if (!complementProduct) {
+    if (!response.ok || !complementProduct || !Array.isArray(complementProduct.variants) || complementProduct.variants.length === 0) {
       document.getElementById('upsell-module').classList.add('hidden');
       return;
     }
+
+    const matchingVariant = complementProduct.variants.find((variant) => {
+      const sameColor = !firstItem.color || !variant.color || String(variant.color).toLowerCase() === String(firstItem.color).toLowerCase();
+      const sameSize = !firstItem.size || !variant.size || String(variant.size).toLowerCase() === String(firstItem.size).toLowerCase();
+      return sameColor && sameSize;
+    }) || complementProduct.variants.find((variant) => {
+      const sameColor = !firstItem.color || !variant.color || String(variant.color).toLowerCase() === String(firstItem.color).toLowerCase();
+      return sameColor;
+    }) || complementProduct.variants[0];
 
     // Show upsell module with complementary product
     const upsellModule = document.getElementById('upsell-module');
     document.getElementById('upsell-name').textContent = upsellData.name;
     document.getElementById('upsell-description').textContent = upsellData.description;
-    document.getElementById('upsell-price').textContent = `$${complementProduct.price}`;
+    document.getElementById('upsell-price').textContent = `$${Number(matchingVariant.price || complementProduct.price || 0)}`;
     document.getElementById('upsell-image-src').src = complementProduct.images?.[0] || '';
 
     // Store upsell product data for add button
     const addBtn = document.getElementById('upsell-add-btn');
     addBtn.dataset.productId = complementProduct.id;
-    addBtn.dataset.variantId = complementProduct.variants?.[0]?.id || '';
-    addBtn.dataset.syncVariantId = complementProduct.variants?.[0]?.syncVariantId || '';
-    addBtn.dataset.price = complementProduct.price;
+    addBtn.dataset.variantId = matchingVariant?.id || '';
+    addBtn.dataset.syncVariantId = matchingVariant?.syncVariantId || '';
+    addBtn.dataset.price = matchingVariant?.price || complementProduct.price || 0;
     addBtn.dataset.name = complementProduct.name;
     addBtn.dataset.image = complementProduct.images?.[0] || '';
+    addBtn.dataset.size = matchingVariant?.size || firstItem.size || 'M';
+    addBtn.dataset.color = matchingVariant?.color || firstItem.color || '';
 
     // Handle add button click
     addBtn.onclick = (e) => {
@@ -194,8 +204,8 @@ async function checkAndShowUpsell(cart) {
         variantId: Number(addBtn.dataset.variantId) || 0,
         syncVariantId: addBtn.dataset.syncVariantId,
         name: addBtn.dataset.name,
-        size: firstItem.size || 'M',
-        color: firstItem.color,
+        size: addBtn.dataset.size || firstItem.size || 'M',
+        color: addBtn.dataset.color || firstItem.color,
         price: Number(addBtn.dataset.price),
         quantity: 1,
         image: addBtn.dataset.image,
