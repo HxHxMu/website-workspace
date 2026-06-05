@@ -436,6 +436,7 @@ document.addEventListener('DOMContentLoaded', () => {
     stepKicker: document.getElementById('checkout-step-kicker'),
     stepTitle: document.getElementById('checkout-step-title'),
     cartItemsPanel: document.getElementById('cart-items-panel'),
+    upsellModule: document.getElementById('upsell-module'),
     checkoutPanel: document.getElementById('checkout-panel'),
     cartContent: document.getElementById('cart-content'),
     emptyState: document.getElementById('cart-empty'),
@@ -596,6 +597,7 @@ document.addEventListener('DOMContentLoaded', () => {
     refs.bagHero.classList.toggle('hidden', isCheckout || isSuccess);
     refs.checkoutHero.classList.toggle('hidden', !isCheckout);
     refs.cartItemsPanel.classList.toggle('hidden', isCheckout || isSuccess);
+    refs.upsellModule?.classList.toggle('hidden', isCheckout || isSuccess || Cart.getCart().length === 0);
     refs.checkoutPanel.classList.toggle('hidden', !isCheckout);
     refs.cartContent.classList.toggle('hidden', isSuccess);
     refs.orderConfirmation.classList.toggle('hidden', !isSuccess);
