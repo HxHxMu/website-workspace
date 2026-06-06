@@ -1,6 +1,7 @@
 const {
   CheckoutError,
   PRINTFUL_API_BASE,
+  SUPPORTED_COUNTRY_CODE,
   buildShippingRateItems,
   hydratePrintfulItems,
   normalizeRecipientAddress,
@@ -32,13 +33,18 @@ module.exports = async (req, res) => {
       throw new CheckoutError(400, 'Missing or incomplete shipping address.');
     }
 
+    const recipient = normalizeRecipientAddress(address);
+    if (recipient.country_code !== SUPPORTED_COUNTRY_CODE) {
+      throw new CheckoutError(400, 'We currently ship only within the United States.');
+    }
+
     const hydratedItems = await hydratePrintfulItems(items, PRINTFUL_API_KEY, {
       requireVariantId: true,
       requireSyncVariantId: true,
     });
 
     const payload = {
-      recipient: normalizeRecipientAddress(address),
+      recipient,
       items: buildShippingRateItems(hydratedItems),
       currency: 'USD',
       locale: 'en_US',

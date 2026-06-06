@@ -132,6 +132,12 @@ const PRODUCT_SETS = {
 
 // Color-based product matching for upsell
 const PRODUCT_COLOR_UPSELL_MAP = {
+  // Saguanari Bra (local dev mocks)
+  '3': { productId: 6, name: 'Saguanari Leggings', description: 'Pair it with the matching leggings for the full Saguanari set.' },
+  '4': { productId: 5, name: 'Saguanari Leggings', description: 'Pair it with the matching leggings for the full Saguanari set.' },
+  // Saguanari Leggings (local dev mocks)
+  '5': { productId: 4, name: 'Saguanari Sports Bra', description: 'Pair it with the matching bra for the full Saguanari set.' },
+  '6': { productId: 3, name: 'Saguanari Sports Bra', description: 'Pair it with the matching bra for the full Saguanari set.' },
   // Saguanari Bra
   '309483674': { productId: 301596573, name: 'Saguanari Leggings', description: 'Pair it with the matching leggings for the full Saguanari set.' },
   '309483736': { productId: 300307426, name: 'Saguanari Leggings', description: 'Pair it with the matching leggings for the full Saguanari set.' },
@@ -141,9 +147,12 @@ const PRODUCT_COLOR_UPSELL_MAP = {
 };
 
 async function checkAndShowUpsell(cart) {
+  const upsellModule = document.getElementById('upsell-module');
+  if (!upsellModule) return;
+
   // Don't show upsell if cart is empty or has multiple different products
   if (cart.length === 0) {
-    document.getElementById('upsell-module').classList.add('hidden');
+    upsellModule.classList.add('hidden');
     return;
   }
 
@@ -152,14 +161,14 @@ async function checkAndShowUpsell(cart) {
   const upsellData = PRODUCT_COLOR_UPSELL_MAP[firstItem.productId];
 
   if (!upsellData) {
-    document.getElementById('upsell-module').classList.add('hidden');
+    upsellModule.classList.add('hidden');
     return;
   }
 
   // Check if complementary product is already in cart
   const hasComplement = cart.some(item => String(item.productId) === String(upsellData.productId));
   if (hasComplement) {
-    document.getElementById('upsell-module').classList.add('hidden');
+    upsellModule.classList.add('hidden');
     return;
   }
 
@@ -169,7 +178,7 @@ async function checkAndShowUpsell(cart) {
     const complementProduct = await response.json();
 
     if (!response.ok || !complementProduct || !Array.isArray(complementProduct.variants) || complementProduct.variants.length === 0) {
-      document.getElementById('upsell-module').classList.add('hidden');
+      upsellModule.classList.add('hidden');
       return;
     }
 
@@ -183,7 +192,6 @@ async function checkAndShowUpsell(cart) {
     }) || complementProduct.variants[0];
 
     // Show upsell module with complementary product
-    const upsellModule = document.getElementById('upsell-module');
     document.getElementById('upsell-name').textContent = upsellData.name;
     document.getElementById('upsell-description').textContent = upsellData.description;
     document.getElementById('upsell-price').textContent = `$${Number(matchingVariant.price || complementProduct.price || 0)}`;
@@ -222,7 +230,7 @@ async function checkAndShowUpsell(cart) {
     upsellModule.classList.remove('hidden');
   } catch (error) {
     console.error('Error loading upsell product:', error);
-    document.getElementById('upsell-module').classList.add('hidden');
+    upsellModule.classList.add('hidden');
   }
 };
 

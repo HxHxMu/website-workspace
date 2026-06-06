@@ -1,6 +1,26 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const productsApi = require('./api/products');
+const productApi = require('./api/product');
+
+['.env.local', '.env'].forEach((envFile) => {
+  const envPath = path.join(__dirname, envFile);
+  if (!fs.existsSync(envPath)) return;
+
+  fs.readFileSync(envPath, 'utf8')
+    .split(/\r?\n/)
+    .forEach((line) => {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('#')) return;
+      const match = trimmed.match(/^([A-Za-z_][A-Za-z0-9_]*)=(.*)$/);
+      if (!match) return;
+
+      const [, key, rawValue] = match;
+      if (process.env[key]) return;
+      process.env[key] = rawValue.trim().replace(/^['"]|['"]$/g, '');
+    });
+});
 
 const productsData = JSON.parse(fs.readFileSync(path.join(__dirname, 'src/data/products.json'), 'utf8'));
 
@@ -36,6 +56,13 @@ const MOCK_COLOR_VARIANTS = {
   ],
 };
 
+const REAL_TO_MOCK_PRODUCT_ID = {
+  309483736: 3,
+  309483674: 4,
+  301596573: 5,
+  300307426: 6,
+};
+
 const SIZE_ORDER = ['XS', 'S', 'M', 'L', 'XL'];
 
 function buildMockVariants(product) {
@@ -69,39 +96,162 @@ const mockProducts = [
   { id: 15, externalId: '63d3c0f8bb5d20', name: 'Ainbo Tank - Terracotta', price: 65, images: imageMap['63d3c0f8bb5d20'] || [] }
 ];
 
-const server = http.createServer((req, res) => {
+function sendJson(res, status, data) {
+  res.writeHead(status, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify(data));
+}
+
+function readJsonBody(req) {
+  return new Promise((resolve) => {
+    let raw = '';
+    req.on('data', (chunk) => {
+      raw += chunk;
+    });
+    req.on('end', () => {
+      if (!raw) {
+        resolve({});
+        return;
+      }
+      try {
+        resolve(JSON.parse(raw));
+      } catch (_) {
+        resolve({});
+      }
+    });
+    req.on('error', () => resolve({}));
+  });
+}
+
+async function runApiHandler(handler, req, res, query = {}) {
+  req.query = query;
+
+  res.status = (statusCode) => {
+    res.statusCode = statusCode;
+    return res;
+  };
+
+  res.json = (data) => {
+    if (!res.headersSent) {
+      res.setHeader('Content-Type', 'application/json');
+    }
+    res.end(JSON.stringify(data));
+    return res;
+  };
+
+  try {
+    await handler(req, res);
+  } catch (error) {
+    console.error('Local API handler failed:', error);
+    if (!res.headersSent) {
+      sendJson(res, 500, { error: 'Local API handler failed', message: error.message });
+    }
+  }
+}
+
+const server = http.createServer(async (req, res) => {
+  const requestUrl = new URL(req.url, 'http://localhost');
+
   // API endpoints
-  if (req.url === '/api/products' && req.method === 'GET') {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(mockProducts.map((product) => ({
-      ...product,
-      variantCount: SIZE_ORDER.length,
-      colorVariants: MOCK_COLOR_VARIANTS[product.id] || null,
-    }))));
+  if (requestUrl.pathname === '/api/products' && req.method === 'GET') {
+    await runApiHandler(productsApi, req, res);
     return;
   }
 
-  if (req.url.startsWith('/api/product') && req.method === 'GET') {
-    const url = new URL(req.url, 'http://localhost');
-    const id = url.searchParams.get('id');
-    const product = mockProducts.find(p => p.id === parseInt(id));
+  if (requestUrl.pathname === '/api/product' && req.method === 'GET') {
+    await runApiHandler(productApi, req, res, {
+      id: requestUrl.searchParams.get('id'),
+    });
+    return;
+  }
 
-    if (product) {
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({
-        ...product,
-        colorVariants: MOCK_COLOR_VARIANTS[product.id] || null,
-        variants: buildMockVariants(product),
-      }));
-    } else {
-      res.writeHead(404, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'Product not found' }));
+  if (requestUrl.pathname === '/api/shipping-rates' && req.method === 'POST') {
+    const body = await readJsonBody(req);
+    const address = body.address || {};
+    if (!address.city || !address.state || !address.zip) {
+      sendJson(res, 400, { error: 'Missing or incomplete shipping address.' });
+      return;
     }
+    if (String(address.country || address.country_code || 'US').toUpperCase() !== 'US') {
+      sendJson(res, 400, { error: 'We currently ship only within the United States.' });
+      return;
+    }
+
+    sendJson(res, 200, {
+      rates: [
+        {
+          id: 'STANDARD',
+          name: 'Standard',
+          rate: 7.95,
+          currency: 'USD',
+          minDeliveryDays: 3,
+          maxDeliveryDays: 6,
+        },
+        {
+          id: 'EXPRESS',
+          name: 'Express',
+          rate: 14.95,
+          currency: 'USD',
+          minDeliveryDays: 2,
+          maxDeliveryDays: 3,
+        },
+      ],
+    });
+    return;
+  }
+
+  if (requestUrl.pathname === '/api/promo-code' && req.method === 'POST') {
+    const body = await readJsonBody(req);
+    const code = String(body.code || '').trim().toUpperCase();
+    const subtotal = Math.max(0, Number(body.subtotal) || 0);
+    if (!code) {
+      sendJson(res, 400, { error: 'Please enter a discount code.' });
+      return;
+    }
+
+    if (['LEBE10', 'SAVE10', 'TEST10'].includes(code)) {
+      sendJson(res, 200, {
+        discount: {
+          code,
+          percentOff: 10,
+          amountOff: null,
+          name: 'Local test discount',
+        },
+        discountAmount: Number((subtotal * 0.1).toFixed(2)),
+      });
+      return;
+    }
+
+    sendJson(res, 400, {
+      error: 'Promo code was not found. In local dev, use LEBE10, SAVE10, or TEST10; real Stripe promo codes work on the Vercel preview.',
+    });
+    return;
+  }
+
+  if (requestUrl.pathname === '/api/stripe-config' && req.method === 'GET') {
+    const publishableKey = process.env.STRIPE_PUBLISHABLE_KEY;
+    if (!publishableKey) {
+      sendJson(res, 500, { error: 'STRIPE_PUBLISHABLE_KEY is not set locally. Use the Vercel preview for real payments.' });
+      return;
+    }
+    sendJson(res, 200, { publishableKey });
+    return;
+  }
+
+  if (requestUrl.pathname === '/api/stripe-intent' && req.method === 'POST') {
+    sendJson(res, 503, {
+      error: 'Local dev can mock shipping and promo codes, but real payment setup must be tested on the Vercel preview.',
+      localDev: true,
+    });
+    return;
+  }
+
+  if (requestUrl.pathname.startsWith('/api/')) {
+    sendJson(res, 404, { error: 'Local API route not implemented.' });
     return;
   }
 
   // URL rewrites from vercel.json
-  let urlPath = new URL(req.url, `http://localhost`).pathname;
+  let urlPath = requestUrl.pathname;
 
   if (urlPath === '/product') {
     urlPath = '/product.html';
@@ -154,6 +304,7 @@ const server = http.createServer((req, res) => {
 });
 
 const PORT = 8080;
-server.listen(PORT, () => {
-  console.log(`Dev server running at http://localhost:${PORT}`);
+const HOST = '127.0.0.1';
+server.listen(PORT, HOST, () => {
+  console.log(`Dev server running at http://${HOST}:${PORT}`);
 });

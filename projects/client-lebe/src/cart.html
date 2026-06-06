@@ -131,8 +131,9 @@
                   <input type="text" id="c-zip" class="h-12 w-full border border-[#050505]/15 bg-white px-4 text-sm outline-none transition focus:border-[#050505]" />
                 </div>
                 <div>
-                  <label for="c-country" class="mb-4 block text-[11px] font-bold uppercase tracking-[0.34em] text-[#050505]/50">Country</label>
-                  <input type="text" id="c-country" value="US" class="h-12 w-full border border-[#050505]/15 bg-white px-4 text-sm uppercase outline-none transition focus:border-[#050505]" />
+                  <p class="mb-4 block text-[11px] font-bold uppercase tracking-[0.34em] text-[#050505]/50">Ships To</p>
+                  <p class="flex h-12 items-center border border-[#050505]/15 bg-white px-4 text-sm text-[#050505]/65">United States only</p>
+                  <input type="hidden" id="c-country" value="US" />
                 </div>
               </div>
 
@@ -227,8 +228,9 @@
                         <input type="text" id="b-zip" class="h-12 w-full border border-[#050505]/15 bg-white px-4 text-sm outline-none transition focus:border-[#050505]" />
                       </div>
                       <div>
-                        <label for="b-country" class="mb-4 block text-[11px] font-bold uppercase tracking-[0.34em] text-[#050505]/50">Billing Country</label>
-                        <input type="text" id="b-country" value="US" class="h-12 w-full border border-[#050505]/15 bg-white px-4 text-sm uppercase outline-none transition focus:border-[#050505]" />
+                        <p class="mb-4 block text-[11px] font-bold uppercase tracking-[0.34em] text-[#050505]/50">Billing Country</p>
+                        <p class="flex h-12 items-center border border-[#050505]/15 bg-white px-4 text-sm text-[#050505]/65">United States</p>
+                        <input type="hidden" id="b-country" value="US" />
                       </div>
                     </div>
                   </div>
@@ -599,6 +601,17 @@ document.addEventListener('DOMContentLoaded', () => {
     refs.promoStatus.classList.toggle('text-[#8a1f1f]', !!isError);
   }
 
+  async function readJsonResponse(response, fallbackMessage) {
+    const contentType = response.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      return response.json();
+    }
+
+    const text = await response.text();
+    const isHtml = /^\s*</.test(text);
+    throw new Error(isHtml ? fallbackMessage : (text || fallbackMessage));
+  }
+
   function renderAppliedPromoNote() {
     const showNote = state.mode === 'checkout' && !!state.appliedDiscount?.code;
     refs.appliedPromoNote?.classList.toggle('hidden', !showNote);
@@ -648,8 +661,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function setShippingFormDisabled(disabled) {
-    [refs.name, refs.email, refs.phone, refs.address1, refs.city, refs.state, refs.zip, refs.country].forEach((input) => {
-      input.disabled = disabled;
+    [refs.name, refs.email, refs.phone, refs.address1, refs.city, refs.state, refs.zip].forEach((input) => {
+      if (input) input.disabled = disabled;
     });
     refs.continueToMethodsBtn.disabled = disabled;
     refs.continueToMethodsBtn.textContent = disabled ? 'Calculating...' : 'Continue to Payment';
@@ -686,7 +699,7 @@ document.addEventListener('DOMContentLoaded', () => {
       city: refs.city.value.trim(),
       state: refs.state.value.trim(),
       zip: refs.zip.value.trim(),
-      country: refs.country.value.trim() || 'US',
+      country: 'US',
     };
   }
 
@@ -698,7 +711,7 @@ document.addEventListener('DOMContentLoaded', () => {
     refs.billingCity.value = refs.city.value.trim();
     refs.billingState.value = refs.state.value.trim();
     refs.billingZip.value = refs.zip.value.trim();
-    refs.billingCountry.value = refs.country.value.trim() || 'US';
+    refs.billingCountry.value = 'US';
   }
 
   function getBillingDetails() {
@@ -712,7 +725,7 @@ document.addEventListener('DOMContentLoaded', () => {
           city: refs.city.value.trim(),
           state: refs.state.value.trim(),
           postal_code: refs.zip.value.trim(),
-          country: refs.country.value.trim() || 'US',
+          country: 'US',
         }
       };
     }
@@ -726,7 +739,7 @@ document.addEventListener('DOMContentLoaded', () => {
         city: refs.billingCity.value.trim(),
         state: refs.billingState.value.trim(),
         postal_code: refs.billingZip.value.trim(),
-        country: refs.billingCountry.value.trim() || 'US',
+        country: 'US',
       }
     };
   }
@@ -818,7 +831,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function hydrateMissingVariantIds(items) {
     const cartItems = Array.isArray(items) ? items : [];
-    const itemsNeedingRepair = cartItems.filter((item) => !Number(item.variantId) && item.productId);
+    const itemsNeedingRepair = cartItems.filter((item) => item.productId);
     if (itemsNeedingRepair.length === 0) {
       return cartItems;
     }
@@ -826,14 +839,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const detailCache = new Map();
 
     const hydratedItems = await Promise.all(cartItems.map(async (item) => {
-      if (Number(item.variantId) || !item.productId) {
+      if (!item.productId) {
         return item;
       }
 
       const productId = String(item.productId);
       if (!detailCache.has(productId)) {
         detailCache.set(productId, fetch(`/api/product?id=${encodeURIComponent(productId)}`).then(async (response) => {
-          const data = await response.json();
+          const data = await readJsonResponse(response, 'Product API returned a non-JSON response. Please refresh and try again.');
           if (!response.ok) {
             throw new Error(data.error || 'Unable to refresh product data.');
           }
@@ -851,6 +864,12 @@ document.addEventListener('DOMContentLoaded', () => {
         let matchingVariant = variants.find((variant) => (
           item.syncVariantId && String(variant.syncVariantId) === String(item.syncVariantId)
         ));
+
+        if (!matchingVariant) {
+          matchingVariant = variants.find((variant) => (
+            item.variantId && Number(variant.id) === Number(item.variantId)
+          ));
+        }
 
         if (!matchingVariant) {
           matchingVariant = variants.find((variant) => {
@@ -888,7 +907,7 @@ document.addEventListener('DOMContentLoaded', () => {
           syncVariantId: item.syncVariantId || String(matchingVariant.syncVariantId || ''),
           size: item.size || matchingVariant.size || '',
           color: item.color || matchingVariant.color || '',
-          price: Number(item.price) || Number(matchingVariant.price) || 0,
+          price: Number(matchingVariant.price) || Number(item.price) || 0,
           options: Array.isArray(item.options) && item.options.length > 0 ? item.options : (matchingVariant.options || []),
         };
       } catch (error) {
@@ -897,7 +916,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }));
 
-    if (hydratedItems.some((item, index) => Number(item.variantId) !== Number(cartItems[index].variantId))) {
+    if (hydratedItems.some((item, index) => (
+      Number(item.variantId) !== Number(cartItems[index].variantId) ||
+      Number(item.price) !== Number(cartItems[index].price)
+    ))) {
       Cart.replaceCart(hydratedItems);
       window.renderCart?.();
     }
@@ -913,7 +935,7 @@ document.addEventListener('DOMContentLoaded', () => {
       body: JSON.stringify({ items: cart, address }),
     });
 
-    const data = await response.json();
+    const data = await readJsonResponse(response, 'Shipping API returned a non-JSON response. Please refresh and try again.');
     if (!response.ok) {
       throw new Error(data.error || 'We couldn’t load shipping options right now. Please try again.');
     }
@@ -1007,9 +1029,11 @@ document.addEventListener('DOMContentLoaded', () => {
         signal: paymentSetupAbortController.signal,
       });
 
-      const data = await response.json();
+      const data = await readJsonResponse(response, 'Payment setup API returned a non-JSON response. Please refresh and try again.');
       if (!response.ok) {
-        throw new Error(data.error || 'We couldn’t calculate this shipping method right now.');
+        const error = new Error(data.error || 'We couldn’t calculate this shipping method right now.');
+        error.isLocalDevPaymentSetup = !!data.localDev;
+        throw error;
       }
       if (requestId !== paymentSetupRequestId) {
         return;
@@ -1035,7 +1059,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (requestId !== paymentSetupRequestId) {
         return;
       }
-      showStep2State({ loading: false, error: `${error.message}\n\nThis shipping method is no longer available for your address or items.` });
+      showStep2State({ loading: false, error: error.message });
+      refs.continueToPaymentBtn.disabled = true;
+      refs.continueToPaymentBtn.textContent = error.isLocalDevPaymentSetup ? 'Use Vercel Preview' : 'Continue to Payment';
       resetCartSummary();
       return;
     }
@@ -1060,7 +1086,10 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       if (!stripeInstance) {
         const configResponse = await fetch('/api/stripe-config');
-        const configData = await configResponse.json();
+        const configData = await readJsonResponse(configResponse, 'Stripe config API returned a non-JSON response. Please refresh and try again.');
+        if (!configResponse.ok) {
+          throw new Error(configData.error || 'Stripe config is unavailable.');
+        }
         stripeInstance = Stripe(configData.publishableKey);
       }
 
@@ -1190,7 +1219,7 @@ document.addEventListener('DOMContentLoaded', () => {
       renderShippingRates();
       await preparePaymentSetup();
     } catch (error) {
-      showStep2State({ loading: false, error: `${error.message}\n\nThis shipping method is no longer available for your address or items.` });
+      showStep2State({ loading: false, error: error.message });
     } finally {
       setShippingFormDisabled(false);
     }
@@ -1282,7 +1311,7 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code, subtotal: Cart.getSubtotal() }),
       });
-      const data = await response.json();
+      const data = await readJsonResponse(response, 'Promo code API returned a non-JSON response. Please refresh and try again.');
       if (!response.ok) {
         throw new Error(data.error || 'We couldn’t validate that discount code.');
       }
@@ -1370,7 +1399,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
       });
 
-      const data = await response.json();
+      const data = await readJsonResponse(response, 'Checkout API returned a non-JSON response. Please refresh and try again.');
       if (!response.ok) {
         throw new Error(data.message || data.error || 'Order failed');
       }
@@ -1405,7 +1434,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  resetCartSummary();
+  hydrateMissingVariantIds(Cart.getCart()).then(() => {
+    resetCartSummary();
+  });
 });
 </script>
 

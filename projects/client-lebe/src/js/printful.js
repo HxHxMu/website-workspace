@@ -142,7 +142,7 @@ async function fetchProducts() {
     }
     const products = await response.json();
     try {
-      sessionStorage.setItem('lebe_products_cache', JSON.stringify({
+      sessionStorage.setItem('lebe_products_cache_v2', JSON.stringify({
         savedAt: Date.now(),
         products,
       }));

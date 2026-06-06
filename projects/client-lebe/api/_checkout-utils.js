@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const PRINTFUL_API_BASE = 'https://api.printful.com';
 const MAX_CART_QUANTITY = 25;
 const METADATA_CHUNK_SIZE = 450;
+const SUPPORTED_COUNTRY_CODE = 'US';
 
 class CheckoutError extends Error {
   constructor(status, publicMessage, logMessage = publicMessage) {
@@ -21,6 +22,10 @@ function amountFromCents(cents) {
 }
 
 function normalizeRecipientAddress(address = {}) {
+  const countryCode = String(address.country_code || address.country || SUPPORTED_COUNTRY_CODE)
+    .trim()
+    .toUpperCase();
+
   return {
     name: String(address.name || '').trim(),
     email: String(address.email || '').trim().toLowerCase(),
@@ -29,7 +34,7 @@ function normalizeRecipientAddress(address = {}) {
     city: String(address.city || '').trim(),
     state_code: String(address.state_code || address.state || '').trim().toUpperCase(),
     zip: String(address.zip || '').trim(),
-    country_code: String(address.country_code || address.country || 'US').trim().toUpperCase(),
+    country_code: countryCode,
   };
 }
 
@@ -39,6 +44,9 @@ function validateRecipient(address) {
   const missingField = requiredFields.find((field) => !recipient[field]);
   if (missingField) {
     throw new CheckoutError(400, 'Missing or incomplete shipping recipient details.');
+  }
+  if (recipient.country_code !== SUPPORTED_COUNTRY_CODE) {
+    throw new CheckoutError(400, 'We currently ship only within the United States.');
   }
   return recipient;
 }
@@ -597,6 +605,7 @@ async function fulfillPaidOrder({ stripe, paymentIntentId, paymentIntent, apiKey
 module.exports = {
   CheckoutError,
   PRINTFUL_API_BASE,
+  SUPPORTED_COUNTRY_CODE,
   amountFromCents,
   buildShippingRateItems,
   createOrderMetadata,

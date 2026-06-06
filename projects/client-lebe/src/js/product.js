@@ -17,7 +17,7 @@ let productGalleryPanY = 0;
 let productGalleryPointerStart = null;
 
 const SIZE_ORDER = ['XS', 'S', 'M', 'L', 'XL'];
-const PRODUCT_CACHE_KEY = 'lebe_products_cache';
+const PRODUCT_CACHE_KEY = 'lebe_products_cache_v2';
 const PRODUCT_CACHE_MAX_AGE = 1000 * 60 * 60;
 const STATIC_PRODUCT_PREVIEWS = {
   309483674: {
