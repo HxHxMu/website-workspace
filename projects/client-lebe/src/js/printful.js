@@ -5,8 +5,8 @@ const FIXED_DESIGN_SLOTS = [
     color: 'white',
     displayName: 'SAGUANARI LEGGINGS',
     images: [
-      'assets/images/9.jpg',
-      'assets/images/product-shots/saguanari_leggin_wht_1.jpg',
+      'assets/images/product-shots/saguanari_leggings/9.0-900.jpg',
+      'assets/images/product-shots/saguanari_leggings/saguanari_leggin_wht_1-900.jpg',
     ],
     swatch: 'white',
   },
@@ -16,8 +16,8 @@ const FIXED_DESIGN_SLOTS = [
     color: 'white',
     displayName: 'SAGUANARI BRA',
     images: [
-      'assets/images/11.jpg',
-      'assets/images/product-shots/saguanari_bra_wht_1.jpg',
+      'assets/images/product-shots/saguanari_bra/11-900.jpg',
+      'assets/images/product-shots/saguanari_bra/saguanari_bra_wht_1-900.jpg',
     ],
     swatch: 'white',
   },
@@ -27,8 +27,8 @@ const FIXED_DESIGN_SLOTS = [
     color: 'black',
     displayName: 'SAGUANARI LEGGINGS',
     images: [
-      'assets/images/15.jpg',
-      'assets/images/product-shots/saguanari_leggin_blk_1.jpg',
+      'assets/images/product-shots/saguanari_leggings/15-900.jpg',
+      'assets/images/product-shots/saguanari_leggings/saguanari_leggin_blk_1-900.jpg',
     ],
     swatch: 'black',
   },
@@ -38,8 +38,8 @@ const FIXED_DESIGN_SLOTS = [
     color: 'black',
     displayName: 'SAGUANARI BRA',
     images: [
-      'assets/images/17.jpg',
-      'assets/images/product-shots/saguanari_bra_blk_1.jpg',
+      'assets/images/17-900.jpg',
+      'assets/images/product-shots/saguanari_bra/saguanari_bra_blk_1-900.jpg',
     ],
     swatch: 'black',
   },
@@ -140,7 +140,14 @@ async function fetchProducts() {
     if (!response.ok) {
       throw new Error('Failed to fetch products');
     }
-    return await response.json();
+    const products = await response.json();
+    try {
+      sessionStorage.setItem('lebe_products_cache', JSON.stringify({
+        savedAt: Date.now(),
+        products,
+      }));
+    } catch (_) {}
+    return products;
   } catch (error) {
     console.error('Error fetching products:', error);
     return [];

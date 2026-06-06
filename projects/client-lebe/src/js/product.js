@@ -8,6 +8,84 @@ let colorVariants = null;
 let allProducts = null;
 
 const SIZE_ORDER = ['XS', 'S', 'M', 'L', 'XL'];
+const PRODUCT_CACHE_KEY = 'lebe_products_cache';
+const PRODUCT_CACHE_MAX_AGE = 1000 * 60 * 60;
+const STATIC_PRODUCT_PREVIEWS = {
+  309483674: {
+    id: 309483674,
+    name: 'Saguanari Sports Bra White',
+    images: ['assets/images/product-shots/saguanari_bra/11-900.jpg'],
+  },
+  309483736: {
+    id: 309483736,
+    name: 'Saguanari Sports Bra Black',
+    images: ['assets/images/17-900.jpg'],
+  },
+  301596573: {
+    id: 301596573,
+    name: 'Saguanari Leggings White',
+    images: ['assets/images/product-shots/saguanari_leggings/9.0-900.jpg'],
+  },
+  300307426: {
+    id: 300307426,
+    name: 'Saguanari Leggings Black',
+    images: ['assets/images/product-shots/saguanari_leggings/15-900.jpg'],
+  },
+};
+
+function getCachedProducts() {
+  try {
+    const cached = JSON.parse(sessionStorage.getItem(PRODUCT_CACHE_KEY) || 'null');
+    if (!cached || !Array.isArray(cached.products)) return [];
+    if (Date.now() - Number(cached.savedAt || 0) > PRODUCT_CACHE_MAX_AGE) return [];
+    return cached.products;
+  } catch (_) {
+    return [];
+  }
+}
+
+function cacheProducts(products) {
+  try {
+    if (Array.isArray(products)) {
+      sessionStorage.setItem(PRODUCT_CACHE_KEY, JSON.stringify({
+        savedAt: Date.now(),
+        products,
+      }));
+    }
+  } catch (_) {}
+}
+
+function getProductImageElements() {
+  return [
+    document.getElementById('product-image'),
+    document.getElementById('carousel-product-image'),
+  ].filter(Boolean);
+}
+
+function setHeroImages(images, name) {
+  const firstImage = Array.isArray(images) ? images[0] : '';
+  if (!firstImage) return;
+
+  getProductImageElements().forEach((img) => {
+    if (img.src.endsWith(firstImage)) return;
+    img.src = firstImage;
+    img.alt = name || '';
+  });
+}
+
+function applyProductPreview(product) {
+  if (!product) return;
+
+  const productName = document.getElementById('product-name');
+  const productPrice = document.getElementById('product-price');
+
+  document.title = `${product.name || 'Product'} — LEBE`;
+  if (productName && product.name) productName.textContent = product.name;
+  if (productPrice && Number.isFinite(Number(product.price))) {
+    productPrice.textContent = `$${Number(product.price).toFixed(2)}`;
+  }
+  setHeroImages(product.images, product.name);
+}
 
 window.handleBuyClick = function(e) {
   console.log('=== HANDLE BUY CLICK CALLED ===');
@@ -237,6 +315,24 @@ const populateImageGallery = (images) => {
   });
 };
 
+async function loadCatalogForColorVariants(productId) {
+  const cachedProducts = getCachedProducts();
+  if (cachedProducts.length > 0) {
+    allProducts = cachedProducts;
+    colorVariants = findColorVariants(productId);
+  }
+
+  try {
+    const productsRes = await fetch('/api/products');
+    if (productsRes.ok) {
+      allProducts = await productsRes.json();
+      cacheProducts(allProducts);
+      colorVariants = findColorVariants(productId);
+      console.log('Color variants:', colorVariants);
+    }
+  } catch (_) {}
+}
+
 const initMobileCarousel = () => {
   if (window.innerWidth >= 768) return;
   if (typeof Splide === 'undefined') return;
@@ -305,16 +401,7 @@ const loadProductData = async (productId) => {
     }
 
     if (currentProduct.images && currentProduct.images.length > 0) {
-      const productImage = document.getElementById('product-image');
-      if (productImage) {
-        productImage.src = currentProduct.images[0];
-        productImage.alt = currentProduct.name;
-      }
-      const carouselImage = document.getElementById('carousel-product-image');
-      if (carouselImage) {
-        carouselImage.src = currentProduct.images[0];
-        carouselImage.alt = currentProduct.name;
-      }
+      setHeroImages(currentProduct.images, currentProduct.name);
       populateImageGallery(currentProduct.images);
     }
 
@@ -410,16 +497,7 @@ const loadProductData = async (productId) => {
           });
 
           // Update images
-          const productImage = document.getElementById('product-image');
-          const carouselImage = document.getElementById('carousel-product-image');
-          if (productImage) {
-            productImage.src = newProduct.images[0];
-            productImage.alt = newProduct.name;
-          }
-          if (carouselImage) {
-            carouselImage.src = newProduct.images[0];
-            carouselImage.alt = newProduct.name;
-          }
+          setHeroImages(newProduct.images, newProduct.name);
           populateImageGallery(newProduct.images);
 
           // Fade back in after a brief delay
@@ -528,17 +606,24 @@ async function initProductPage() {
   });
 
   try {
-    // Pre-load catalog so color selectors render on the single loadProductData call below
-    try {
-      const productsRes = await fetch('/api/products');
-      if (productsRes.ok) {
-        allProducts = await productsRes.json();
-        colorVariants = findColorVariants(id);
-        console.log('Color variants:', colorVariants);
-      }
-    } catch (_) {}
+    const cachedProducts = getCachedProducts();
+    let previewApplied = false;
 
+    if (cachedProducts.length > 0) {
+      allProducts = cachedProducts;
+      const cachedProduct = cachedProducts.find((product) => String(product.id) === String(id));
+      applyProductPreview(cachedProduct);
+      previewApplied = Boolean(cachedProduct);
+      colorVariants = findColorVariants(id);
+    }
+
+    if (!previewApplied) {
+      applyProductPreview(STATIC_PRODUCT_PREVIEWS[id]);
+    }
+
+    const catalogPromise = loadCatalogForColorVariants(id);
     await loadProductData(id);
+    await catalogPromise;
     initMobileCarousel();
   } catch (error) {
     console.error('Error initializing:', error);
