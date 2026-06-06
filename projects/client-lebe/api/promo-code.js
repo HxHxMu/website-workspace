@@ -1,17 +1,9 @@
 const Stripe = require('stripe');
-
-function buildDiscountSummary(promotionCode) {
-  const coupon = promotionCode?.coupon || {};
-  return {
-    promotionCodeId: promotionCode.id,
-    code: promotionCode.code,
-    couponId: coupon.id || null,
-    name: coupon.name || promotionCode.code,
-    percentOff: Number.isFinite(Number(coupon.percent_off)) ? Number(coupon.percent_off) : null,
-    amountOff: Number.isFinite(Number(coupon.amount_off)) ? Number(coupon.amount_off) / 100 : null,
-    currency: coupon.currency || 'usd',
-  };
-}
+const {
+  CheckoutError,
+  amountFromCents,
+  resolvePromotionDiscount,
+} = require('./_checkout-utils');
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
@@ -30,23 +22,22 @@ module.exports = async (req, res) => {
 
   try {
     const stripe = Stripe(STRIPE_SECRET_KEY);
-    const result = await stripe.promotionCodes.list({
+    const subtotalCents = Math.max(0, Math.round((Number(req.body?.subtotal) || 0) * 100));
+    const promo = await resolvePromotionDiscount(stripe, {
       code,
-      active: true,
-      limit: 1,
-      expand: ['data.coupon'],
+      subtotalCents,
+      currency: 'usd',
     });
 
-    const promotionCode = result.data?.[0];
-    if (!promotionCode || !promotionCode.active || !promotionCode.coupon) {
-      return res.status(404).json({ error: 'This discount code is invalid or expired.' });
-    }
-
     return res.status(200).json({
-      discount: buildDiscountSummary(promotionCode),
+      discount: promo.summary,
+      discountAmount: amountFromCents(promo.discountCents),
     });
   } catch (error) {
     console.error('promo-code error:', error);
+    if (error instanceof CheckoutError) {
+      return res.status(error.status).json({ error: error.publicMessage });
+    }
     return res.status(500).json({ error: 'We couldn’t validate that discount code right now.' });
   }
 };

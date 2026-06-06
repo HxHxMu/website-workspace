@@ -434,6 +434,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let cardNumberElementInstance = null;
   let cardExpiryElementInstance = null;
   let cardCvcElementInstance = null;
+  let paymentSetupRequestId = 0;
+  let paymentSetupAbortController = null;
 
   const refs = {
     bagHero: document.getElementById('bag-hero'),
@@ -781,6 +783,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function resetPreparedCheckout() {
+    paymentSetupRequestId += 1;
+    if (paymentSetupAbortController) {
+      paymentSetupAbortController.abort();
+      paymentSetupAbortController = null;
+    }
     state.shippingRates = [];
     state.selectedShipping = null;
     state.paymentSetup = null;
@@ -969,6 +976,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const cart = await hydrateMissingVariantIds(Cart.getCart());
+    const requestId = paymentSetupRequestId + 1;
+    const previousPaymentIntentId = state.paymentSetup?.paymentIntentId || null;
+    paymentSetupRequestId = requestId;
+    if (paymentSetupAbortController) {
+      paymentSetupAbortController.abort();
+    }
+    paymentSetupAbortController = new AbortController();
     state.checkoutItems = cart.map((item) => ({ ...item }));
 
     refs.continueToPaymentBtn.disabled = true;
@@ -987,14 +1001,18 @@ document.addEventListener('DOMContentLoaded', () => {
           items: cart,
           address: state.verifiedAddress,
           shippingMethod: state.selectedShipping,
-          previousPaymentIntentId: state.paymentSetup?.paymentIntentId || null,
+          previousPaymentIntentId,
           promoCode: state.promoCode || null,
         }),
+        signal: paymentSetupAbortController.signal,
       });
 
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.error || 'We couldn’t calculate this shipping method right now.');
+      }
+      if (requestId !== paymentSetupRequestId) {
+        return;
       }
 
       state.paymentSetup = data;
@@ -1011,11 +1029,20 @@ document.addEventListener('DOMContentLoaded', () => {
         setPromoStatus('No discount was applied.', true);
       }
     } catch (error) {
+      if (error.name === 'AbortError') {
+        return;
+      }
+      if (requestId !== paymentSetupRequestId) {
+        return;
+      }
       showStep2State({ loading: false, error: `${error.message}\n\nThis shipping method is no longer available for your address or items.` });
       resetCartSummary();
       return;
     }
 
+    if (requestId !== paymentSetupRequestId) {
+      return;
+    }
     showStep2State({ loading: false, error: '' });
     refs.continueToPaymentBtn.textContent = 'Continue to Payment';
   }
@@ -1253,7 +1280,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const response = await fetch('/api/promo-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code }),
+        body: JSON.stringify({ code, subtotal: Cart.getSubtotal() }),
       });
       const data = await response.json();
       if (!response.ok) {
@@ -1262,12 +1289,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       state.promoCode = code;
       const subtotal = Cart.getSubtotal();
-      let discountAmount = 0;
-      if (data.discount?.percentOff > 0) {
-        discountAmount = subtotal * (data.discount.percentOff / 100);
-      } else if (data.discount?.amountOff > 0) {
-        discountAmount = data.discount.amountOff;
-      }
+      const discountAmount = Math.min(subtotal, Math.max(0, Number(data.discountAmount) || 0));
       state.appliedDiscount = { ...data.discount, amount: discountAmount };
       setPromoStatus(`${code} applied.`, false);
 

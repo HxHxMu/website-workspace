@@ -1,131 +1,102 @@
-# Printful API Integration Setup
+# Checkout API Setup
 
 ## Overview
 
-This project uses Vercel Functions to securely integrate with the Printful API. Your custom designs are served from the frontend while product data (pricing, inventory, variants) is fetched from Printful in real-time.
+This project uses Vercel Functions for a custom Stripe + Printful checkout.
 
-## Getting Your Printful API Key
+- Product, shipping, tax, and fulfillment data come from Printful.
+- Payment is collected by Stripe PaymentIntents.
+- Promo codes are managed in Stripe Promotion Codes.
+- Printful fulfillment is guarded by a Stripe payment amount check and order hash.
+- Stripe webhooks provide durable fulfillment retry if the customer closes the tab after payment.
 
-1. Log in to your Printful account (https://www.printful.com/admin)
-2. Go to **Settings** → **API** (https://www.printful.com/admin/settings/api)
-3. Copy your API key
-4. Create `.env.local` in the project root (copy from `.env.local.example`)
-5. Add your API key:
-   ```
-   PRINTFUL_API_KEY=your_api_key_here
-   ```
+## Environment Variables
 
-## Project Structure
+Copy `.env.local.example` to `.env.local` for local work, and add the same values in Vercel.
 
-```
-projects/client-lebe/
-├── api/
-│   ├── products.js      # Fetch products from Printful + merge with custom images
-│   └── checkout.js      # Create orders on Printful
-├── src/
-│   ├── data/
-│   │   └── products.json # Image mappings (static, won't change)
-│   └── js/
-│       └── printful.js   # Frontend that calls the API
-└── .env.local.example    # Environment variable template
+```bash
+PRINTFUL_API_KEY=...
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+FULFILLMENT_ADMIN_TOKEN=...
 ```
 
-## Image Mapping
+`FULFILLMENT_ADMIN_TOKEN` should be a long random value. It protects the manual reconciliation endpoint.
 
-Update `src/data/products.json` to add/remove product images:
+## Stripe Setup
 
-```json
-{
-  "products": [
-    {
-      "printfulId": "product-id-from-printful",
-      "images": [
-        "/assets/images/photo1.jpg",
-        "/assets/images/photo2.jpg"
-      ]
-    }
-  ]
-}
-```
+1. Create or use a Stripe account in test mode first.
+2. Add `STRIPE_SECRET_KEY` and `STRIPE_PUBLISHABLE_KEY`.
+3. In Stripe Dashboard, create a webhook endpoint:
+   - URL: `https://<your-domain>/api/stripe-webhook`
+   - Event: `payment_intent.succeeded`
+4. Copy the endpoint signing secret into `STRIPE_WEBHOOK_SECRET`.
+5. Create Promotion Codes in Stripe for any customer-facing discount codes.
 
-- `printfulId`: Must match the product ID from Printful
-- `images`: Your custom image paths (won't change after set)
+## Printful Setup
+
+1. Create a Printful API key from Printful settings.
+2. Add it as `PRINTFUL_API_KEY`.
+3. Confirm every storefront variant has both:
+   - Printful catalog `variant_id`, used for shipping rates.
+   - Printful store `syncVariantId`, used for cost estimates and orders.
+
+The server validates and repairs older cart items when possible, but checkout fails safely if variant identity cannot be proven.
 
 ## API Endpoints
 
-### GET /api/products
-Returns all products from Printful with merged custom images.
+### `POST /api/shipping-rates`
 
-**Response:**
-```json
-[
-  {
-    "id": "product-id",
-    "name": "Product Name",
-    "description": "...",
-    "price": 45.00,
-    "images": ["/path/to/image1.jpg", "/path/to/image2.jpg"],
-    "variants": [...]
-  }
-]
+Calculates live Printful shipping rates from canonical variant IDs.
+
+### `POST /api/promo-code`
+
+Validates a Stripe Promotion Code against subtotal, currency, redemption, expiration, and supported restrictions.
+
+### `POST /api/stripe-intent`
+
+Creates a Stripe PaymentIntent from server-calculated Printful totals and stores a compact order snapshot in PaymentIntent metadata.
+
+### `POST /api/checkout`
+
+Client-side fulfillment path after Stripe confirms payment. It re-verifies:
+
+- Payment succeeded.
+- Payment amount matches latest Printful subtotal, shipping, tax, and Stripe discount metadata.
+- Order hash matches the exact items, shipping method, and recipient.
+- Printful `external_id` equals the PaymentIntent ID for duplicate protection.
+
+### `POST /api/stripe-webhook`
+
+Durable fulfillment path for `payment_intent.succeeded`. Stripe retries this endpoint if Printful is temporarily unavailable.
+
+### `POST /api/reconcile-fulfillment`
+
+Manual recovery endpoint for a paid PaymentIntent that still needs Printful fulfillment retry.
+
+```bash
+curl -X POST https://<your-domain>/api/reconcile-fulfillment \
+  -H "Authorization: Bearer $FULFILLMENT_ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"paymentIntentId":"pi_..."}'
 ```
 
-### POST /api/checkout
-Creates an order on Printful.
+## Test Checklist
 
-**Request:**
-```json
-{
-  "items": [
-    {
-      "variantId": 123,
-      "quantity": 1,
-      "syncVariantId": "abc123"
-    }
-  ],
-  "customer": {
-    "name": "John Doe",
-    "email": "john@example.com",
-    "phone": "+1234567890",
-    "address1": "123 Main St",
-    "city": "New York",
-    "state": "NY",
-    "zip": "10001",
-    "country": "US"
-  }
-}
-```
+Before going live:
 
-**Response:**
-```json
-{
-  "success": true,
-  "orderId": 123456,
-  "externalId": "ext-id",
-  "estimatedDelivery": "2024-06-15",
-  "totalCost": 55.00,
-  "shippingCost": 10.00
-}
-```
-
-## Local Testing
-
-1. Copy `.env.local.example` to `.env.local` and add your API key
-2. Run `npm run serve` to start the local server
-3. Products will fetch from your Printful store
+1. Run `npm run build`.
+2. Place a Stripe test order and confirm a Printful order is created.
+3. Replay the Stripe webhook for the same PaymentIntent and confirm no duplicate Printful order is created.
+4. Test an invalid/expired promo code.
+5. Test a fixed-amount promo code in USD.
+6. Test changing shipping methods quickly and confirm only the latest total is paid.
+7. Test manual reconciliation with a known paid test PaymentIntent.
 
 ## Deployment to Vercel
 
-1. Push to GitHub
-2. Connect your repo to Vercel
-3. Add `PRINTFUL_API_KEY` to Vercel environment variables
-4. Deploy
-
-Vercel Functions automatically handle the `/api/*` routes.
-
-## Next Steps
-
-- Build checkout flow (form → POST /api/checkout)
-- Add to-cart functionality
-- Handle payment confirmation
-- Order status tracking
+1. Add all environment variables in Vercel.
+2. Deploy.
+3. Configure the Stripe webhook to the deployed domain.
+4. Run the test checklist against the deployed preview or production URL.

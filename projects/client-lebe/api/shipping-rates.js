@@ -1,17 +1,10 @@
-const PRINTFUL_API_BASE = 'https://api.printful.com';
-
-function normalizeAddress(address) {
-  return {
-    name: address.name || 'Valued Customer',
-    email: address.email || 'customer@example.com',
-    phone: address.phone || '',
-    address1: address.address1,
-    city: address.city,
-    state_code: String(address.state).toUpperCase(),
-    zip: String(address.zip),
-    country_code: String(address.country || 'US').toUpperCase()
-  };
-}
+const {
+  CheckoutError,
+  PRINTFUL_API_BASE,
+  buildShippingRateItems,
+  hydratePrintfulItems,
+  normalizeRecipientAddress,
+} = require('./_checkout-utils');
 
 function summarizeItems(items) {
   return items.map((item) => ({
@@ -33,22 +26,20 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: 'Missing environment variables' });
   }
 
-  const { items, address } = req.body;
-  if (!Array.isArray(items) || items.length === 0) {
-    return res.status(400).json({ error: 'Missing or empty items' });
-  }
-
-  if (!address || !address.city || !address.state || !address.zip) {
-    return res.status(400).json({ error: 'Missing or incomplete shipping address' });
-  }
-
   try {
+    const { items, address } = req.body;
+    if (!address || !address.city || !address.state || !address.zip) {
+      throw new CheckoutError(400, 'Missing or incomplete shipping address.');
+    }
+
+    const hydratedItems = await hydratePrintfulItems(items, PRINTFUL_API_KEY, {
+      requireVariantId: true,
+      requireSyncVariantId: true,
+    });
+
     const payload = {
-      recipient: normalizeAddress(address),
-      items: items.map((item) => ({
-        variant_id: Number(item.variantId),
-        quantity: Number(item.quantity),
-      })),
+      recipient: normalizeRecipientAddress(address),
+      items: buildShippingRateItems(hydratedItems),
       currency: 'USD',
       locale: 'en_US',
     };
@@ -61,16 +52,16 @@ module.exports = async (req, res) => {
         country_code: payload.recipient.country_code,
         hasPhone: Boolean(payload.recipient.phone),
       },
-      items: summarizeItems(items),
+      items: summarizeItems(hydratedItems),
     }, null, 2));
 
     const response = await fetch(`${PRINTFUL_API_BASE}/shipping/rates`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${PRINTFUL_API_KEY}`,
-        'Content-Type': 'application/json'
+        Authorization: `Bearer ${PRINTFUL_API_KEY}`,
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
@@ -81,14 +72,6 @@ module.exports = async (req, res) => {
     const data = await response.json();
     const rates = Array.isArray(data.result) ? data.result : [];
 
-    console.log('📦 Shipping rates response:', JSON.stringify(rates.map((rate) => ({
-      id: rate.id,
-      name: rate.name,
-      rate: rate.rate,
-      minDeliveryDays: rate.minDeliveryDays ?? null,
-      maxDeliveryDays: rate.maxDeliveryDays ?? null,
-    })), null, 2));
-
     res.status(200).json({
       rates: rates.map((rate) => ({
         id: rate.id,
@@ -97,10 +80,13 @@ module.exports = async (req, res) => {
         currency: rate.currency || 'USD',
         minDeliveryDays: rate.minDeliveryDays ?? null,
         maxDeliveryDays: rate.maxDeliveryDays ?? null,
-      }))
+      })),
     });
   } catch (error) {
     console.error('shipping-rates error:', error);
-    res.status(500).json({ error: error.message });
+    if (error instanceof CheckoutError) {
+      return res.status(error.status).json({ error: error.publicMessage });
+    }
+    return res.status(500).json({ error: error.message });
   }
 };
