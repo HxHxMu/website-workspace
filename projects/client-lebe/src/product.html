@@ -169,6 +169,22 @@
   </footer>
 </main>
 
+<div id="pdp-gallery" class="pdp-gallery" role="dialog" aria-modal="true" aria-label="Product image gallery" hidden>
+  <div class="pdp-gallery__surface">
+    <div class="pdp-gallery__bar">
+      <p id="pdp-gallery-count" class="pdp-gallery__count">1 / 1</p>
+      <button id="pdp-gallery-close" class="pdp-gallery__close" type="button" aria-label="Close gallery">×</button>
+    </div>
+    <div class="pdp-gallery__stage">
+      <button id="pdp-gallery-prev" class="pdp-gallery__nav pdp-gallery__nav--prev" type="button" aria-label="Previous image">←</button>
+      <figure class="pdp-gallery__figure">
+        <img id="pdp-gallery-image" class="pdp-gallery__image" src="" alt="" role="button" tabindex="0" aria-label="Toggle image zoom" aria-pressed="false" draggable="false" decoding="async" />
+      </figure>
+      <button id="pdp-gallery-next" class="pdp-gallery__nav pdp-gallery__nav--next" type="button" aria-label="Next image">→</button>
+    </div>
+  </div>
+</div>
+
 <script>
   // Persistent mobile ADD button - fade when form buttons come into view
   const isMobile = window.innerWidth < 768;
