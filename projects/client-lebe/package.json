@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "./build.sh && npm run build:css",
+    "build": "sh ./build.sh && npm run build:css",
     "build:css": "tailwindcss -i ./src/input.css -o ./src/output.css --minify",
     "serve": "node dev-server.js"
   },
