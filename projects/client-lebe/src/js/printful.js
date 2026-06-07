@@ -127,7 +127,7 @@ async function renderProductGrid() {
     const displayImage = imageVariants[0] || TRANSPARENT_PIXEL;
     const fallbackSrcs = imageVariants.join('|');
     const isWhite = slot.swatch === 'white';
-    const displayName = slot.displayName;
+    const displayName = product?.name || slot.displayName;
     const numericPrice = Number(product?.price);
     const displayPrice = Number.isFinite(numericPrice) ? `$${numericPrice.toFixed(0)}.` : '—';
     const productHref = product ? `/product?id=${encodeURIComponent(product.id)}` : '#';
@@ -148,7 +148,7 @@ async function renderProductGrid() {
         </a>
         <div class="flex min-h-[100px] flex-1 items-start justify-between gap-4 border-b border-[#050505]/15 py-5">
           <div class="flex-1">
-            <h3 class="min-h-[3.25rem] text-base font-semibold uppercase leading-tight tracking-[-0.03em] text-[#050505] md:text-lg">
+            <h3 class="min-h-[3.25rem] text-base font-semibold leading-tight tracking-[-0.03em] text-[#050505] md:text-lg">
               ${displayName}
             </h3>
             <div class="mt-2 flex items-center gap-3">
