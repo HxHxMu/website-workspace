@@ -119,33 +119,6 @@ window.renderCart = function() {
   }
 };
 
-// Product set configuration
-const PRODUCT_SETS = {
-  saguanari: {
-    name: 'Saguanari',
-    products: [
-      { name: 'Bra', keywords: ['bra', 'sports bra'] },
-      { name: 'Leggings', keywords: ['leggings', 'yoga leggings'] }
-    ]
-  }
-};
-
-// Color-based product matching for upsell
-const PRODUCT_COLOR_UPSELL_MAP = {
-  // Saguanari Bra (local dev mocks)
-  '3': { productId: 6, name: 'Saguanari Leggings', description: 'Pair it with the matching leggings for the full Saguanari set.' },
-  '4': { productId: 5, name: 'Saguanari Leggings', description: 'Pair it with the matching leggings for the full Saguanari set.' },
-  // Saguanari Leggings (local dev mocks)
-  '5': { productId: 4, name: 'Saguanari Sports Bra', description: 'Pair it with the matching bra for the full Saguanari set.' },
-  '6': { productId: 3, name: 'Saguanari Sports Bra', description: 'Pair it with the matching bra for the full Saguanari set.' },
-  // Saguanari Bra
-  '309483674': { productId: 301596573, name: 'Saguanari Leggings', description: 'Pair it with the matching leggings for the full Saguanari set.' },
-  '309483736': { productId: 300307426, name: 'Saguanari Leggings', description: 'Pair it with the matching leggings for the full Saguanari set.' },
-  // Saguanari Leggings
-  '301596573': { productId: 309483674, name: 'Saguanari Sports Bra', description: 'Pair it with the matching bra for the full Saguanari set.' },
-  '300307426': { productId: 309483736, name: 'Saguanari Sports Bra', description: 'Pair it with the matching bra for the full Saguanari set.' }
-};
-
 async function checkAndShowUpsell(cart) {
   const upsellModule = document.getElementById('upsell-module');
   if (!upsellModule) return;
@@ -158,7 +131,7 @@ async function checkAndShowUpsell(cart) {
 
   // Check if all items in cart are from the same set but incomplete
   const firstItem = cart[0];
-  const upsellData = PRODUCT_COLOR_UPSELL_MAP[firstItem.productId];
+  const upsellData = window.LebeProductModel?.getUpsell(firstItem.productId);
 
   if (!upsellData) {
     upsellModule.classList.add('hidden');

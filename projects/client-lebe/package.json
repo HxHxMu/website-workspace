@@ -5,7 +5,8 @@
   "scripts": {
     "build": "sh ./build.sh && npm run build:css",
     "build:css": "tailwindcss -i ./src/input.css -o ./src/output.css --minify",
-    "serve": "node dev-server.js"
+    "serve": "node dev-server.js",
+    "smoke:checkout": "node scripts/checkout-smoke.js"
   },
   "dependencies": {
     "@splidejs/splide": "^4.1.4",

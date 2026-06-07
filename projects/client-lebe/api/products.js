@@ -1,38 +1,5 @@
-const fs = require('fs');
-const path = require('path');
-
-const productsData = JSON.parse(fs.readFileSync(path.join(__dirname, '../src/data/products.json'), 'utf8'));
-const PRINTFUL_API_BASE = 'https://api.printful.com';
-
-function normalizeLocalAssetPath(value) {
-  if (!value) return value;
-  const raw = String(value).trim();
-  if (/^(https?:)?\/\//i.test(raw) || raw.startsWith('data:')) {
-    return raw;
-  }
-  return raw.replace(/^\.\//, '').replace(/^\/+/, '');
-}
-
-async function fetchFromPrintful(endpoint, apiKey) {
-  const response = await fetch(`${PRINTFUL_API_BASE}${endpoint}`, {
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json'
-    }
-  });
-
-  if (!response.ok) {
-    throw new Error(`Printful API error: ${response.statusText}`);
-  }
-
-  return response.json();
-}
-
-const imageMap = {};
-productsData.products.forEach(p => {
-  imageMap[p.externalId] = p.images;
-});
-const colorVariantMap = productsData.colorVariants || {};
+const { fetchFromPrintful } = require('./_lib/printful');
+const { getColorVariants, getProductImages } = require('./_lib/products-data');
 
 module.exports = async (req, res) => {
   if (req.method !== 'GET') {
@@ -49,9 +16,7 @@ module.exports = async (req, res) => {
     const printfulProducts = data.result || [];
 
     const products = await Promise.all(printfulProducts.map(async (product) => {
-      const customImages = (imageMap[product.external_id] || [])
-        .map(normalizeLocalAssetPath)
-        .filter(Boolean);
+      const productImages = getProductImages(product.external_id, [product.thumbnail_url]);
       let price = null;
 
       try {
@@ -72,11 +37,9 @@ module.exports = async (req, res) => {
         externalId: product.external_id,
         name: product.name,
         price,
-        images: customImages.length > 0
-          ? customImages
-          : [product.thumbnail_url].filter(Boolean),
+        images: productImages,
         variantCount: product.variants,
-        colorVariants: colorVariantMap[String(product.id)]?.colors || null
+        colorVariants: getColorVariants(product.id)
       };
     }));
 

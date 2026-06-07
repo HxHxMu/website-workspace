@@ -1,38 +1,5 @@
-const fs = require('fs');
-const path = require('path');
-
-const productsData = JSON.parse(fs.readFileSync(path.join(__dirname, '../src/data/products.json'), 'utf8'));
-const PRINTFUL_API_BASE = 'https://api.printful.com';
-
-function normalizeLocalAssetPath(value) {
-  if (!value) return value;
-  const raw = String(value).trim();
-  if (/^(https?:)?\/\//i.test(raw) || raw.startsWith('data:')) {
-    return raw;
-  }
-  return raw.replace(/^\.\//, '').replace(/^\/+/, '');
-}
-
-async function fetchFromPrintful(endpoint, apiKey) {
-  const response = await fetch(`${PRINTFUL_API_BASE}${endpoint}`, {
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json'
-    }
-  });
-
-  if (!response.ok) {
-    throw new Error(`Printful API error: ${response.statusText}`);
-  }
-
-  return response.json();
-}
-
-const imageMap = {};
-productsData.products.forEach(p => {
-  imageMap[p.externalId] = p.images;
-});
-const colorVariantMap = productsData.colorVariants || {};
+const { fetchFromPrintful } = require('./_lib/printful');
+const { getColorVariants, getProductImages } = require('./_lib/products-data');
 
 module.exports = async (req, res) => {
   if (req.method !== 'GET') {
@@ -58,16 +25,12 @@ module.exports = async (req, res) => {
       return res.status(404).json({ error: 'Product not found' });
     }
 
-    const customImages = (imageMap[syncProduct.external_id] || [])
-      .map(normalizeLocalAssetPath)
-      .filter(Boolean);
-
     const product = {
       id: syncProduct.id,
       externalId: syncProduct.external_id,
       name: syncProduct.name,
-      images: customImages || [],
-      colorVariants: colorVariantMap[String(syncProduct.id)]?.colors || null,
+      images: getProductImages(syncProduct.external_id),
+      colorVariants: getColorVariants(syncProduct.id),
       variants: syncVariants.map(v => ({
         id: v.variant_id,
         syncVariantId: v.id,

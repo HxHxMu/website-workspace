@@ -1,50 +1,3 @@
-const FIXED_DESIGN_SLOTS = [
-  {
-    externalId: '64000b204a6de9',
-    type: 'leggings',
-    color: 'white',
-    displayName: 'SAGUANARI LEGGINGS',
-    images: [
-      'assets/images/product-shots/saguanari_leggings/9.0-900.jpg',
-      'assets/images/product-shots/saguanari_leggings/saguanari_leggin_wht_1-900.jpg',
-    ],
-    swatch: 'white',
-  },
-  {
-    externalId: '64775fcaef5f21',
-    type: 'bra',
-    color: 'white',
-    displayName: 'SAGUANARI BRA',
-    images: [
-      'assets/images/product-shots/saguanari_bra/11-900.jpg',
-      'assets/images/product-shots/saguanari_bra/saguanari_bra_wht_1-900.jpg',
-    ],
-    swatch: 'white',
-  },
-  {
-    externalId: '63ec714091ff89',
-    type: 'leggings',
-    color: 'black',
-    displayName: 'SAGUANARI LEGGINGS',
-    images: [
-      'assets/images/product-shots/saguanari_leggings/15-900.jpg',
-      'assets/images/product-shots/saguanari_leggings/saguanari_leggin_blk_1-900.jpg',
-    ],
-    swatch: 'black',
-  },
-  {
-    externalId: '6477600e15cb73',
-    type: 'bra',
-    color: 'black',
-    displayName: 'SAGUANARI BRA',
-    images: [
-      'assets/images/17-900.jpg',
-      'assets/images/product-shots/saguanari_bra/saguanari_bra_blk_1-900.jpg',
-    ],
-    swatch: 'black',
-  },
-];
-
 const TRANSPARENT_PIXEL = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
 
 function escapeHtml(value) {
@@ -116,7 +69,7 @@ function slotMatch(product, slot) {
 
 function mapProductsToSlots(products) {
   const usedIds = new Set();
-  return FIXED_DESIGN_SLOTS.map((slot) => {
+  return (window.LebeProductModel?.getDesignSlots() || []).map((slot) => {
     const byExternalId = products.find(
       (product) =>
         !usedIds.has(product.id) &&

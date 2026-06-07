@@ -1,8 +1,8 @@
 const {
   CheckoutError,
-  PRINTFUL_API_BASE,
   SUPPORTED_COUNTRY_CODE,
   buildShippingRateItems,
+  fetchFromPrintful,
   hydratePrintfulItems,
   normalizeRecipientAddress,
 } = require('./_checkout-utils');
@@ -61,21 +61,11 @@ module.exports = async (req, res) => {
       items: summarizeItems(hydratedItems),
     }, null, 2));
 
-    const response = await fetch(`${PRINTFUL_API_BASE}/shipping/rates`, {
+    const data = await fetchFromPrintful('/shipping/rates', PRINTFUL_API_KEY, {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${PRINTFUL_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
       body: JSON.stringify(payload),
     });
 
-    if (!response.ok) {
-      const text = await response.text();
-      throw new Error(`Unable to load shipping methods: ${text}`);
-    }
-
-    const data = await response.json();
     const rates = Array.isArray(data.result) ? data.result : [];
 
     res.status(200).json({
@@ -93,6 +83,6 @@ module.exports = async (req, res) => {
     if (error instanceof CheckoutError) {
       return res.status(error.status).json({ error: error.publicMessage });
     }
-    return res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: 'Unable to load shipping methods right now.' });
   }
 };

@@ -1,4 +1,5 @@
 node_modules/
+._*
 src/index.html
 src/output.css
 .env.local

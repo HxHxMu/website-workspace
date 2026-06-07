@@ -1,6 +1,9 @@
 const crypto = require('crypto');
+const {
+  PRINTFUL_API_BASE,
+  fetchFromPrintful: fetchFromPrintfulRaw,
+} = require('./_lib/printful');
 
-const PRINTFUL_API_BASE = 'https://api.printful.com';
 const MAX_CART_QUANTITY = 25;
 const METADATA_CHUNK_SIZE = 450;
 const SUPPORTED_COUNTRY_CODE = 'US';
@@ -102,25 +105,15 @@ function normalizeLineItems(items) {
 }
 
 async function fetchFromPrintful(endpoint, apiKey, options = {}) {
-  const response = await fetch(`${PRINTFUL_API_BASE}${endpoint}`, {
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    ...options,
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    let message = errorText || response.statusText;
-    try {
-      const parsed = JSON.parse(errorText);
-      message = parsed.result || parsed.message || parsed.error?.message || message;
-    } catch (_) {}
-    throw new CheckoutError(502, 'Printful could not verify this order right now.', `Printful API error: ${message}`);
+  try {
+    return await fetchFromPrintfulRaw(endpoint, apiKey, options);
+  } catch (error) {
+    throw new CheckoutError(
+      502,
+      'Printful could not verify this order right now.',
+      error.message || 'Printful API error'
+    );
   }
-
-  return response.json();
 }
 
 async function fetchStoreProduct(productId, apiKey) {
