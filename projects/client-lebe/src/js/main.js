@@ -30,13 +30,13 @@ window.renderCart = function() {
   cartItems.innerHTML = cart.map(item => {
     const svid = escHtml(String(item.syncVariantId));
     return `
-    <div class="grid grid-cols-[96px_1fr] gap-5 border-b border-black/15 pb-6 md:grid-cols-[140px_1fr]">
+    <div class="grid grid-cols-[88px_minmax(0,1fr)] gap-4 border-b border-black/15 pb-6 sm:grid-cols-[96px_minmax(0,1fr)] lg:grid-cols-[140px_minmax(0,1fr)] lg:gap-5">
       <a href="/product?id=${escHtml(item.productId)}" class="block overflow-hidden bg-neutral-100">
         <img src="${escHtml(item.image)}" alt="${escHtml(item.name)}" class="aspect-[4/5] h-full w-full object-cover transition duration-500 hover:scale-105" />
       </a>
       <div class="flex min-w-0 flex-col justify-between gap-5">
-        <div class="flex items-start justify-between gap-4">
-          <div>
+        <div class="flex min-w-0 items-start justify-between gap-3">
+          <div class="min-w-0">
             <a href="/product?id=${escHtml(item.productId)}" class="font-semibold uppercase tracking-[-0.03em] transition hover:text-black/55">
               ${escHtml(item.name)}
             </a>
@@ -44,8 +44,8 @@ window.renderCart = function() {
           </div>
           <p class="shrink-0 font-semibold">$${item.price.toFixed(2)}</p>
         </div>
-        <div class="flex items-end justify-between gap-4">
-          <div>
+        <div class="flex items-end justify-between gap-3">
+          <div class="min-w-0">
             <p class="mb-2 text-[10px] font-bold uppercase tracking-[0.3em] text-black/40">quantity</p>
             <div class="inline-flex h-10 items-center border border-black">
               <button type="button" class="h-full w-10 text-lg leading-none transition hover:bg-black hover:text-white qty-minus" data-sync-variant-id="${svid}">−</button>
@@ -53,9 +53,8 @@ window.renderCart = function() {
               <button type="button" class="h-full w-10 text-lg leading-none transition hover:bg-black hover:text-white qty-plus" data-sync-variant-id="${svid}">+</button>
             </div>
           </div>
-          <button type="button" class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.22em] text-black/50 transition hover:text-black remove-btn" data-sync-variant-id="${svid}">
-            <svg class="h-4 w-4" stroke="currentColor" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-            remove.
+          <button type="button" class="inline-flex h-11 w-11 shrink-0 items-center justify-center text-black/50 transition hover:text-black remove-btn" aria-label="Remove item from bag" data-sync-variant-id="${svid}">
+            <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
           </button>
         </div>
       </div>

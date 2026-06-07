@@ -55,8 +55,8 @@
       </a>
     </div>
 
-    <div id="cart-content" class="hidden">
-      <div class="grid gap-10 py-12 md:grid-cols-[minmax(0,1fr)_420px] md:items-start">
+    <div id="cart-content" class="hidden cart-mode-cart">
+      <div class="cart-layout">
         <div>
           <div id="cart-items-panel">
             <div id="cart-items" class="space-y-6"></div>
@@ -281,10 +281,10 @@
           </div>
         </div>
 
-        <aside class="border border-[#050505] p-7 md:sticky md:top-28">
-          <h2 class="border-b border-[#050505] pb-5 text-sm font-bold uppercase tracking-[0.28em]">Order Summary</h2>
+        <aside class="cart-summary border border-[#050505] p-6">
+          <h2 class="border-b border-[#050505] pb-4 text-sm font-bold uppercase tracking-[0.28em]">Order Summary</h2>
 
-          <div class="space-y-4 border-b border-[#050505]/12 py-6 text-[16px] leading-8">
+          <div class="space-y-3 border-b border-[#050505]/12 py-5 text-[15px] leading-7">
             <div class="flex justify-between gap-6">
               <span class="text-[#050505]/60">Subtotal</span>
               <span id="cart-subtotal" class="font-semibold">$0.00</span>
@@ -303,12 +303,12 @@
             </div>
           </div>
 
-          <div id="summary-copy" class="border-b border-[#050505]/12 py-6 text-[13px] leading-8 text-[#050505]/60">
+          <div id="summary-copy" class="border-b border-[#050505]/12 py-5 text-[13px] leading-7 text-[#050505]/60">
             Shipping and tax are calculated after your address is verified.
           </div>
 
           <div id="promo-section" class="cart-only" data-cart-only>
-            <label for="promo" class="mt-6 block text-[11px] font-bold uppercase tracking-[0.28em] text-[#050505]/50">Code.</label>
+            <label for="promo" class="mt-5 block text-[11px] font-bold uppercase tracking-[0.28em] text-[#050505]/50">Code.</label>
             <div class="mt-3 flex border border-[#050505]">
               <input id="promo" type="text" placeholder="code" class="min-w-0 flex-1 bg-white px-4 py-3 text-sm uppercase outline-none placeholder:text-[#050505]/30" />
               <button id="promo-apply-btn" type="button" class="border-l border-[#050505] px-4 text-[11px] font-bold uppercase tracking-[0.22em] transition hover:bg-[#050505] hover:text-white">
@@ -324,16 +324,16 @@
             Discount code <span id="applied-promo-code" class="font-bold uppercase tracking-[0.18em] text-[#050505]"></span> applied.
           </div>
 
-          <div class="mt-6 flex justify-between text-[20px] font-bold uppercase tracking-[0.12em]">
+          <div class="mt-5 flex justify-between gap-6 text-[20px] font-bold uppercase tracking-[0.12em]">
             <span>Total</span>
             <span id="cart-total">$0.00</span>
           </div>
 
-          <button id="checkout-toggle" class="cart-only mt-6 inline-flex min-h-12 w-full items-center justify-center bg-[#050505] px-7 py-4 text-[11px] font-bold uppercase tracking-[0.28em] text-white transition hover:bg-[#050505]/80" data-cart-only>
+          <button id="checkout-toggle" class="cart-only mt-5 inline-flex min-h-12 w-full items-center justify-center bg-[#050505] px-7 py-4 text-[11px] font-bold uppercase tracking-[0.28em] text-white transition hover:bg-[#050505]/80" data-cart-only>
             buy.
           </button>
 
-          <div class="cart-only mt-6 space-y-3 border-t border-[#050505]/15 pt-5 text-[11px] leading-5 text-[#050505]/60">
+          <div class="cart-only mt-5 space-y-3 border-t border-[#050505]/15 pt-5 text-[11px] leading-5 text-[#050505]/60">
             <p class="flex items-center gap-2">
               <svg class="h-4 w-4" stroke="currentColor" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
               Secure checkout.
@@ -627,6 +627,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const isCheckout = mode === 'checkout';
     const isSuccess = mode === 'success';
 
+    refs.cartContent.classList.toggle('cart-mode-cart', mode === 'cart');
+    refs.cartContent.classList.toggle('cart-mode-checkout', isCheckout);
+    refs.cartContent.classList.toggle('cart-mode-success', isSuccess);
     refs.bagHero.classList.toggle('hidden', isCheckout || isSuccess);
     refs.checkoutHero.classList.toggle('hidden', !isCheckout);
     refs.cartItemsPanel.classList.toggle('hidden', isCheckout || isSuccess);
@@ -961,17 +964,17 @@ document.addEventListener('DOMContentLoaded', () => {
       return `
         <button
           type="button"
-          class="shipping-rate-btn flex w-full items-start justify-between gap-6 border px-6 py-6 text-left transition hover:border-[#050505] ${borderClass}"
+          class="shipping-rate-btn flex w-full items-start justify-between gap-5 border px-6 py-6 text-left transition hover:border-[#050505] ${borderClass}"
           data-rate-id="${rate.id}"
         >
-          <span class="flex items-start gap-4">
+          <span class="shipping-rate-copy flex min-w-0 items-start gap-4">
             ${indicator}
-            <span>
-              <span class="block font-serif text-[30px] leading-[1.08] tracking-[-0.03em]">${formatShippingLabel(rate)}</span>
+            <span class="min-w-0">
+              <span class="block font-serif text-[28px] leading-[1.08] tracking-[-0.03em] lg:text-[30px]">${formatShippingLabel(rate)}</span>
               <span class="mt-3 block text-[13px] leading-7 text-[#050505]/60">${formatTransitLabel(rate)}</span>
             </span>
           </span>
-          <span class="shrink-0 text-[18px] font-semibold">${formatMoney(rate.rate)}</span>
+          <span class="shipping-rate-price shrink-0 text-[18px] font-semibold">${formatMoney(rate.rate)}</span>
         </button>
       `;
     }).join('');
