@@ -156,6 +156,35 @@
     color: var(--muted);
   }
 
+  .policy-copy {
+    font-size: 17px;
+    line-height: 1.85;
+  }
+
+  .policy-copy section + section {
+    margin-top: 3.25rem;
+  }
+
+  .policy-copy h2 {
+    margin-bottom: 1rem;
+    font-family: var(--font-serif);
+    font-size: 28px;
+    line-height: 1.15;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    color: #050505;
+  }
+
+  .policy-copy p + p {
+    margin-top: 1rem;
+  }
+
+  .policy-copy a {
+    color: #050505;
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+
   .cart-layout {
     display: grid;
     gap: 2rem;

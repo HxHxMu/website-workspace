@@ -5,6 +5,10 @@
   "rewrites": [
     { "source": "/product", "destination": "/product.html" },
     { "source": "/cart", "destination": "/cart.html" },
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/terms", "destination": "/terms.html" },
+    { "source": "/shipping", "destination": "/shipping.html" },
+    { "source": "/returns", "destination": "/returns.html" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }

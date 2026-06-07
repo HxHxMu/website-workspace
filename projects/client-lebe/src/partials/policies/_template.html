@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{META_TITLE}}</title>
+  <meta name="description" content="{{META_DESCRIPTION}}" />
+  <link rel="icon" href="./assets/images/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="./output.css" />
+</head>
+<body class="bg-white text-[#050505]">
+  <header class="lebe-header">
+    <nav class="lebe-shell h-full flex items-center justify-between">
+      <a href="/" class="lebe-brand">lebe.</a>
+      <a href="/cart" class="lebe-bag group">
+        <svg class="h-5 w-5 transition duration-300 group-hover:scale-95" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M5 1.66667L2.5 5V16.6667C2.5 17.1087 2.67559 17.5326 2.98816 17.8452C3.30072 18.1577 3.72464 18.3333 4.16667 18.3333H15.8333C16.2754 18.3333 16.6993 18.1577 17.0118 17.8452C17.3244 17.5326 17.5 17.1087 17.5 16.6667V5L15 1.66667H5Z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2.5 5H17.5" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M13.3333 8.33333C13.3333 9.21739 12.9821 10.0652 12.357 10.6904C11.7319 11.3155 10.884 11.6667 9.99996 11.6667C9.1159 11.6667 8.26806 11.3155 7.64294 10.6904C7.01782 10.0652 6.66663 9.21739 6.66663 8.33333" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </nav>
+  </header>
+
+  <main class="pt-28 md:pt-36">
+    <section class="lebe-main-shell pb-20 md:pb-28">
+      <div class="border-b border-[#050505] pb-10 md:pb-12">
+        <p class="lebe-kicker mb-7">{{EYEBROW}}</p>
+        <h1 class="font-serif text-[64px] font-bold leading-[0.92] tracking-[-0.06em] md:text-[112px]">{{TITLE}}</h1>
+      </div>
+
+      <div class="grid gap-12 py-12 md:grid-cols-[280px_minmax(0,1fr)] md:gap-20 md:py-16">
+        <aside>
+          <p class="lebe-kicker mb-5">{{SIDE_TITLE}}</p>
+          <p class="font-serif text-[18px] font-bold italic leading-7 text-[#050505]/40">{{SIDE_NOTE}}</p>
+        </aside>
+
+        <article class="policy-copy max-w-[760px] text-[#050505]/68">
+          {{CONTENT}}
+
+          <div class="mt-12 border-t border-[#050505]/12 pt-8 text-[14px] leading-7 text-[#050505]/48">
+            Last updated: {{UPDATED}}.
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-[#050505]/20 bg-[#e9e9e9] px-6 md:px-10">
+    <div class="mx-auto flex max-w-7xl flex-col items-center justify-center gap-5 py-14 text-center md:py-16">
+      <p class="font-serif text-lg text-[#050505]">Made-to-order. Ships in ~14 days.</p>
+      <a href="https://www.instagram.com/_lebe._/" target="_blank" rel="noopener noreferrer" class="rounded-full border border-[#050505] p-3 text-[#050505] transition hover:bg-[#050505] hover:text-white">
+        <svg class="h-4 w-4" stroke="currentColor" fill="none" viewBox="0 0 24 24" stroke-width="1.7">
+          <circle cx="12" cy="12" r="1"></circle><path d="M9 2h6a7 7 0 0 1 7 7v6a7 7 0 0 1-7 7H9a7 7 0 0 1-7-7V9a7 7 0 0 1 7-7"></path><circle cx="12" cy="12" r="5"></circle>
+        </svg>
+      </a>
+    </div>
+    <div class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 border-t border-[#050505]/15 py-5 text-center md:flex-row">
+      <p class="font-serif text-[12px] italic text-[#050505]/60">© lebe 2026</p>
+      <nav class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[11px] font-bold uppercase tracking-[0.24em] text-[#050505]/45">
+        <a href="/privacy" class="transition hover:text-[#050505]">privacy</a>
+        <a href="/terms" class="transition hover:text-[#050505]">terms</a>
+        <a href="/shipping" class="transition hover:text-[#050505]">shipping</a>
+        <a href="/returns" class="transition hover:text-[#050505]">returns</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>
