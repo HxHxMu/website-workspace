@@ -12,19 +12,40 @@
     (() => {
       const id = new URLSearchParams(window.location.search).get('id');
       const previews = {
-        309483674: 'assets/images/product-shots/saguanari_bra/11-900.jpg',
-        309483736: 'assets/images/17-900.jpg',
-        301596573: 'assets/images/product-shots/saguanari_leggings/9.0-900.jpg',
-        300307426: 'assets/images/product-shots/saguanari_leggings/15-900.jpg',
+        309483674: [
+          'assets/images/product-shots/saguanari_bra/11-900.jpg',
+          'assets/images/product-shots/saguanari_bra/11.1-900.jpg',
+          'assets/images/product-shots/saguanari_bra/11.2-900.jpg',
+          'assets/images/product-shots/saguanari_bra/11.3-900.jpg',
+        ],
+        309483736: [
+          'assets/images/17-900.jpg',
+          'assets/images/product-shots/saguanari_bra/saguanari_bra_blk_1-900.jpg',
+          'assets/images/product-shots/saguanari_bra/saguanari_bra_blk_2-900.jpg',
+        ],
+        301596573: [
+          'assets/images/product-shots/saguanari_leggings/9.0-900.jpg',
+          'assets/images/product-shots/saguanari_leggings/9.1-900.jpg',
+          'assets/images/product-shots/saguanari_leggings/9.2-900.jpg',
+          'assets/images/product-shots/saguanari_leggings/9.3-900.jpg',
+        ],
+        300307426: [
+          'assets/images/product-shots/saguanari_leggings/15-900.jpg',
+          'assets/images/product-shots/saguanari_leggings/15.1-900.jpg',
+          'assets/images/product-shots/saguanari_leggings/15.2-900.jpg',
+          'assets/images/product-shots/saguanari_leggings/15.3-900.jpg',
+        ],
       };
-      const href = previews[id];
-      if (!href) return;
-      const link = document.createElement('link');
-      link.rel = 'preload';
-      link.as = 'image';
-      link.href = href;
-      link.fetchPriority = 'high';
-      document.head.appendChild(link);
+      const hrefs = previews[id] || [];
+      window.LEBE_PDP_PRELOAD_IMAGES = hrefs;
+      hrefs.forEach((href, index) => {
+        const link = document.createElement('link');
+        link.rel = index === 0 ? 'preload' : 'prefetch';
+        link.as = 'image';
+        link.href = href;
+        if (index === 0) link.fetchPriority = 'high';
+        document.head.appendChild(link);
+      });
     })();
   </script>
 </head>
@@ -77,6 +98,40 @@
       <div class="aspect-[4/5] border border-[#050505]/15 bg-white"></div>
       <div class="aspect-[4/5] border border-[#050505]/15 bg-white"></div>
     </div>
+
+    <script>
+      (() => {
+        const images = window.LEBE_PDP_PRELOAD_IMAGES || [];
+        if (!images.length) return;
+
+        const setImage = (img, src, index) => {
+          if (!img || !src) return;
+          img.src = src;
+          img.alt = 'Product image';
+          img.decoding = 'async';
+          img.loading = 'eager';
+          img.fetchPriority = index === 0 ? 'high' : 'low';
+        };
+
+        setImage(document.getElementById('product-image'), images[0], 0);
+        setImage(document.getElementById('carousel-product-image'), images[0], 0);
+
+        document.querySelectorAll('#image-grid > div').forEach((item, index) => {
+          if (!images[index]) return;
+          const existing = item.querySelector('img');
+          if (existing) {
+            setImage(existing, images[index], index);
+            return;
+          }
+
+          const img = document.createElement('img');
+          img.className = 'h-full w-full object-cover';
+          setImage(img, images[index], index);
+          item.innerHTML = '';
+          item.appendChild(img);
+        });
+      })();
+    </script>
 
     <!-- Product Info -->
     <div class="flex h-fit flex-col justify-center border-t border-[#050505] py-10 md:sticky md:top-32">

@@ -23,22 +23,41 @@ const STATIC_PRODUCT_PREVIEWS = {
   309483674: {
     id: 309483674,
     name: 'Saguanari Sports Bra White',
-    images: ['assets/images/product-shots/saguanari_bra/11-900.jpg'],
+    images: [
+      'assets/images/product-shots/saguanari_bra/11-900.jpg',
+      'assets/images/product-shots/saguanari_bra/11.1-900.jpg',
+      'assets/images/product-shots/saguanari_bra/11.2-900.jpg',
+      'assets/images/product-shots/saguanari_bra/11.3-900.jpg',
+    ],
   },
   309483736: {
     id: 309483736,
     name: 'Saguanari Sports Bra Black',
-    images: ['assets/images/17-900.jpg'],
+    images: [
+      'assets/images/17-900.jpg',
+      'assets/images/product-shots/saguanari_bra/saguanari_bra_blk_1-900.jpg',
+      'assets/images/product-shots/saguanari_bra/saguanari_bra_blk_2-900.jpg',
+    ],
   },
   301596573: {
     id: 301596573,
     name: 'Saguanari Leggings White',
-    images: ['assets/images/product-shots/saguanari_leggings/9.0-900.jpg'],
+    images: [
+      'assets/images/product-shots/saguanari_leggings/9.0-900.jpg',
+      'assets/images/product-shots/saguanari_leggings/9.1-900.jpg',
+      'assets/images/product-shots/saguanari_leggings/9.2-900.jpg',
+      'assets/images/product-shots/saguanari_leggings/9.3-900.jpg',
+    ],
   },
   300307426: {
     id: 300307426,
     name: 'Saguanari Leggings Black',
-    images: ['assets/images/product-shots/saguanari_leggings/15-900.jpg'],
+    images: [
+      'assets/images/product-shots/saguanari_leggings/15-900.jpg',
+      'assets/images/product-shots/saguanari_leggings/15.1-900.jpg',
+      'assets/images/product-shots/saguanari_leggings/15.2-900.jpg',
+      'assets/images/product-shots/saguanari_leggings/15.3-900.jpg',
+    ],
   },
 };
 
@@ -152,7 +171,7 @@ function applyProductPreview(product) {
   if (productPrice && Number.isFinite(Number(product.price))) {
     productPrice.textContent = `$${Number(product.price).toFixed(2)}`;
   }
-  setProductGalleryImages(product.images);
+  populateImageGallery(product.images);
   setHeroImages(product.images, product.name);
 }
 
@@ -167,8 +186,10 @@ function renderProductGallery() {
   productGalleryIndex = (productGalleryIndex + productGalleryImages.length) % productGalleryImages.length;
   const activeImage = productGalleryImages[productGalleryIndex];
 
-  image.src = activeImage.full;
+  image.src = activeImage.thumb;
+  image.dataset.fullSrc = activeImage.full;
   image.dataset.fallbackSrc = activeImage.thumb;
+  image.dataset.fullRequested = 'false';
   image.dataset.triedFallback = 'false';
   image.alt = currentProduct?.name || 'Product image';
   applyProductGalleryTransform();
@@ -177,6 +198,33 @@ function renderProductGallery() {
   const hasMultipleImages = productGalleryImages.length > 1;
   prev?.toggleAttribute('hidden', !hasMultipleImages);
   next?.toggleAttribute('hidden', !hasMultipleImages);
+}
+
+function preloadProductGalleryFullImage(index) {
+  const activeImage = productGalleryImages[(index + productGalleryImages.length) % productGalleryImages.length];
+  if (!activeImage?.full || activeImage.full === activeImage.thumb) return;
+  const loader = new Image();
+  loader.decoding = 'async';
+  loader.src = activeImage.full;
+}
+
+function upgradeProductGalleryImageToFull() {
+  const image = document.getElementById('pdp-gallery-image');
+  if (!image) return;
+
+  const fullSrc = image.dataset.fullSrc;
+  if (!fullSrc || image.dataset.fullRequested === 'true') return;
+  if (image.currentSrc.endsWith(fullSrc) || image.src.endsWith(fullSrc)) return;
+
+  image.dataset.fullRequested = 'true';
+  const loader = new Image();
+  loader.decoding = 'async';
+  loader.onload = () => {
+    if (image.dataset.fullSrc === fullSrc) {
+      image.src = fullSrc;
+    }
+  };
+  loader.src = fullSrc;
 }
 
 function openProductGallery(index = 0) {
@@ -190,6 +238,10 @@ function openProductGallery(index = 0) {
   gallery.hidden = false;
   document.body.classList.add('pdp-gallery-open');
   renderProductGallery();
+  window.setTimeout(() => {
+    preloadProductGalleryFullImage(productGalleryIndex);
+    preloadProductGalleryFullImage(productGalleryIndex + 1);
+  }, 120);
   close?.focus({ preventScroll: true });
 }
 
@@ -216,6 +268,9 @@ function toggleProductGalleryZoom() {
   productGalleryPanX = 0;
   productGalleryPanY = 0;
   applyProductGalleryTransform();
+  if (productGalleryZoomed) {
+    upgradeProductGalleryImageToFull();
+  }
 }
 
 function startProductGalleryPan(event) {
@@ -406,41 +461,41 @@ const updateCareInstructions = () => {
 };
 
 const populateImageGallery = (images) => {
-  console.log('populateImageGallery called with:', images);
   if (!images || images.length === 0) {
-    console.warn('No images provided to populateImageGallery');
     return;
   }
   setProductGalleryImages(images);
 
   // Populate carousel slides (mobile)
   const carouselSlides = document.querySelectorAll('#image-carousel .splide__slide');
-  console.log('Found carousel slides:', carouselSlides.length);
   carouselSlides.forEach((slide, index) => {
     if (index < images.length) {
       const img = slide.querySelector('img');
-      console.log(`Slide ${index}: img exists?`, !!img, 'src:', images[index]);
       if (!img) {
-        slide.innerHTML = `<div class="aspect-[4/5] overflow-hidden bg-neutral-100"><img src="${images[index]}" alt="" class="h-full w-full object-cover" decoding="async" /></div>`;
+        slide.innerHTML = `<div class="aspect-[4/5] overflow-hidden bg-neutral-100"><img src="${images[index]}" alt="${currentProduct?.name || 'Product image'}" class="h-full w-full object-cover" loading="eager" decoding="async" /></div>`;
       } else {
         img.src = images[index];
+        img.alt = currentProduct?.name || 'Product image';
+        img.loading = 'eager';
       }
     }
   });
 
   // Populate grid items (desktop)
   const gridItems = document.querySelectorAll('#image-grid > div');
-  console.log('Found grid items:', gridItems.length);
   gridItems.forEach((item, index) => {
     if (index < images.length) {
       const img = item.querySelector('img');
-      console.log(`Grid item ${index}: img exists?`, !!img, 'src:', images[index]);
       if (img) {
         img.src = images[index];
+        img.alt = currentProduct?.name || 'Product image';
+        img.loading = 'eager';
       } else if (index > 0) {
         const newImg = document.createElement('img');
         newImg.src = images[index];
-        newImg.alt = '';
+        newImg.alt = currentProduct?.name || 'Product image';
+        newImg.loading = 'eager';
+        newImg.decoding = 'async';
         newImg.className = 'h-full w-full object-cover';
         item.innerHTML = '';
         item.appendChild(newImg);
