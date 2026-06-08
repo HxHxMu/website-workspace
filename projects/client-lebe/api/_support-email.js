@@ -56,7 +56,7 @@ function validateHoneypot(fields) {
   }
 }
 
-async function sendResendEmail(message) {
+async function sendResendEmail(message, label = 'email') {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     throw new SupportError(503, 'Support email is not configured yet.');
@@ -77,9 +77,11 @@ async function sendResendEmail(message) {
 
   if (!response.ok) {
     const detail = await response.text().catch(() => '');
-    console.error('Resend email error:', response.status, detail);
+    console.error(`Resend ${label} error:`, response.status, detail);
     throw new SupportError(502, 'We could not send your request right now. Please try again.');
   }
+
+  return response.json().catch(() => ({}));
 }
 
 function renderFieldList(fields) {
@@ -138,21 +140,28 @@ async function sendSupportRequest({
     </div>
   `;
 
-  await Promise.all([
-    sendResendEmail({
-      to: SUPPORT_INBOX,
-      reply_to: replyTo,
-      subject: normalizeSubject(staffSubject),
-      text: staffText,
-      html: staffHtml,
-    }),
-    sendResendEmail({
+  await sendResendEmail({
+    to: SUPPORT_INBOX,
+    reply_to: replyTo,
+    subject: normalizeSubject(staffSubject),
+    text: staffText,
+    html: staffHtml,
+  }, 'staff notification');
+
+  let customerConfirmationSent = true;
+  try {
+    await sendResendEmail({
       to: customerEmail,
       subject: normalizeSubject(customerSubject),
       text: customerText,
       html: customerHtml,
-    }),
-  ]);
+    }, 'customer confirmation');
+  } catch (error) {
+    customerConfirmationSent = false;
+    console.error(`Customer confirmation failed for ${referenceId}:`, error.message);
+  }
+
+  return { customerConfirmationSent };
 }
 
 module.exports = {

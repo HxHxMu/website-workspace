@@ -41,7 +41,7 @@ module.exports = async (req, res) => {
     const photoLinks = normalizeText(body.photoLinks, 1500);
     const referenceId = generateReferenceId();
 
-    await sendSupportRequest({
+    const delivery = await sendSupportRequest({
       referenceId,
       customerEmail: email,
       customerName: name,
@@ -59,7 +59,7 @@ module.exports = async (req, res) => {
       customerIntro: 'Thanks for sending the details. If photos are needed, we’ll request them in our reply.',
     });
 
-    return res.status(200).json({ ok: true, referenceId });
+    return res.status(200).json({ ok: true, referenceId, ...delivery });
   } catch (error) {
     console.error('order issue support error:', error);
     if (error instanceof SupportError) {

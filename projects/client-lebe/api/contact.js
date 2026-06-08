@@ -23,7 +23,7 @@ module.exports = async (req, res) => {
     const message = requiredText(body, 'message', 'Message', 3000);
     const referenceId = generateReferenceId();
 
-    await sendSupportRequest({
+    const delivery = await sendSupportRequest({
       referenceId,
       customerEmail: email,
       customerName: name,
@@ -39,7 +39,7 @@ module.exports = async (req, res) => {
       customerIntro: 'Thanks for reaching out. This confirms your message was received.',
     });
 
-    return res.status(200).json({ ok: true, referenceId });
+    return res.status(200).json({ ok: true, referenceId, ...delivery });
   } catch (error) {
     console.error('contact support error:', error);
     if (error instanceof SupportError) {
