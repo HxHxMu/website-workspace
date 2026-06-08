@@ -51,7 +51,7 @@ function generateReferenceId() {
 }
 
 function validateHoneypot(fields) {
-  if (normalizeText(fields.company, 120)) {
+  if (normalizeText(fields.lebe_confirm_url, 120)) {
     throw new SupportError(400, 'Unable to submit this request.');
   }
 }
