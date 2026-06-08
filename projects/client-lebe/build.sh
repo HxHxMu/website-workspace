@@ -22,11 +22,11 @@ echo "Built HTML: index.html"
 node scripts/build-policies.js
 
 # Validate presence of standalone pages so full site build is consistent
-for page in src/product.html src/cart.html src/privacy.html src/terms.html src/shipping.html src/returns.html; do
+for page in src/product.html src/cart.html src/privacy.html src/terms.html src/shipping.html src/returns.html src/contact.html src/order-issue.html; do
   if [ ! -f "$page" ]; then
     echo "Missing required page: $page" >&2
     exit 1
   fi
 done
 
-echo "Verified HTML: product.html, cart.html, privacy.html, terms.html, shipping.html, returns.html"
+echo "Verified HTML: product.html, cart.html, privacy.html, terms.html, shipping.html, returns.html, contact.html, order-issue.html"

@@ -185,6 +185,118 @@
     text-underline-offset: 0.25em;
   }
 
+  .support-form {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .support-form__grid {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .support-form__honeypot {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .support-field {
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .support-field span {
+    color: rgba(5, 5, 5, 0.52);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.42em;
+    text-transform: uppercase;
+  }
+
+  .support-field input,
+  .support-field select,
+  .support-field textarea {
+    width: 100%;
+    border: 1px solid rgba(5, 5, 5, 0.18);
+    background: #f8f8f5;
+    color: #050505;
+    padding: 1rem;
+    font-size: 16px;
+    line-height: 1.5;
+    transition: border-color 180ms ease, background 180ms ease;
+  }
+
+  .support-field textarea {
+    resize: vertical;
+  }
+
+  .support-field input:focus,
+  .support-field select:focus,
+  .support-field textarea:focus {
+    outline: none;
+    border-color: #050505;
+    background: #fff;
+  }
+
+  .support-form__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+    margin-top: 0.75rem;
+  }
+
+  .support-form__actions button {
+    display: inline-flex;
+    min-height: 3.5rem;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #050505;
+    background: #050505;
+    color: #fff;
+    padding: 1rem 1.75rem;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    transition: background 180ms ease, color 180ms ease, opacity 180ms ease;
+  }
+
+  .support-form__actions button:hover,
+  .support-form__actions button:focus-visible {
+    background: #fff;
+    color: #050505;
+  }
+
+  .support-form__actions button:disabled {
+    cursor: wait;
+    opacity: 0.55;
+  }
+
+  .support-form__status {
+    min-height: 1.5rem;
+    color: rgba(5, 5, 5, 0.62);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .support-form__status.is-error {
+    color: #9f1d1d;
+  }
+
+  .support-form__status.is-success {
+    color: #285f3a;
+  }
+
+  @media (min-width: 768px) {
+    .support-form__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
   .cart-layout {
     display: grid;
     gap: 2rem;

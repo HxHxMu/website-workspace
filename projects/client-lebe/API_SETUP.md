@@ -20,9 +20,14 @@ STRIPE_SECRET_KEY=sk_test_...
 STRIPE_PUBLISHABLE_KEY=pk_test_...
 STRIPE_WEBHOOK_SECRET=whsec_...
 FULFILLMENT_ADMIN_TOKEN=...
+RESEND_API_KEY=...
+SUPPORT_INBOX=support@lebe.life
+SUPPORT_FROM_EMAIL="LEBE Support <support@lebe.life>"
 ```
 
 `FULFILLMENT_ADMIN_TOKEN` should be a long random value. It protects the manual reconciliation endpoint.
+
+`RESEND_API_KEY` powers the private support forms. `SUPPORT_INBOX` is where contact and order issue requests are delivered. `SUPPORT_FROM_EMAIL` must use a sender/domain verified in Resend.
 
 ## Stripe Setup
 
@@ -81,6 +86,14 @@ curl -X POST https://<your-domain>/api/reconcile-fulfillment \
   -H "Content-Type: application/json" \
   -d '{"paymentIntentId":"pi_..."}'
 ```
+
+### `POST /api/contact`
+
+Receives the public contact form, validates the request, sends the private support inbox a copy, and sends the customer a confirmation with a `LEBE-YYYY-XXXXXX` reference.
+
+### `POST /api/order-issue`
+
+Receives damaged, defective, incorrect, missing, or other order issue requests. The public site does not expose the support email address; requests are routed privately through Resend.
 
 ## Test Checklist
 

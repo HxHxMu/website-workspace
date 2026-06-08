@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Returns & Refunds — LEBE</title>
-  <meta name="description" content="Return, refund, damaged item, and cancellation information for LEBE orders." />
+  <title>Contact — LEBE</title>
+  <meta name="description" content="Contact LEBE for general product, order, and policy questions." />
   <link rel="icon" href="./assets/images/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="./output.css" />
 </head>
@@ -12,7 +12,7 @@
   <header class="lebe-header">
     <nav class="lebe-shell h-full flex items-center justify-between">
       <a href="/" class="lebe-brand">lebe.</a>
-      <a href="/cart" class="lebe-bag group">
+      <a href="/cart" class="lebe-bag group" aria-label="Open bag">
         <svg class="h-5 w-5 transition duration-300 group-hover:scale-95" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <path d="M5 1.66667L2.5 5V16.6667C2.5 17.1087 2.67559 17.5326 2.98816 17.8452C3.30072 18.1577 3.72464 18.3333 4.16667 18.3333H15.8333C16.2754 18.3333 16.6993 18.1577 17.0118 17.8452C17.3244 17.5326 17.5 17.1087 17.5 16.6667V5L15 1.66667H5Z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M2.5 5H17.5" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
@@ -25,49 +25,64 @@
   <main class="pt-28 md:pt-36">
     <section class="lebe-main-shell pb-20 md:pb-28">
       <div class="border-b border-[#050505] pb-10 md:pb-12">
-        <p class="lebe-kicker mb-7">returns & refunds</p>
-        <h1 class="font-serif text-[64px] font-bold leading-[0.92] tracking-[-0.06em] md:text-[112px]">Returns</h1>
+        <p class="lebe-kicker mb-7">private support</p>
+        <h1 class="font-serif text-[64px] font-bold leading-[0.92] tracking-[-0.06em] md:text-[112px]">Contact</h1>
       </div>
 
       <div class="grid gap-12 py-12 md:grid-cols-[280px_minmax(0,1fr)] md:gap-20 md:py-16">
         <aside>
-          <p class="lebe-kicker mb-5">order care.</p>
-          <p class="font-serif text-[18px] font-bold italic leading-7 text-[#050505]/40">Made for you.</p>
+          <p class="lebe-kicker mb-5">general questions.</p>
+          <p class="font-serif text-[18px] font-bold italic leading-7 text-[#050505]/40">No public inbox. Just a clean request path.</p>
         </aside>
 
-        <article class="policy-copy max-w-[760px] text-[#050505]/68">
-          
-          <section>
-            <h2>Overview.</h2>
-            <p>Because every product is made specifically to order, we do not accept returns or exchanges for incorrect size selection, change of mind, buyer’s remorse, or preference regarding color, fit, or style.</p>
-            <p>Please review sizing information carefully before placing your order.</p>
-          </section>
-
-
-          <section>
-            <h2>Damaged, defective, or incorrect items.</h2>
-            <p>If your order arrives damaged, defective, or incorrect, submit an <a href="/order-issue">order issue request</a> within 30 days of delivery.</p>
-            <p>Include your order number, a description of the issue, and any available photo links. We may request photos before approving a replacement or refund.</p>
-            <p>If approved, we will provide a replacement or refund at no additional cost.</p>
-          </section>
-
-
-          <section>
-            <h2>Order changes & cancellations.</h2>
-            <p>Requests to modify or cancel an order must be submitted within 12 hours of purchase.</p>
-            <p>Once production has begun, orders cannot be modified, canceled, or refunded.</p>
-          </section>
-
-
-          <section>
-            <h2>Contact.</h2>
-            <p>For damaged, defective, incorrect, or missing orders, use the <a href="/order-issue">order issue form</a>. For general questions, use the <a href="/contact">contact form</a>.</p>
-          </section>
-
-          <div class="mt-12 border-t border-[#050505]/12 pt-8 text-[14px] leading-7 text-[#050505]/48">
-            Last updated: June 2026.
+        <div class="max-w-[760px]">
+          <div class="policy-copy mb-10 text-[#050505]/68">
+            <section>
+              <h2>Tell us what you need.</h2>
+              <p>Use this form for product questions, policy questions, and non-urgent order questions. For damaged, defective, incorrect, or missing orders, use the order issue form so we get the right details upfront.</p>
+              <p><a href="/order-issue">Open the order issue form.</a></p>
+            </section>
           </div>
-        </article>
+
+          <form class="support-form" action="/api/contact" method="post" data-support-form>
+            <div class="support-form__honeypot" aria-hidden="true">
+              <label for="company">Company</label>
+              <input id="company" name="company" type="text" tabindex="-1" autocomplete="off" />
+            </div>
+
+            <div class="support-form__grid">
+              <label class="support-field">
+                <span>Name</span>
+                <input name="name" type="text" autocomplete="name" required />
+              </label>
+              <label class="support-field">
+                <span>Email</span>
+                <input name="email" type="email" autocomplete="email" required />
+              </label>
+            </div>
+
+            <label class="support-field">
+              <span>Topic</span>
+              <select name="topic" required>
+                <option value="">Select a topic</option>
+                <option value="Product question">Product question</option>
+                <option value="Order question">Order question</option>
+                <option value="Policy question">Policy question</option>
+                <option value="Other">Other</option>
+              </select>
+            </label>
+
+            <label class="support-field">
+              <span>Message</span>
+              <textarea name="message" rows="7" required></textarea>
+            </label>
+
+            <div class="support-form__actions">
+              <button type="submit">Send.</button>
+              <p data-form-status class="support-form__status" role="status" aria-live="polite"></p>
+            </div>
+          </form>
+        </div>
       </div>
     </section>
   </main>
@@ -92,6 +107,7 @@
       </nav>
     </div>
   </footer>
+
+  <script src="./js/support-form.js" defer></script>
 </body>
 </html>
-

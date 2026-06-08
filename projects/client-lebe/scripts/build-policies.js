@@ -5,7 +5,6 @@ const ROOT = path.join(__dirname, '..');
 const template = fs.readFileSync(path.join(ROOT, 'src/partials/policies/_template.html'), 'utf8');
 
 const UPDATED = 'June 2026';
-const SUPPORT_EMAIL = 'support@lebe.life';
 
 const pages = [
   {
@@ -58,6 +57,12 @@ const pages = [
         ],
       },
       {
+        heading: 'Data retention.',
+        body: [
+          'We keep order, support, and transaction records only as long as reasonably necessary for fulfillment, customer support, fraud prevention, accounting, and legal obligations.',
+        ],
+      },
+      {
         heading: 'California privacy rights.',
         body: [
           'California residents may request information regarding the categories of personal information collected and may request deletion of personal information, subject to applicable legal exceptions.',
@@ -66,7 +71,7 @@ const pages = [
       {
         heading: 'Contact.',
         body: [
-          `For privacy-related questions, contact <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a>.`,
+          'For privacy-related questions, use the <a href="/contact">contact form</a>.',
         ],
       },
     ],
@@ -123,6 +128,12 @@ const pages = [
           'Once a shipment has been marked as delivered by the carrier, responsibility for the package transfers to the customer.',
         ],
       },
+      {
+        heading: 'Questions.',
+        body: [
+          'For general shipping questions, use the <a href="/contact">contact form</a>.',
+        ],
+      },
     ],
   },
   {
@@ -144,8 +155,8 @@ const pages = [
       {
         heading: 'Damaged, defective, or incorrect items.',
         body: [
-          'If your order arrives damaged, defective, or incorrect, please contact us within 30 days of delivery.',
-          'Include your order number, a description of the issue, and photos showing the problem.',
+          'If your order arrives damaged, defective, or incorrect, submit an <a href="/order-issue">order issue request</a> within 30 days of delivery.',
+          'Include your order number, a description of the issue, and any available photo links. We may request photos before approving a replacement or refund.',
           'If approved, we will provide a replacement or refund at no additional cost.',
         ],
       },
@@ -159,7 +170,7 @@ const pages = [
       {
         heading: 'Contact.',
         body: [
-          `For return or refund questions, contact <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a>.`,
+          'For damaged, defective, incorrect, or missing orders, use the <a href="/order-issue">order issue form</a>. For general questions, use the <a href="/contact">contact form</a>.',
         ],
       },
     ],
@@ -227,7 +238,7 @@ const pages = [
       {
         heading: 'Contact.',
         body: [
-          `Questions regarding these terms may be directed to <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a>.`,
+          'Questions regarding these terms may be sent through the <a href="/contact">contact form</a>.',
         ],
       },
     ],

@@ -3,6 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const productsApi = require('./api/products');
 const productApi = require('./api/product');
+const contactApi = require('./api/contact');
+const orderIssueApi = require('./api/order-issue');
 
 ['.env.local', '.env'].forEach((envFile) => {
   const envPath = path.join(__dirname, envFile);
@@ -163,6 +165,18 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  if (requestUrl.pathname === '/api/contact' && req.method === 'POST') {
+    req.body = await readJsonBody(req);
+    await runApiHandler(contactApi, req, res);
+    return;
+  }
+
+  if (requestUrl.pathname === '/api/order-issue' && req.method === 'POST') {
+    req.body = await readJsonBody(req);
+    await runApiHandler(orderIssueApi, req, res);
+    return;
+  }
+
   if (requestUrl.pathname === '/api/stripe-intent' && req.method === 'POST') {
     sendJson(res, 503, {
       error: 'Local dev can mock shipping and promo codes, but real payment setup must be tested on the Vercel preview.',
@@ -183,6 +197,10 @@ const server = http.createServer(async (req, res) => {
     urlPath = '/product.html';
   } else if (urlPath === '/cart') {
     urlPath = '/cart.html';
+  } else if (urlPath === '/contact') {
+    urlPath = '/contact.html';
+  } else if (urlPath === '/order-issue') {
+    urlPath = '/order-issue.html';
   } else if (urlPath === '/') {
     urlPath = '/index.html';
   } else if (!path.extname(urlPath)) {
