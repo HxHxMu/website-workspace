@@ -1,4 +1,11 @@
 const crypto = require('crypto');
+const {
+  escapeHtml,
+  renderEmailLayout,
+  renderParagraph,
+  renderRows,
+  renderSection,
+} = require('./_email-layout');
 
 const SUPPORT_INBOX = process.env.SUPPORT_INBOX || 'support@lebe.life';
 const SUPPORT_FROM_EMAIL = process.env.SUPPORT_FROM_EMAIL || 'LEBE Store <support@mail.lebe.life>';
@@ -9,15 +16,6 @@ class SupportError extends Error {
     this.status = status;
     this.publicMessage = publicMessage;
   }
-}
-
-function escapeHtml(value) {
-  return String(value || '')
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
 }
 
 function normalizeText(value, maxLength = 2000) {
@@ -122,23 +120,41 @@ async function sendSupportRequest({
     ...Object.entries(staffFields).map(([label, value]) => `${label}: ${value || '—'}`),
   ].join('\n');
 
-  const staffHtml = `
-    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #050505;">
-      <p>${escapeHtml(staffIntro)}</p>
-      <p><strong>Reference:</strong> ${escapeHtml(referenceId)}</p>
-      ${renderFieldList(staffFields)}
-    </div>
-  `;
+  const staffHtml = renderEmailLayout({
+    kicker: 'support request',
+    title: 'New request.',
+    asideKicker: 'internal note.',
+    asideText: 'Customer care.',
+    footer: 'Reply to this notification to respond to the customer.',
+    children: `
+      ${renderSection('Overview.', [
+        renderParagraph(staffIntro),
+        `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse; margin-top:18px;">${renderRows([
+          { label: 'Reference', value: referenceId },
+        ])}</table>`,
+      ].join(''))}
+      ${renderSection('Details.', renderFieldList(staffFields))}
+    `,
+  });
 
   const customerText = renderCustomerConfirmation(referenceId, customerIntro);
-  const customerHtml = `
-    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #050505;">
-      <p>LEBE received your request.</p>
-      <p><strong>Reference:</strong> ${escapeHtml(referenceId)}</p>
-      <p>${escapeHtml(customerIntro)}</p>
-      <p>We’ll review it and respond as soon as possible.</p>
-    </div>
-  `;
+  const customerHtml = renderEmailLayout({
+    kicker: 'customer care',
+    title: 'Request received.',
+    asideKicker: 'support.',
+    asideText: 'We have your note.',
+    footer: 'LEBE customer care',
+    children: `
+      ${renderSection('Overview.', [
+        renderParagraph('LEBE received your request.'),
+        renderParagraph(customerIntro),
+        `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse; margin-top:18px;">${renderRows([
+          { label: 'Reference', value: referenceId },
+        ])}</table>`,
+      ].join(''))}
+      ${renderSection('Next step.', renderParagraph('We’ll review it and respond as soon as possible.'))}
+    `,
+  });
 
   await sendResendEmail({
     to: SUPPORT_INBOX,

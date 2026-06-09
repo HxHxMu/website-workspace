@@ -1,11 +1,12 @@
-function escapeHtml(value) {
-  return String(value ?? '')
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
-}
+const {
+  escapeHtml,
+  renderButton,
+  renderDataTable,
+  renderEmailLayout,
+  renderParagraph,
+  renderRows,
+  renderSection,
+} = require('./_email-layout');
 
 function formatMoneyFromCents(cents) {
   return `$${((Number(cents) || 0) / 100).toFixed(2)}`;
@@ -68,13 +69,18 @@ function buildItemsText(items = []) {
 }
 
 function buildItemsTable(items = []) {
-  return items.map((item) => `
-    <tr>
-      <td style="padding: 12px 0; border-bottom: 1px solid #e4e4e4;">${escapeHtml(itemName(item))}</td>
-      <td style="padding: 12px 0; border-bottom: 1px solid #e4e4e4;">${escapeHtml(itemDetails(item))}</td>
-      <td style="padding: 12px 0; border-bottom: 1px solid #e4e4e4; text-align: right;">${Number(item.quantity) || 1}</td>
-    </tr>
-  `).join('');
+  return renderDataTable({
+    headers: ['Item', 'Details', 'Qty'],
+    rows: items.map((item) => [
+      itemName(item),
+      itemDetails(item),
+      String(Number(item.quantity) || 1),
+    ]),
+  });
+}
+
+function addressHtml(recipient = {}) {
+  return escapeHtml(formatAddress(recipient)).replaceAll('\n', '<br>');
 }
 
 function buildOrderEmail({ paymentIntent, fulfillment }) {
@@ -117,44 +123,36 @@ function buildOrderEmail({ paymentIntent, fulfillment }) {
     'Questions? Use the contact or order issue forms on lebe.life.',
   ].filter(Boolean).join('\n');
 
-  const html = `
-    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #050505; max-width: 640px;">
-      <p style="font-size: 18px;">Thank you for your LEBE order.</p>
-      <p><strong>Order reference:</strong> ${escapeHtml(orderReference)}</p>
-      ${orderId ? `<p><strong>Printful order:</strong> ${escapeHtml(orderId)}</p>` : ''}
-
-      <h2 style="font-size: 18px; margin-top: 32px;">Items</h2>
-      <table style="width: 100%; border-collapse: collapse;">
-        <thead>
-          <tr>
-            <th style="padding: 0 0 10px; border-bottom: 1px solid #050505; text-align: left;">Item</th>
-            <th style="padding: 0 0 10px; border-bottom: 1px solid #050505; text-align: left;">Details</th>
-            <th style="padding: 0 0 10px; border-bottom: 1px solid #050505; text-align: right;">Qty</th>
-          </tr>
-        </thead>
-        <tbody>${buildItemsTable(items)}</tbody>
-      </table>
-
-      <h2 style="font-size: 18px; margin-top: 32px;">Order total</h2>
-      <p>
-        Subtotal: ${formatMoneyFromCents(estimate.subtotalCents)}<br>
-        ${discountCents ? `Discount: -${formatMoneyFromCents(discountCents)}<br>` : ''}
-        Shipping: ${formatMoneyFromCents(estimate.shippingCents)}<br>
-        Estimated tax: ${formatMoneyFromCents(estimate.taxCents)}<br>
-        <strong>Total paid: ${formatMoneyFromCents(paymentIntent.amount)}</strong>
-      </p>
-
-      <h2 style="font-size: 18px; margin-top: 32px;">Shipping method</h2>
-      <p>${escapeHtml(shippingLabel)}</p>
-
-      <h2 style="font-size: 18px; margin-top: 32px;">Ship to</h2>
-      <p>${escapeHtml(formatAddress(recipient)).replaceAll('\n', '<br>')}</p>
-
-      <h2 style="font-size: 18px; margin-top: 32px;">Production & tracking</h2>
-      <p>Your pieces are made to order. Production typically takes 2–7 business days before shipment. Tracking will be available once the order ships.</p>
-      <p>Questions? Use the contact or order issue forms on lebe.life.</p>
-    </div>
-  `;
+  const html = renderEmailLayout({
+    kicker: 'order information',
+    title: 'Order confirmed.',
+    asideKicker: 'customer order.',
+    asideText: 'Made-to-order pieces.',
+    footer: 'Questions? Use the contact or order issue forms on lebe.life.',
+    children: `
+      ${renderSection('Overview.', [
+        renderParagraph('Thank you for your LEBE order. We’ve received your payment and your order is queued for fulfillment.'),
+        `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse; margin-top:18px;">${renderRows([
+          { label: 'Order reference', value: orderReference },
+          orderId ? { label: 'Printful order', value: orderId } : null,
+        ])}</table>`,
+      ].join(''))}
+      ${renderSection('Items.', buildItemsTable(items))}
+      ${renderSection('Order total.', `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">${renderRows([
+        { label: 'Subtotal', value: formatMoneyFromCents(estimate.subtotalCents) },
+        discountCents ? { label: 'Discount', value: `-${formatMoneyFromCents(discountCents)}` } : null,
+        { label: 'Shipping', value: formatMoneyFromCents(estimate.shippingCents) },
+        { label: 'Estimated tax', value: formatMoneyFromCents(estimate.taxCents) },
+        { label: 'Total paid', value: formatMoneyFromCents(paymentIntent.amount) },
+      ])}</table>`)}
+      ${renderSection('Shipping method.', renderParagraph(shippingLabel))}
+      ${renderSection('Ship to.', `<p style="margin:0 0 16px;">${addressHtml(recipient)}</p>`)}
+      ${renderSection('Production & tracking.', [
+        renderParagraph('Your pieces are made to order. Production typically takes 2–7 business days before shipment.'),
+        renderParagraph('Tracking will be available once the order ships, and we’ll send it to you automatically.'),
+      ].join(''))}
+    `,
+  });
 
   return { text, html, subject: 'Your LEBE order is confirmed' };
 }
@@ -184,23 +182,28 @@ function buildProductionEmail({ paymentIntent, order, metadataItems = [] }) {
     formatAddress(recipient),
   ].filter(Boolean).join('\n');
 
-  const html = `
-    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #050505; max-width: 640px;">
-      <p style="font-size: 18px;">Your LEBE order is now in production.</p>
-      <p><strong>Order reference:</strong> ${escapeHtml(orderReference)}</p>
-      <h2 style="font-size: 18px; margin-top: 32px;">Production & tracking</h2>
-      <p>Your pieces are made to order and are now being prepared for fulfillment. Production typically takes 2–7 business days before shipment.</p>
-      <p>We’ll send tracking information as soon as the carrier receives your package.</p>
-      <h2 style="font-size: 18px; margin-top: 32px;">Shipping method</h2>
-      <p>${escapeHtml(shippingLabel)}</p>
-      <h2 style="font-size: 18px; margin-top: 32px;">Items</h2>
-      <table style="width: 100%; border-collapse: collapse;">
-        <tbody>${buildItemsTable(items)}</tbody>
-      </table>
-      <h2 style="font-size: 18px; margin-top: 32px;">Ship to</h2>
-      <p>${escapeHtml(formatAddress(recipient)).replaceAll('\n', '<br>')}</p>
-    </div>
-  `;
+  const html = renderEmailLayout({
+    kicker: 'production update',
+    title: 'In production.',
+    asideKicker: 'order status.',
+    asideText: 'Now being made.',
+    footer: 'We’ll send tracking as soon as your order ships.',
+    children: `
+      ${renderSection('Overview.', [
+        renderParagraph('Your LEBE order is now in production. Your pieces are made to order and are being prepared for fulfillment.'),
+        `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse; margin-top:18px;">${renderRows([
+          { label: 'Order reference', value: orderReference },
+        ])}</table>`,
+      ].join(''))}
+      ${renderSection('Production & tracking.', [
+        renderParagraph('Production typically takes 2–7 business days before shipment.'),
+        renderParagraph('We’ll send tracking information as soon as the carrier receives your package.'),
+      ].join(''))}
+      ${renderSection('Shipping method.', renderParagraph(shippingLabel))}
+      ${renderSection('Items.', buildItemsTable(items))}
+      ${renderSection('Ship to.', `<p style="margin:0 0 16px;">${addressHtml(recipient)}</p>`)}
+    `,
+  });
 
   return { subject: 'Your LEBE order is in production', text, html };
 }
@@ -241,24 +244,26 @@ function buildShipmentEmail({ paymentIntent, order, shipment = {}, metadataItems
     buildItemsText(items),
   ].filter(Boolean).join('\n');
 
-  const html = `
-    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #050505; max-width: 640px;">
-      <p style="font-size: 18px;">Your LEBE order has shipped.</p>
-      <p><strong>Order reference:</strong> ${escapeHtml(orderReference)}</p>
-      <h2 style="font-size: 18px; margin-top: 32px;">Tracking</h2>
-      ${normalizedShipment.carrier ? `<p><strong>Carrier:</strong> ${escapeHtml(normalizedShipment.carrier)}</p>` : ''}
-      <p>
-        ${normalizedShipment.trackingNumber ? `<strong>Tracking number:</strong> ${escapeHtml(normalizedShipment.trackingNumber)}<br>` : ''}
-        ${normalizedShipment.trackingUrl ? `<a href="${escapeHtml(normalizedShipment.trackingUrl)}" style="color: #050505;">Track your package</a>` : 'Tracking is now available from the carrier.'}
-      </p>
-      <h2 style="font-size: 18px; margin-top: 32px;">Production & tracking</h2>
-      <p>Your made-to-order pieces have left production and are now with the carrier. Tracking may take a short time to update after the label is created.</p>
-      <h2 style="font-size: 18px; margin-top: 32px;">Items</h2>
-      <table style="width: 100%; border-collapse: collapse;">
-        <tbody>${buildItemsTable(items)}</tbody>
-      </table>
-    </div>
-  `;
+  const html = renderEmailLayout({
+    kicker: 'shipping update',
+    title: 'On its way.',
+    asideKicker: 'tracking.',
+    asideText: 'With the carrier.',
+    footer: 'Tracking can take a short time to update after the label is created.',
+    children: `
+      ${renderSection('Overview.', [
+        renderParagraph('Your LEBE order has shipped. Your made-to-order pieces have left production and are now with the carrier.'),
+        `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse; margin-top:18px;">${renderRows([
+          { label: 'Order reference', value: orderReference },
+          normalizedShipment.carrier ? { label: 'Carrier', value: normalizedShipment.carrier } : null,
+          normalizedShipment.trackingNumber ? { label: 'Tracking number', value: normalizedShipment.trackingNumber } : null,
+        ])}</table>`,
+        renderButton({ href: normalizedShipment.trackingUrl, label: 'Track package' }),
+      ].join(''))}
+      ${renderSection('Production & tracking.', renderParagraph('Tracking may take a short time to update after the carrier receives the package.'))}
+      ${renderSection('Items.', buildItemsTable(items))}
+    `,
+  });
 
   return { subject: 'Your LEBE order has shipped', text, html, shipment: normalizedShipment };
 }
