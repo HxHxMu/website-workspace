@@ -175,6 +175,9 @@ async function hydratePrintfulItems(items, apiKey, requirements = {}) {
           ...item,
           variantId: match.variantId || item.variantId,
           syncVariantId: match.syncVariantId || item.syncVariantId,
+          name: item.name || match.name,
+          size: item.size || match.size,
+          color: item.color || match.color,
           options: Object.keys(item.options).length ? item.options : normalizeOptions(match.options),
         };
       }
@@ -592,6 +595,12 @@ async function fulfillPaidOrder({ stripe, paymentIntentId, paymentIntent, apiKey
     estimatedDelivery,
     totalCost: order.total_cost,
     shippingCost: order.shipping_cost,
+    recipient,
+    items,
+    shippingMethod,
+    estimate,
+    discountCents,
+    expectedCents,
   };
 }
 

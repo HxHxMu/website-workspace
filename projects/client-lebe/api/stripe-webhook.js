@@ -3,6 +3,7 @@ const {
   CheckoutError,
   fulfillPaidOrder,
 } = require('./_checkout-utils');
+const { trySendOrderConfirmationEmail } = require('./_order-email');
 
 async function readRawBody(req) {
   if (Buffer.isBuffer(req.body)) return req.body;
@@ -59,10 +60,16 @@ module.exports = async (req, res) => {
       paymentIntent,
       apiKey: PRINTFUL_API_KEY,
     });
+    const confirmationEmail = await trySendOrderConfirmationEmail({
+      stripe,
+      paymentIntent,
+      fulfillment,
+    });
 
     return res.status(200).json({
       received: true,
       orderId: fulfillment.order.id,
+      confirmationEmail,
     });
   } catch (error) {
     console.error('stripe-webhook fulfillment error:', error);

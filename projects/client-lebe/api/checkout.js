@@ -3,6 +3,7 @@ const {
   CheckoutError,
   fulfillPaidOrder,
 } = require('./_checkout-utils');
+const { trySendOrderConfirmationEmail } = require('./_order-email');
 
 function sendError(res, status, message) {
   return res.status(status).json({ error: message, message });
@@ -38,6 +39,12 @@ module.exports = async (req, res) => {
         orderHash,
       },
     });
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+    const confirmationEmail = await trySendOrderConfirmationEmail({
+      stripe,
+      paymentIntent,
+      fulfillment,
+    });
 
     return res.status(200).json({
       success: true,
@@ -46,6 +53,7 @@ module.exports = async (req, res) => {
       estimatedDelivery: fulfillment.estimatedDelivery,
       totalCost: fulfillment.totalCost,
       shippingCost: fulfillment.shippingCost,
+      confirmationEmail,
     });
   } catch (error) {
     console.error('Error creating order:', error);

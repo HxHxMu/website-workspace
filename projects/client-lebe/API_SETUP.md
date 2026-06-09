@@ -23,11 +23,12 @@ FULFILLMENT_ADMIN_TOKEN=...
 RESEND_API_KEY=...
 SUPPORT_INBOX=support@lebe.life
 SUPPORT_FROM_EMAIL="LEBE Support <support@lebe.life>"
+SUPPORT_REPLY_TO=support@lebe.life
 ```
 
 `FULFILLMENT_ADMIN_TOKEN` should be a long random value. It protects the manual reconciliation endpoint.
 
-`RESEND_API_KEY` powers the private support forms. `SUPPORT_INBOX` is where contact and order issue requests are delivered. `SUPPORT_FROM_EMAIL` must use a sender/domain verified in Resend.
+`RESEND_API_KEY` powers support and order confirmation emails. `SUPPORT_INBOX` is where contact and order issue requests are delivered. `SUPPORT_FROM_EMAIL` must use a sender/domain verified in Resend. `SUPPORT_REPLY_TO` should point to the real customer support inbox.
 
 ## Stripe Setup
 
@@ -72,9 +73,13 @@ Client-side fulfillment path after Stripe confirms payment. It re-verifies:
 - Order hash matches the exact items, shipping method, and recipient.
 - Printful `external_id` equals the PaymentIntent ID for duplicate protection.
 
+After successful fulfillment, this endpoint sends a customer order confirmation email through Resend and marks the Stripe PaymentIntent metadata to avoid duplicate confirmation emails.
+
 ### `POST /api/stripe-webhook`
 
 Durable fulfillment path for `payment_intent.succeeded`. Stripe retries this endpoint if Printful is temporarily unavailable.
+
+This endpoint also attempts the same duplicate-guarded customer order confirmation email after successful fulfillment.
 
 ### `POST /api/reconcile-fulfillment`
 
