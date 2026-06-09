@@ -21,7 +21,7 @@ function renderEmailLayout({
     <div style="display:none; max-height:0; overflow:hidden; opacity:0; color:transparent;">${escapeHtml(title)}</div>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse; background:#ffffff;">
       <tr>
-        <td align="center" style="padding:0 20px;">
+        <td align="center" style="padding:0 18px;">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:820px; border-collapse:collapse;">
             <tr>
               <td style="padding:34px 0 30px; border-bottom:1px solid #e3e3e3;">
@@ -31,22 +31,16 @@ function renderEmailLayout({
             <tr>
               <td style="padding:70px 0 34px; border-bottom:1px solid #050505;">
                 <div style="font-family:Arial, Helvetica, sans-serif; font-size:11px; line-height:1.4; letter-spacing:0.42em; text-transform:uppercase; font-weight:700; color:#8d8d8d; margin-bottom:24px;">${escapeHtml(kicker)}</div>
-                <h1 style="margin:0; font-family:Georgia, 'Times New Roman', serif; font-size:72px; line-height:0.92; letter-spacing:-0.065em; font-weight:700; color:#050505;">${escapeHtml(title)}</h1>
+                <h1 style="margin:0; font-family:Georgia, 'Times New Roman', serif; font-size:60px; line-height:0.96; letter-spacing:-0.06em; font-weight:700; color:#050505;">${escapeHtml(title)}</h1>
               </td>
             </tr>
             <tr>
-              <td style="padding:44px 0 56px;">
-                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
-                  <tr>
-                    <td valign="top" width="235" style="padding:0 56px 28px 0;">
-                      <div style="font-family:Arial, Helvetica, sans-serif; font-size:11px; line-height:1.6; letter-spacing:0.42em; text-transform:uppercase; font-weight:700; color:#8d8d8d; margin-bottom:18px;">${escapeHtml(asideKicker)}</div>
-                      <div style="font-family:Georgia, 'Times New Roman', serif; font-size:18px; line-height:1.45; font-style:italic; font-weight:700; color:#9a9a9a;">${escapeHtml(asideText)}</div>
-                    </td>
-                    <td valign="top" style="font-family:Arial, Helvetica, sans-serif; font-size:17px; line-height:1.85; color:rgba(5,5,5,0.68);">
-                      ${children}
-                    </td>
-                  </tr>
-                </table>
+              <td style="padding:34px 0 52px;">
+                <div style="font-family:Arial, Helvetica, sans-serif; font-size:11px; line-height:1.6; letter-spacing:0.42em; text-transform:uppercase; font-weight:700; color:#8d8d8d; margin-bottom:14px;">${escapeHtml(asideKicker)}</div>
+                <div style="font-family:Georgia, 'Times New Roman', serif; font-size:18px; line-height:1.45; font-style:italic; font-weight:700; color:#9a9a9a; margin-bottom:38px;">${escapeHtml(asideText)}</div>
+                <div style="font-family:Arial, Helvetica, sans-serif; font-size:17px; line-height:1.85; color:rgba(5,5,5,0.68);">
+                  ${children}
+                </div>
               </td>
             </tr>
             <tr>
