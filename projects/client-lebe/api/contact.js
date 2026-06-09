@@ -35,7 +35,7 @@ module.exports = async (req, res) => {
         Topic: topic,
         Message: message,
       },
-      customerSubject: `LEBE received your message — ${referenceId}`,
+      customerSubject: 'We received your message',
       customerIntro: 'Thanks for reaching out. This confirms your message was received.',
     });
 

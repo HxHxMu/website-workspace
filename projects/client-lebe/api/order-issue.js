@@ -55,7 +55,7 @@ module.exports = async (req, res) => {
         Description: description,
         'Photo links': photoLinks || 'No photo links provided',
       },
-      customerSubject: `LEBE received your order issue — ${referenceId}`,
+      customerSubject: 'We received your order issue',
       customerIntro: 'Thanks for sending the details. If photos are needed, we’ll request them in our reply.',
     });
 

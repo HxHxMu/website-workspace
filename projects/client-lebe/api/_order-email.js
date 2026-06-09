@@ -113,7 +113,7 @@ function buildOrderEmail({ paymentIntent, fulfillment }) {
     </div>
   `;
 
-  return { text, html, subject: `LEBE order received — ${orderReference}` };
+  return { text, html, subject: 'Your LEBE order is confirmed' };
 }
 
 async function sendResendEmail(message) {
