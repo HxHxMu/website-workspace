@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 
 const SUPPORT_INBOX = process.env.SUPPORT_INBOX || 'support@lebe.life';
-const SUPPORT_FROM_EMAIL = process.env.SUPPORT_FROM_EMAIL || 'LEBE Support <support@lebe.life>';
+const SUPPORT_FROM_EMAIL = process.env.SUPPORT_FROM_EMAIL || 'LEBE Store <support@mail.lebe.life>';
 
 class SupportError extends Error {
   constructor(status, publicMessage) {

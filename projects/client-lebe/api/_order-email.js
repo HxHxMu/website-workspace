@@ -122,7 +122,7 @@ async function sendResendEmail(message) {
     throw new Error('RESEND_API_KEY is not configured.');
   }
 
-  const from = process.env.SUPPORT_FROM_EMAIL || 'LEBE Support <support@mail.lebe.life>';
+  const from = process.env.SUPPORT_FROM_EMAIL || 'LEBE Store <support@mail.lebe.life>';
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
