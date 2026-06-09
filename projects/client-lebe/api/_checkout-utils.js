@@ -597,6 +597,17 @@ async function fulfillPaidOrder({ stripe, paymentIntentId, paymentIntent, apiKey
   }
 
   const order = result.result;
+  try {
+    await stripe.paymentIntents.update(intent.id, {
+      metadata: {
+        printful_order_id: String(order.id || ''),
+        printful_order_status: String(order.status || ''),
+      },
+    });
+  } catch (error) {
+    console.error('Unable to store Printful order metadata:', error);
+  }
+
   let estimatedDelivery = order.estimated_delivery;
   if (!estimatedDelivery) {
     const productionDays = 10;
@@ -633,6 +644,7 @@ module.exports = {
   hashOrder,
   hydratePrintfulItems,
   normalizeRecipientAddress,
+  readOrderSnapshotFromMetadata,
   resolvePromotionDiscount,
   summarizePromotionCode,
   validateRecipient,

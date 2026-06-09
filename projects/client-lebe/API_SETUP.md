@@ -19,6 +19,7 @@ PRINTFUL_API_KEY=...
 STRIPE_SECRET_KEY=sk_test_...
 STRIPE_PUBLISHABLE_KEY=pk_test_...
 STRIPE_WEBHOOK_SECRET=whsec_...
+PRINTFUL_WEBHOOK_SECRET=...
 FULFILLMENT_ADMIN_TOKEN=...
 RESEND_API_KEY=...
 SUPPORT_INBOX=support@lebe.life
@@ -44,7 +45,11 @@ SUPPORT_REPLY_TO=support@lebe.life
 
 1. Create a Printful API key from Printful settings.
 2. Add it as `PRINTFUL_API_KEY`.
-3. Confirm every storefront variant has both:
+3. Create a long random `PRINTFUL_WEBHOOK_SECRET` and add it in Vercel.
+4. Configure a Printful webhook endpoint:
+   - URL: `https://<your-domain>/api/printful-webhook?secret=<PRINTFUL_WEBHOOK_SECRET>`
+   - Events: `order_updated`, `package_shipped`
+5. Confirm every storefront variant has both:
    - Printful catalog `variant_id`, used for shipping rates.
    - Printful store `syncVariantId`, used for cost estimates and orders.
 
@@ -80,6 +85,15 @@ After successful fulfillment, this endpoint sends a customer order confirmation 
 Durable fulfillment path for `payment_intent.succeeded`. Stripe retries this endpoint if Printful is temporarily unavailable.
 
 This endpoint also attempts the same duplicate-guarded customer order confirmation email after successful fulfillment.
+
+### `POST /api/printful-webhook`
+
+Receives Printful order lifecycle events after fulfillment:
+
+- `order_updated`: sends a duplicate-safe customer email when the order status becomes `inprocess`.
+- `package_shipped`: sends a duplicate-safe customer email with tracking details when Printful ships a package.
+
+Because Printful webhooks do not use Stripe-style signed payloads, protect the URL with `PRINTFUL_WEBHOOK_SECRET` as a query string secret.
 
 ### `POST /api/reconcile-fulfillment`
 
