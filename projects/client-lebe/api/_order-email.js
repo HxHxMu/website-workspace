@@ -21,12 +21,20 @@ function formatAddress(recipient = {}) {
 }
 
 function itemLabel(item = {}) {
+  const details = [item.color, item.size].filter(Boolean).join(' / ');
   return [
-    item.name || 'LEBE item',
-    item.color ? `Color: ${item.color}` : '',
-    item.size ? `Size: ${item.size}` : '',
+    item.name || 'LEBE garment',
+    details || '',
     `Qty: ${Number(item.quantity) || 1}`,
   ].filter(Boolean).join(' · ');
+}
+
+function itemName(item = {}) {
+  return item.name || 'LEBE garment';
+}
+
+function itemDetails(item = {}) {
+  return [item.color, item.size].filter(Boolean).join(' / ') || 'Made-to-order';
 }
 
 function buildOrderEmail({ paymentIntent, fulfillment }) {
@@ -41,8 +49,8 @@ function buildOrderEmail({ paymentIntent, fulfillment }) {
   const itemLines = items.map((item) => `- ${itemLabel(item)}`).join('\n');
   const itemRows = items.map((item) => `
     <tr>
-      <td style="padding: 12px 0; border-bottom: 1px solid #e4e4e4;">${escapeHtml(item.name || 'LEBE item')}</td>
-      <td style="padding: 12px 0; border-bottom: 1px solid #e4e4e4;">${escapeHtml([item.color, item.size].filter(Boolean).join(' / ') || '—')}</td>
+      <td style="padding: 12px 0; border-bottom: 1px solid #e4e4e4;">${escapeHtml(itemName(item))}</td>
+      <td style="padding: 12px 0; border-bottom: 1px solid #e4e4e4;">${escapeHtml(itemDetails(item))}</td>
       <td style="padding: 12px 0; border-bottom: 1px solid #e4e4e4; text-align: right;">${Number(item.quantity) || 1}</td>
     </tr>
   `).join('');
@@ -69,8 +77,10 @@ function buildOrderEmail({ paymentIntent, fulfillment }) {
     'Ship to',
     formatAddress(recipient),
     '',
-    `Shipping method: ${shippingLabel}`,
+    'Shipping method',
+    shippingLabel,
     '',
+    'Production & tracking',
     'Your pieces are made to order. Production typically takes 2–7 business days before shipment. Tracking will be available once the order ships.',
     '',
     'Questions? Use the contact or order issue forms on lebe.life.',
@@ -103,9 +113,11 @@ function buildOrderEmail({ paymentIntent, fulfillment }) {
         <strong>Total paid: ${formatMoneyFromCents(paymentIntent.amount)}</strong>
       </p>
 
-      <h2 style="font-size: 18px; margin-top: 32px;">Shipping</h2>
+      <h2 style="font-size: 18px; margin-top: 32px;">Shipping method</h2>
+      <p>${escapeHtml(shippingLabel)}</p>
+
+      <h2 style="font-size: 18px; margin-top: 32px;">Ship to</h2>
       <p>${escapeHtml(formatAddress(recipient)).replaceAll('\n', '<br>')}</p>
-      <p><strong>Method:</strong> ${escapeHtml(shippingLabel)}</p>
 
       <h2 style="font-size: 18px; margin-top: 32px;">Production & tracking</h2>
       <p>Your pieces are made to order. Production typically takes 2–7 business days before shipment. Tracking will be available once the order ships.</p>

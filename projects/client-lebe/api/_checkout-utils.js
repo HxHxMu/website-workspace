@@ -407,9 +407,17 @@ function createOrderMetadata({ items, recipient, shippingMethod, orderHash, expe
   };
 
   const compactItems = items.map((item) => {
-    const compact = [String(item.syncVariantId), item.quantity, item.variantId ? String(item.variantId) : ''];
     const optionEntries = optionHashEntries(item.options);
-    if (optionEntries.length > 0) compact.push(optionEntries);
+    const compact = [
+      String(item.syncVariantId),
+      item.quantity,
+      item.variantId ? String(item.variantId) : '',
+      optionEntries,
+    ];
+    compact.push(String(item.productId || ''));
+    compact.push(String(item.name || '').slice(0, 160));
+    compact.push(String(item.size || '').slice(0, 80));
+    compact.push(String(item.color || '').slice(0, 80));
     return compact;
   });
 
@@ -430,17 +438,25 @@ function readOrderSnapshotFromMetadata(metadata = {}) {
     throw new CheckoutError(400, 'Payment order details are invalid.');
   }
 
-  const items = compactItems.map((entry) => ({
-    syncVariantId: entry[0],
-    quantity: entry[1],
-    variantId: entry[2],
-    options: Array.isArray(entry[3])
+  const items = compactItems.map((entry) => {
+    const hasOptionArray = Array.isArray(entry[3]);
+    const displayStart = hasOptionArray ? 4 : 3;
+    return {
+      syncVariantId: entry[0],
+      quantity: entry[1],
+      variantId: entry[2],
+      options: hasOptionArray
       ? entry[3].reduce((result, optionEntry) => {
         result[optionEntry[0]] = optionEntry[1];
         return result;
       }, {})
       : {},
-  }));
+      productId: entry[displayStart] ? String(entry[displayStart]) : '',
+      name: entry[displayStart + 1] ? String(entry[displayStart + 1]) : '',
+      size: entry[displayStart + 2] ? String(entry[displayStart + 2]) : '',
+      color: entry[displayStart + 3] ? String(entry[displayStart + 3]) : '',
+    };
+  });
 
   const recipient = normalizeRecipientAddress({
     name: metadata.rec_name,
