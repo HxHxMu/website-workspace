@@ -73,8 +73,10 @@ const STATIC_PRODUCT_PREVIEWS = {
     id: 309483736,
     name: 'Saguanari Sports Bra Black',
     images: [
-      'assets/images/product-shots/saguanari_bra/saguanari_bra_blk_1-900.jpg',
-      'assets/images/product-shots/saguanari_bra/saguanari_bra_blk_2-900.jpg',
+      'assets/images/product-shots/saguanari_bra/17-900.jpg',
+      'assets/images/product-shots/saguanari_bra/17.1-900.jpg',
+      'assets/images/product-shots/saguanari_bra/17.2-900.jpg',
+      'assets/images/product-shots/saguanari_bra/17.3-900.jpg',
     ],
   },
   301596573: {

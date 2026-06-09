@@ -57,8 +57,8 @@
       color: 'black',
       displayName: 'SAGUANARI BRA',
       images: [
-        'assets/images/product-shots/saguanari_bra/saguanari_bra_blk_1-900.jpg',
-        'assets/images/product-shots/saguanari_bra/saguanari_bra_blk_2-900.jpg',
+        'assets/images/product-shots/saguanari_bra/17-900.jpg',
+        'assets/images/product-shots/saguanari_bra/17.1-900.jpg',
       ],
       swatch: 'black',
     },
