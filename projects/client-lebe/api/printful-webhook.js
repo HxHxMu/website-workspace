@@ -23,14 +23,15 @@ function getQueryValue(value) {
 }
 
 function verifyWebhookSecret(req) {
-  const expectedSecret = process.env.PRINTFUL_WEBHOOK_SECRET;
+  const expectedSecret = String(process.env.PRINTFUL_WEBHOOK_SECRET || '').trim();
   if (!expectedSecret) {
     return { ok: false, status: 500, error: 'PRINTFUL_WEBHOOK_SECRET is not configured.' };
   }
 
-  const providedSecret = req.headers['x-lebe-webhook-secret']
+  const providedSecret = String(req.headers['x-lebe-webhook-secret']
     || getQueryValue(req.query?.secret)
-    || getQueryValue(req.query?.token);
+    || getQueryValue(req.query?.token)
+    || '').trim();
 
   if (providedSecret !== expectedSecret) {
     return { ok: false, status: 401, error: 'Invalid webhook secret.' };
