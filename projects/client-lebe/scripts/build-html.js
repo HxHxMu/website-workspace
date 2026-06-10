@@ -2,11 +2,142 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
-const template = fs.readFileSync(path.join(ROOT, 'src/partials/policies/_template.html'), 'utf8');
 
+// Helper to resolve absolute path in the workspace
+function getPath(...parts) {
+  return path.join(ROOT, ...parts);
+}
+
+// 1. Load layout partial templates
+const headTemplate = fs.readFileSync(getPath('src/partials/shared/_head.html'), 'utf8');
+const headerTemplate = fs.readFileSync(getPath('src/partials/shared/_header.html'), 'utf8');
+const footerTemplate = fs.readFileSync(getPath('src/partials/shared/_footer.html'), 'utf8');
+const scriptsTemplate = fs.readFileSync(getPath('src/partials/shared/_scripts.html'), 'utf8');
+const policyTemplate = fs.readFileSync(getPath('src/partials/policies/_policy.html'), 'utf8');
+
+// 2. Define compilation engine
+function assemblePage(config) {
+  const content = fs.readFileSync(getPath(config.contentFile), 'utf8');
+
+  // Substitute head place holders
+  let head = headTemplate
+    .replaceAll('{{TITLE}}', config.title)
+    .replaceAll('{{DESCRIPTION}}', config.description)
+    .replaceAll('{{EXTRA_HEAD}}', config.extraHead || '')
+    .replaceAll('{{BODY_CLASS}}', config.bodyClass || 'bg-white text-[#050505]');
+
+  // Substitute header class placeholder
+  let header = headerTemplate
+    .replaceAll('{{HEADER_CLASS}}', config.headerClass || '');
+
+  // Substitute scripts placeholder
+  let scripts = scriptsTemplate
+    .replaceAll('{{SCRIPTS}}', config.scripts || '');
+
+  // Concatenate parts
+  return `${head}\n${header}\n${content}\n${footerTemplate}\n${scripts}`;
+}
+
+// 3. Define configuration for core HTML pages
+const corePages = [
+  {
+    slug: 'index',
+    title: 'LEBE — Saguanari Yoga Wear',
+    description: 'Made-to-order yoga wear. Ships in ~14 days.',
+    bodyClass: 'bg-white text-[#050505]',
+    headerClass: 'lebe-header--hero',
+    extraHead: '',
+    scripts: `
+<script src="js/product-data.js" defer></script>
+<script src="js/product-model.js" defer></script>
+<script src="js/html-utils.js" defer></script>
+<script src="js/main.js" defer></script>
+<script src="js/printful.js" defer></script>`,
+    contentFile: 'src/partials/home/_hero.html'
+  },
+  {
+    slug: 'product',
+    title: 'Product — LEBE',
+    description: 'Explore LEBE made-to-order activewear, product details, sizing, and gallery imagery.',
+    bodyClass: 'bg-[#e9e9e9] text-[#050505]',
+    headerClass: '',
+    extraHead: `
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" />
+  <script src="js/product-data.js"></script>
+  <script>
+    (() => {
+      const id = new URLSearchParams(window.location.search).get('id');
+      const previews = window.LebeProductData?.previews || {};
+      const product = previews[id];
+      const hrefs = product ? product.images : [];
+      window.LEBE_PDP_PRELOAD_IMAGES = hrefs;
+      hrefs.forEach((href, index) => {
+        const link = document.createElement('link');
+        link.rel = index === 0 ? 'preload' : 'prefetch';
+        link.as = 'image';
+        link.href = href;
+        if (index === 0) link.fetchPriority = 'high';
+        document.head.appendChild(link);
+      });
+    })();
+  </script>`,
+    scripts: `
+<script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+<script src="js/cart.js" defer></script>
+<script src="js/product-model.js" defer></script>
+<script src="js/product-gallery.js" defer></script>
+<script src="js/product-size-guide.js" defer></script>
+<script src="js/product.js" defer></script>`,
+    contentFile: 'src/partials/product/_product.html'
+  },
+  {
+    slug: 'cart',
+    title: 'Cart — LEBE',
+    description: 'Review your cart and proceed to checkout.',
+    bodyClass: 'bg-white text-[#050505]',
+    headerClass: '',
+    extraHead: '',
+    scripts: `
+<script src="js/product-data.js" defer></script>
+<script src="js/cart.js" defer></script>
+<script src="js/product-model.js" defer></script>
+<script src="js/html-utils.js" defer></script>
+<script src="js/main.js" defer></script>
+<script src="js/checkout.js" defer></script>`,
+    contentFile: 'src/partials/cart/_cart.html'
+  },
+  {
+    slug: 'contact',
+    title: 'Contact — LEBE',
+    description: 'Contact LEBE for general product, order, and policy questions.',
+    bodyClass: 'bg-white text-[#050505]',
+    headerClass: '',
+    extraHead: '',
+    scripts: `<script src="./js/support-form.js" defer></script>`,
+    contentFile: 'src/partials/contact/_contact.html'
+  },
+  {
+    slug: 'order-issue',
+    title: 'Order Issue — LEBE',
+    description: 'Report a damaged, defective, incorrect, or missing LEBE order.',
+    bodyClass: 'bg-white text-[#050505]',
+    headerClass: '',
+    extraHead: '',
+    scripts: `<script src="./js/support-form.js" defer></script>`,
+    contentFile: 'src/partials/order-issue/_order-issue.html'
+  }
+];
+
+// Compile core pages
+corePages.forEach((page) => {
+  const html = assemblePage(page);
+  fs.writeFileSync(getPath('src', `${page.slug}.html`), html);
+  console.log(`Built HTML: ${page.slug}.html`);
+});
+
+// 4. Define and Compile Policy Pages
 const UPDATED = 'June 2026';
-
-const pages = [
+const policies = [
   {
     slug: 'privacy',
     title: 'Privacy',
@@ -242,7 +373,7 @@ const pages = [
         ],
       },
     ],
-  },
+  }
 ];
 
 function renderSections(sections) {
@@ -253,20 +384,45 @@ function renderSections(sections) {
           </section>`).join('\n\n');
 }
 
-function renderPage(page) {
-  return template
-    .replaceAll('{{META_TITLE}}', page.metaTitle)
-    .replaceAll('{{META_DESCRIPTION}}', page.metaDescription)
-    .replaceAll('{{EYEBROW}}', page.eyebrow)
-    .replaceAll('{{TITLE}}', page.title)
-    .replaceAll('{{SIDE_TITLE}}', page.sideTitle)
-    .replaceAll('{{SIDE_NOTE}}', page.sideNote)
-    .replaceAll('{{CONTENT}}', renderSections(page.sections))
+function renderPolicyContent(policy) {
+  return policyTemplate
+    .replaceAll('{{EYEBROW}}', policy.eyebrow)
+    .replaceAll('{{TITLE}}', policy.title)
+    .replaceAll('{{SIDE_TITLE}}', policy.sideTitle)
+    .replaceAll('{{SIDE_NOTE}}', policy.sideNote)
+    .replaceAll('{{CONTENT}}', renderSections(policy.sections))
     .replaceAll('{{UPDATED}}', UPDATED);
 }
 
-pages.forEach((page) => {
-  const target = path.join(ROOT, 'src', `${page.slug}.html`);
-  fs.writeFileSync(target, `${renderPage(page)}\n`);
-  console.log(`Built HTML: ${page.slug}.html`);
+// Compile policy pages
+policies.forEach((policy) => {
+  const contentHtml = renderPolicyContent(policy);
+  
+  // Substitute head/header/scripts place holders using the policy content
+  const config = {
+    title: policy.metaTitle,
+    description: policy.metaDescription,
+    bodyClass: 'bg-white text-[#050505]',
+    headerClass: '',
+    extraHead: '',
+    scripts: '' // base scripts only (Meta Pixel will be loaded by scriptsTemplate)
+  };
+
+  // Compile full page html
+  let head = headTemplate
+    .replaceAll('{{TITLE}}', config.title)
+    .replaceAll('{{DESCRIPTION}}', config.description)
+    .replaceAll('{{EXTRA_HEAD}}', config.extraHead)
+    .replaceAll('{{BODY_CLASS}}', config.bodyClass);
+
+  let header = headerTemplate
+    .replaceAll('{{HEADER_CLASS}}', config.headerClass);
+
+  let scripts = scriptsTemplate
+    .replaceAll('{{SCRIPTS}}', config.scripts);
+
+  const fullHtml = `${head}\n${header}\n${contentHtml}\n${footerTemplate}\n${scripts}`;
+  
+  fs.writeFileSync(getPath('src', `${policy.slug}.html`), fullHtml);
+  console.log(`Built HTML: ${policy.slug}.html`);
 });

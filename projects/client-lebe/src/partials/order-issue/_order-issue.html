@@ -1,0 +1,76 @@
+  <main class="pt-28 md:pt-36">
+    <section class="lebe-main-shell pb-20 md:pb-28">
+      <div class="border-b border-[#050505] pb-10 md:pb-12">
+        <p class="lebe-kicker mb-7">order care</p>
+        <h1 class="font-serif text-[60px] font-bold leading-[0.92] tracking-[-0.06em] md:text-[104px]">Order Issue</h1>
+      </div>
+
+      <div class="grid gap-12 py-12 md:grid-cols-[280px_minmax(0,1fr)] md:gap-20 md:py-16">
+        <aside>
+          <p class="lebe-kicker mb-5">damaged or incorrect.</p>
+          <p class="font-serif text-[18px] font-bold italic leading-7 text-[#050505]/40">Made-to-order support, routed privately.</p>
+        </aside>
+
+        <div class="max-w-[760px]">
+          <div class="policy-copy mb-10 text-[#050505]/68">
+            <section>
+              <h2>Start here for order problems.</h2>
+              <p>Use this form if your item arrived damaged, defective, incorrect, or if a delivered package is missing. Include as much detail as you can. If photos are needed, we’ll request them in the reply, or you may paste photo links below.</p>
+              <p>For sizing preference, change of mind, or buyer’s remorse, review the <a href="/returns">returns policy</a>.</p>
+            </section>
+          </div>
+
+          <form class="support-form" action="/api/order-issue" method="post" data-support-form>
+            <div class="support-form__honeypot" aria-hidden="true">
+              <label for="lebe-issue-confirm">Leave this field empty</label>
+              <input id="lebe-issue-confirm" name="lebe_confirm_url" type="text" tabindex="-1" autocomplete="off" inputmode="none" />
+            </div>
+
+            <label class="support-field">
+              <span>Order number</span>
+              <input name="orderNumber" type="text" autocomplete="off" required />
+            </label>
+
+            <div class="support-form__grid">
+              <label class="support-field">
+                <span>Name</span>
+                <input name="name" type="text" autocomplete="name" required />
+              </label>
+              <label class="support-field">
+                <span>Email</span>
+                <input name="email" type="email" autocomplete="email" required />
+              </label>
+            </div>
+
+            <label class="support-field">
+              <span>Issue type</span>
+              <select name="issueType" required>
+                <option value="">Select issue type</option>
+                <option value="damaged">Damaged item</option>
+                <option value="defective">Defective item</option>
+                <option value="incorrect">Incorrect item</option>
+                <option value="missing">Missing delivered package</option>
+                <option value="other">Other issue</option>
+              </select>
+            </label>
+
+            <label class="support-field">
+              <span>Description</span>
+              <textarea name="description" rows="7" required></textarea>
+            </label>
+
+            <label class="support-field">
+              <span>Photo links optional</span>
+              <textarea name="photoLinks" rows="4" placeholder="Paste image links if you already have them."></textarea>
+            </label>
+
+            <div class="support-form__actions">
+              <button type="submit">Submit issue.</button>
+              <p data-form-status class="support-form__status" role="status" aria-live="polite"></p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+

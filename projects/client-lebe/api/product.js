@@ -25,11 +25,18 @@ module.exports = async (req, res) => {
       return res.status(404).json({ error: 'Product not found' });
     }
 
+    const variantPreviews = syncVariants
+      .flatMap((v) => v.files || [])
+      .filter((f) => f.type === 'preview' && f.preview_url)
+      .map((f) => f.preview_url);
+
+    const fallbackImages = [...new Set([syncProduct.thumbnail_url, ...variantPreviews])].filter(Boolean);
+
     const product = {
       id: syncProduct.id,
       externalId: syncProduct.external_id,
       name: syncProduct.name,
-      images: getProductImages(syncProduct.external_id),
+      images: getProductImages(syncProduct.external_id, fallbackImages),
       colorVariants: getColorVariants(syncProduct.id),
       variants: syncVariants.map(v => ({
         id: v.variant_id,

@@ -1,0 +1,23 @@
+<main class="pt-28 md:pt-36">
+  <section class="lebe-main-shell pb-20 md:pb-28">
+    <div class="border-b border-[#050505] pb-10 md:pb-12">
+      <p class="lebe-kicker mb-7">{{EYEBROW}}</p>
+      <h1 class="font-serif text-[64px] font-bold leading-[0.92] tracking-[-0.06em] md:text-[112px]">{{TITLE}}</h1>
+    </div>
+
+    <div class="grid gap-12 py-12 md:grid-cols-[280px_minmax(0,1fr)] md:gap-20 md:py-16">
+      <aside>
+        <p class="lebe-kicker mb-5">{{SIDE_TITLE}}</p>
+        <p class="font-serif text-[18px] font-bold italic leading-7 text-[#050505]/40">{{SIDE_NOTE}}</p>
+      </aside>
+
+      <article class="policy-copy max-w-[760px] text-[#050505]/68">
+        {{CONTENT}}
+
+        <div class="mt-12 border-t border-[#050505]/12 pt-8 text-[14px] leading-7 text-[#050505]/48">
+          Last updated: {{UPDATED}}.
+        </div>
+      </article>
+    </div>
+  </section>
+</main>

@@ -4,100 +4,10 @@ let currentQuantity = 1;
 let currentColor = null;
 let colorVariants = null;
 let allProducts = null;
-let productGalleryImages = [];
-let productGalleryIndex = 0;
-let productGalleryLastFocus = null;
-let productGalleryTouchStartX = null;
-let productGalleryZoomed = false;
-let productGallerySuppressClick = false;
-let productGalleryPanX = 0;
-let productGalleryPanY = 0;
-let productGalleryPointerStart = null;
-let sizeGuideLastFocus = null;
 
 const SIZE_ORDER = ['XS', 'S', 'M', 'L', 'XL'];
 const PRODUCT_CACHE_KEY = 'lebe_products_cache_v2';
 const PRODUCT_CACHE_MAX_AGE = 1000 * 60 * 60;
-const SIZE_GUIDES = {
-  leggings: {
-    description: 'This size guide shows body measurements. We suggest ordering a size down when your measurements are between sizes.',
-    imageSrc: './assets/images/sizeChartFigure.png',
-    imageAlt: 'Measure yourself: waist and hips',
-    columns: ['Waist', 'Hips'],
-    instructions: [
-      'For all horizontal measurements, keep the tape measure parallel to the ground.',
-      '<strong class="text-[#050505]">A Waist.</strong> Place the tape on the narrowest part of the waist and measure around.',
-      '<strong class="text-[#050505]">B Hips.</strong> Put the beginning of the tape measure on one hip and bring the tape across the fullest part of the hips back to where you started measuring.',
-    ],
-    rows: [
-      ['XS', '25 ¼', '35 ⅜'],
-      ['S', '26 ¾', '37'],
-      ['M', '28 ⅜', '38 ⅝'],
-      ['L', '31 ½', '41 ¾'],
-      ['XL', '34 ⅝', '44 ⅞'],
-    ],
-  },
-  bra: {
-    description: 'This size guide shows body measurements. We suggest ordering a size up when your measurements are between sizes.',
-    imageSrc: './assets/images/sizeChartFigure-bra.png',
-    imageAlt: 'Measure yourself: chest and underbust',
-    columns: ['Chest', 'Underbust'],
-    instructions: [
-      'For all horizontal measurements, keep the tape measure parallel to the ground.',
-      '<strong class="text-[#050505]">A Chest.</strong> Put one end of the tape measure on the fullest part of the chest and bring the tape around the back, under the armpits and over the shoulder blades, to where you started.',
-      '<strong class="text-[#050505]">B Underbust girth.</strong> Put the measuring tape around your body, right under your breasts where the bra band sits.',
-    ],
-    rows: [
-      ['XS', '33 ⅛', '27 ⅝'],
-      ['S', '34 ⅝', '29 ⅛'],
-      ['M', '36 ¼', '30 ¾'],
-      ['L', '39 ⅜', '33 ½'],
-      ['XL', '42 ½', '36 ¼'],
-    ],
-  },
-};
-const STATIC_PRODUCT_PREVIEWS = {
-  309483674: {
-    id: 309483674,
-    name: 'Saguanari Sports Bra White',
-    images: [
-      'assets/images/product-shots/saguanari_bra/11-900.jpg',
-      'assets/images/product-shots/saguanari_bra/11.1-900.jpg',
-      'assets/images/product-shots/saguanari_bra/11.2-900.jpg',
-      'assets/images/product-shots/saguanari_bra/11.3-900.jpg',
-    ],
-  },
-  309483736: {
-    id: 309483736,
-    name: 'Saguanari Sports Bra Black',
-    images: [
-      'assets/images/product-shots/saguanari_bra/17-900.jpg',
-      'assets/images/product-shots/saguanari_bra/17.1-900.jpg',
-      'assets/images/product-shots/saguanari_bra/17.2-900.jpg',
-      'assets/images/product-shots/saguanari_bra/17.3-900.jpg',
-    ],
-  },
-  301596573: {
-    id: 301596573,
-    name: 'Saguanari Leggings White',
-    images: [
-      'assets/images/product-shots/saguanari_leggings/9.0-900.jpg',
-      'assets/images/product-shots/saguanari_leggings/9.1-900.jpg',
-      'assets/images/product-shots/saguanari_leggings/9.2-900.jpg',
-      'assets/images/product-shots/saguanari_leggings/9.3-900.jpg',
-    ],
-  },
-  300307426: {
-    id: 300307426,
-    name: 'Saguanari Leggings Black',
-    images: [
-      'assets/images/product-shots/saguanari_leggings/15-900.jpg',
-      'assets/images/product-shots/saguanari_leggings/15.1-900.jpg',
-      'assets/images/product-shots/saguanari_leggings/15.2-900.jpg',
-      'assets/images/product-shots/saguanari_leggings/15.3-900.jpg',
-    ],
-  },
-};
 
 function getCachedProducts() {
   try {
@@ -139,113 +49,7 @@ function setHeroImages(images, name) {
   });
 }
 
-function getFullSizeImageSrc(src) {
-  return String(src || '').replace(/-900(?=\.jpe?g(?:$|[?#]))/i, '');
-}
 
-function setProductGalleryImages(images) {
-  productGalleryImages = (Array.isArray(images) ? images : [])
-    .filter(Boolean)
-    .map((src) => ({
-      thumb: String(src),
-      full: getFullSizeImageSrc(src),
-    }));
-}
-
-function getProductGalleryPanBounds() {
-  const image = document.getElementById('pdp-gallery-image');
-  const figure = image?.closest('.pdp-gallery__figure');
-  if (!image || !figure || !productGalleryZoomed) return { maxX: 0, maxY: 0 };
-
-  const scale = Number.parseFloat(getComputedStyle(image).getPropertyValue('--pdp-gallery-zoom-scale')) || 1.2;
-  const figureRect = figure.getBoundingClientRect();
-  const maxX = Math.max(0, (figureRect.width * scale - figureRect.width) / (2 * scale));
-  const maxY = Math.max(0, (figureRect.height * scale - figureRect.height) / (2 * scale));
-
-  return { maxX, maxY };
-}
-
-function clampProductGalleryPan() {
-  const { maxX, maxY } = getProductGalleryPanBounds();
-  productGalleryPanX = Math.max(-maxX, Math.min(maxX, productGalleryPanX));
-  productGalleryPanY = Math.max(-maxY, Math.min(maxY, productGalleryPanY));
-}
-
-function applyProductGalleryTransform() {
-  const image = document.getElementById('pdp-gallery-image');
-  if (!image) return;
-
-  if (!productGalleryZoomed) {
-    image.style.removeProperty('--pdp-gallery-pan-x');
-    image.style.removeProperty('--pdp-gallery-pan-y');
-    image.classList.remove('is-zoomed', 'is-dragging');
-    image.setAttribute('aria-pressed', 'false');
-    return;
-  }
-
-  clampProductGalleryPan();
-  image.style.setProperty('--pdp-gallery-pan-x', `${productGalleryPanX}px`);
-  image.style.setProperty('--pdp-gallery-pan-y', `${productGalleryPanY}px`);
-  image.classList.add('is-zoomed');
-  image.setAttribute('aria-pressed', 'true');
-}
-
-function resetProductGalleryZoom() {
-  productGalleryZoomed = false;
-  productGalleryPanX = 0;
-  productGalleryPanY = 0;
-  productGalleryPointerStart = null;
-  applyProductGalleryTransform();
-}
-
-function getProductSizeGuideType(product) {
-  const productName = String(product?.name || '').toLowerCase();
-  const productId = String(product?.id || '');
-  return productName.includes('bra') || ['309483674', '309483736'].includes(productId)
-    ? 'bra'
-    : 'leggings';
-}
-
-function renderSizeGuide(product = currentProduct) {
-  const guide = SIZE_GUIDES[getProductSizeGuideType(product)] || SIZE_GUIDES.leggings;
-  const description = document.getElementById('size-guide-description');
-  const image = document.getElementById('size-guide-figure-image');
-  const instructions = document.getElementById('size-guide-instructions');
-  const tableHead = document.getElementById('size-guide-table-head');
-  const tableBody = document.getElementById('size-guide-table-body');
-
-  if (description) description.textContent = guide.description;
-  if (image) {
-    image.src = guide.imageSrc;
-    image.alt = guide.imageAlt;
-  }
-
-  if (instructions) {
-    instructions.innerHTML = guide.instructions
-      .map((instruction) => `<p>${instruction}</p>`)
-      .join('');
-  }
-
-  if (tableHead) {
-    tableHead.innerHTML = `
-      <tr>
-        <th scope="col">Size</th>
-        ${guide.columns.map((column) => `<th scope="col">${column}</th>`).join('')}
-      </tr>
-    `;
-  }
-
-  if (tableBody) {
-    tableBody.innerHTML = guide.rows
-      .map(([size, ...values]) => `
-        <tr>
-          <th scope="row">${size}</th>
-          ${values.map((value) => `<td>${value}</td>`).join('')}
-        </tr>
-      `)
-      .join('');
-  }
-}
 
 function applyProductPreview(product) {
   if (!product) return;
@@ -260,303 +64,10 @@ function applyProductPreview(product) {
   }
   populateImageGallery(product.images);
   setHeroImages(product.images, product.name);
-  renderSizeGuide(product);
+  window.LebeSizeGuide.render(product);
 }
 
-function renderProductGallery() {
-  const gallery = document.getElementById('pdp-gallery');
-  const image = document.getElementById('pdp-gallery-image');
-  const count = document.getElementById('pdp-gallery-count');
-  const prev = document.getElementById('pdp-gallery-prev');
-  const next = document.getElementById('pdp-gallery-next');
-  if (!gallery || !image || productGalleryImages.length === 0) return;
 
-  productGalleryIndex = (productGalleryIndex + productGalleryImages.length) % productGalleryImages.length;
-  const activeImage = productGalleryImages[productGalleryIndex];
-
-  image.src = activeImage.thumb;
-  image.dataset.fullSrc = activeImage.full;
-  image.dataset.fallbackSrc = activeImage.thumb;
-  image.dataset.fullRequested = 'false';
-  image.dataset.triedFallback = 'false';
-  image.alt = currentProduct?.name || 'Product image';
-  applyProductGalleryTransform();
-  if (count) count.textContent = `${productGalleryIndex + 1} / ${productGalleryImages.length}`;
-
-  const hasMultipleImages = productGalleryImages.length > 1;
-  prev?.toggleAttribute('hidden', !hasMultipleImages);
-  next?.toggleAttribute('hidden', !hasMultipleImages);
-}
-
-function preloadProductGalleryFullImage(index) {
-  const activeImage = productGalleryImages[(index + productGalleryImages.length) % productGalleryImages.length];
-  if (!activeImage?.full || activeImage.full === activeImage.thumb) return;
-  const loader = new Image();
-  loader.decoding = 'async';
-  loader.src = activeImage.full;
-}
-
-function upgradeProductGalleryImageToFull() {
-  const image = document.getElementById('pdp-gallery-image');
-  if (!image) return;
-
-  const fullSrc = image.dataset.fullSrc;
-  if (!fullSrc || image.dataset.fullRequested === 'true') return;
-  if (image.currentSrc.endsWith(fullSrc) || image.src.endsWith(fullSrc)) return;
-
-  image.dataset.fullRequested = 'true';
-  const loader = new Image();
-  loader.decoding = 'async';
-  loader.onload = () => {
-    if (image.dataset.fullSrc === fullSrc) {
-      image.src = fullSrc;
-    }
-  };
-  loader.src = fullSrc;
-}
-
-function openProductGallery(index = 0) {
-  const gallery = document.getElementById('pdp-gallery');
-  const close = document.getElementById('pdp-gallery-close');
-  if (!gallery || productGalleryImages.length === 0) return;
-
-  productGalleryLastFocus = document.activeElement;
-  productGalleryIndex = Number.isFinite(Number(index)) ? Number(index) : 0;
-  productGalleryZoomed = false;
-  gallery.hidden = false;
-  document.body.classList.add('pdp-gallery-open');
-  renderProductGallery();
-  window.setTimeout(() => {
-    preloadProductGalleryFullImage(productGalleryIndex);
-    preloadProductGalleryFullImage(productGalleryIndex + 1);
-  }, 120);
-  close?.focus({ preventScroll: true });
-}
-
-function closeProductGallery() {
-  const gallery = document.getElementById('pdp-gallery');
-  if (!gallery || gallery.hidden) return;
-
-  gallery.hidden = true;
-  document.body.classList.remove('pdp-gallery-open');
-  resetProductGalleryZoom();
-  productGalleryLastFocus?.focus?.({ preventScroll: true });
-  productGalleryLastFocus = null;
-}
-
-function navigateProductGallery(direction) {
-  if (productGalleryImages.length < 2) return;
-  productGalleryIndex += direction;
-  resetProductGalleryZoom();
-  renderProductGallery();
-}
-
-function toggleProductGalleryZoom() {
-  productGalleryZoomed = !productGalleryZoomed;
-  productGalleryPanX = 0;
-  productGalleryPanY = 0;
-  applyProductGalleryTransform();
-  if (productGalleryZoomed) {
-    upgradeProductGalleryImageToFull();
-  }
-}
-
-function startProductGalleryPan(event) {
-  if (!productGalleryZoomed) return;
-  const image = document.getElementById('pdp-gallery-image');
-  if (!image) return;
-
-  productGalleryPointerStart = {
-    id: event.pointerId,
-    x: event.clientX,
-    y: event.clientY,
-    panX: productGalleryPanX,
-    panY: productGalleryPanY,
-    moved: false,
-  };
-  image.classList.add('is-dragging');
-  image.setPointerCapture?.(event.pointerId);
-}
-
-function moveProductGalleryPan(event) {
-  if (!productGalleryPointerStart || productGalleryPointerStart.id !== event.pointerId) return;
-
-  const deltaX = event.clientX - productGalleryPointerStart.x;
-  const deltaY = event.clientY - productGalleryPointerStart.y;
-  if (Math.hypot(deltaX, deltaY) > 3) {
-    productGalleryPointerStart.moved = true;
-  }
-
-  const scale = productGalleryZoomed
-    ? Number.parseFloat(getComputedStyle(event.currentTarget).getPropertyValue('--pdp-gallery-zoom-scale')) || 1.2
-    : 1;
-
-  productGalleryPanX = productGalleryPointerStart.panX + (deltaX / scale);
-  productGalleryPanY = productGalleryPointerStart.panY + (deltaY / scale);
-  applyProductGalleryTransform();
-}
-
-function endProductGalleryPan(event) {
-  if (!productGalleryPointerStart || productGalleryPointerStart.id !== event.pointerId) return;
-
-  const image = document.getElementById('pdp-gallery-image');
-  if (productGalleryPointerStart.moved) {
-    productGallerySuppressClick = true;
-  }
-  productGalleryPointerStart = null;
-  image?.classList.remove('is-dragging');
-  image?.releasePointerCapture?.(event.pointerId);
-}
-
-function bindProductGalleryTriggers() {
-  ['#image-carousel', '#image-grid'].forEach((containerSelector) => {
-    const triggerImages = document.querySelectorAll(`${containerSelector} img`);
-    triggerImages.forEach((img, index) => {
-      img.classList.add('pdp-gallery-trigger');
-      img.setAttribute('role', 'button');
-      img.setAttribute('tabindex', '0');
-      img.setAttribute('aria-label', `Open product image ${index + 1}`);
-      img.onclick = () => openProductGallery(index);
-      img.onkeydown = (event) => {
-        if (event.key !== 'Enter' && event.key !== ' ') return;
-        event.preventDefault();
-        openProductGallery(index);
-      };
-    });
-  });
-}
-
-function initProductGallery() {
-  const gallery = document.getElementById('pdp-gallery');
-  const close = document.getElementById('pdp-gallery-close');
-  const prev = document.getElementById('pdp-gallery-prev');
-  const next = document.getElementById('pdp-gallery-next');
-  const image = document.getElementById('pdp-gallery-image');
-  if (!gallery || gallery.dataset.initialized === 'true') return;
-
-  gallery.dataset.initialized = 'true';
-  close?.addEventListener('click', closeProductGallery);
-  prev?.addEventListener('click', () => navigateProductGallery(-1));
-  next?.addEventListener('click', () => navigateProductGallery(1));
-  image?.addEventListener('pointerdown', startProductGalleryPan);
-  image?.addEventListener('pointermove', moveProductGalleryPan);
-  image?.addEventListener('pointerup', endProductGalleryPan);
-  image?.addEventListener('pointercancel', endProductGalleryPan);
-  image?.addEventListener('click', () => {
-    if (productGallerySuppressClick) {
-      productGallerySuppressClick = false;
-      return;
-    }
-    toggleProductGalleryZoom();
-  });
-  image?.addEventListener('keydown', (event) => {
-    if (event.key !== 'Enter' && event.key !== ' ') return;
-    event.preventDefault();
-    toggleProductGalleryZoom();
-  });
-  image?.addEventListener('error', () => {
-    const fallbackSrc = image.dataset.fallbackSrc;
-    if (fallbackSrc && image.dataset.triedFallback !== 'true') {
-      image.dataset.triedFallback = 'true';
-      image.src = fallbackSrc;
-    }
-  });
-
-  gallery.addEventListener('click', (event) => {
-    if (event.target === gallery) closeProductGallery();
-  });
-
-  gallery.addEventListener('touchstart', (event) => {
-    productGalleryTouchStartX = event.changedTouches?.[0]?.clientX ?? null;
-  }, { passive: true });
-
-  gallery.addEventListener('touchend', (event) => {
-    if (productGalleryZoomed) return;
-    if (productGalleryTouchStartX === null) return;
-    const endX = event.changedTouches?.[0]?.clientX;
-    if (typeof endX !== 'number') return;
-    const deltaX = endX - productGalleryTouchStartX;
-    productGalleryTouchStartX = null;
-    if (Math.abs(deltaX) < 44) return;
-    productGallerySuppressClick = true;
-    navigateProductGallery(deltaX > 0 ? -1 : 1);
-  }, { passive: true });
-
-  document.addEventListener('keydown', (event) => {
-    if (gallery.hidden) return;
-    if (event.key === 'Escape') closeProductGallery();
-    if (event.key === 'ArrowLeft') navigateProductGallery(-1);
-    if (event.key === 'ArrowRight') navigateProductGallery(1);
-  });
-}
-
-function getSizeGuideFocusableElements(modal) {
-  return Array.from(modal.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'))
-    .filter((element) => !element.hasAttribute('disabled') && element.offsetParent !== null);
-}
-
-function openSizeGuide() {
-  const modal = document.getElementById('size-guide-modal');
-  const close = document.getElementById('size-guide-close');
-  const trigger = document.getElementById('size-guide-trigger');
-  if (!modal) return;
-
-  sizeGuideLastFocus = document.activeElement;
-  modal.hidden = false;
-  trigger?.setAttribute('aria-expanded', 'true');
-  document.body.classList.add('pdp-size-guide-open');
-  close?.focus({ preventScroll: true });
-}
-
-function closeSizeGuide() {
-  const modal = document.getElementById('size-guide-modal');
-  const trigger = document.getElementById('size-guide-trigger');
-  if (!modal || modal.hidden) return;
-
-  modal.hidden = true;
-  trigger?.setAttribute('aria-expanded', 'false');
-  document.body.classList.remove('pdp-size-guide-open');
-  sizeGuideLastFocus?.focus?.({ preventScroll: true });
-  sizeGuideLastFocus = null;
-}
-
-function initSizeGuide() {
-  const trigger = document.getElementById('size-guide-trigger');
-  const modal = document.getElementById('size-guide-modal');
-  const close = document.getElementById('size-guide-close');
-  if (!trigger || !modal || modal.dataset.initialized === 'true') return;
-
-  modal.dataset.initialized = 'true';
-  trigger.addEventListener('click', openSizeGuide);
-  close?.addEventListener('click', closeSizeGuide);
-
-  modal.addEventListener('click', (event) => {
-    if (event.target === modal) closeSizeGuide();
-  });
-
-  document.addEventListener('keydown', (event) => {
-    if (modal.hidden) return;
-    if (event.key === 'Escape') {
-      closeSizeGuide();
-      return;
-    }
-
-    if (event.key !== 'Tab') return;
-    const focusableElements = getSizeGuideFocusableElements(modal);
-    if (focusableElements.length === 0) return;
-
-    const firstElement = focusableElements[0];
-    const lastElement = focusableElements[focusableElements.length - 1];
-
-    if (event.shiftKey && document.activeElement === firstElement) {
-      event.preventDefault();
-      lastElement.focus();
-    } else if (!event.shiftKey && document.activeElement === lastElement) {
-      event.preventDefault();
-      firstElement.focus();
-    }
-  });
-}
 
 window.handleBuyClick = function(e) {
   if (e) {
@@ -616,7 +127,7 @@ const populateImageGallery = (images) => {
   if (!images || images.length === 0) {
     return;
   }
-  setProductGalleryImages(images);
+  window.LebeProductGallery.setImages(images);
 
   // Populate carousel slides (mobile)
   const carouselSlides = document.querySelectorAll('#image-carousel .splide__slide');
@@ -655,7 +166,7 @@ const populateImageGallery = (images) => {
     }
   });
 
-  bindProductGalleryTriggers();
+  window.LebeProductGallery.bindTriggers();
 };
 
 async function loadCatalogForColorVariants(productId) {
@@ -688,7 +199,7 @@ const initMobileCarousel = () => {
     drag: true,
     rewind: true,
   }).mount();
-  bindProductGalleryTriggers();
+  window.LebeProductGallery.bindTriggers();
 };
 
 const loadProductData = async (productId) => {
@@ -939,8 +450,8 @@ async function initProductPage() {
     buyButton.onclick = window.handleBuyClick;
   }
 
-  initProductGallery();
-  initSizeGuide();
+  window.LebeProductGallery.init();
+  window.LebeSizeGuide.init();
 
   qtyMinus?.addEventListener('click', (e) => {
     e.preventDefault();
@@ -969,7 +480,7 @@ async function initProductPage() {
     }
 
     if (!previewApplied) {
-      applyProductPreview(STATIC_PRODUCT_PREVIEWS[id]);
+      applyProductPreview(window.LebeProductData?.previews?.[id]);
     }
 
     const catalogPromise = loadCatalogForColorVariants(id);
