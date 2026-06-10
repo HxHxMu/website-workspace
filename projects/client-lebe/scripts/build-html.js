@@ -96,7 +96,7 @@ const corePages = [
     description: 'Review your cart and proceed to checkout.',
     bodyClass: 'bg-white text-[#050505]',
     headerClass: '',
-    extraHead: '',
+    extraHead: '<script src="https://js.stripe.com/v3/"></script>',
     scripts: `
 <script src="js/product-data.js" defer></script>
 <script src="js/cart.js" defer></script>
