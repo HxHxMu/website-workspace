@@ -436,3 +436,42 @@ policies.forEach((policy) => {
   fs.writeFileSync(getPath('src', `${policy.slug}.html`), fullHtml);
   console.log(`Built HTML: ${policy.slug}.html`);
 });
+
+// 5. Generate Dynamic XML Sitemap
+function buildSitemap() {
+  try {
+    const LebeProductData = require(getPath('src/js/product-data'));
+    const DOMAIN = 'https://lebe.life';
+    const urls = [];
+
+    // Core static pages
+    const staticSlugs = ['index', 'cart', 'contact', 'order-issue', 'privacy', 'shipping', 'returns', 'terms'];
+    staticSlugs.forEach((slug) => {
+      const path = slug === 'index' ? '' : `/${slug}`;
+      urls.push(`${DOMAIN}${path}`);
+    });
+
+    // Dynamic product pages
+    if (LebeProductData && LebeProductData.previews) {
+      Object.keys(LebeProductData.previews).forEach((id) => {
+        urls.push(`${DOMAIN}/product?id=${id}`);
+      });
+    }
+
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.map(url => `  <url>
+    <loc>${url}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>${url.endsWith('.life') || url.endsWith('.life/') ? '1.0' : (url.includes('/product') ? '0.8' : '0.5')}</priority>
+  </url>`).join('\n')}
+</urlset>`;
+
+    fs.writeFileSync(getPath('src', 'sitemap.xml'), xml);
+    console.log('Built XML: sitemap.xml');
+  } catch (error) {
+    console.error('Error building sitemap:', error);
+  }
+}
+
+buildSitemap();
