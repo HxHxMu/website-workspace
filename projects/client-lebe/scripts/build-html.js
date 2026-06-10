@@ -23,11 +23,18 @@ function assemblePage(config) {
     ? `<meta name="google-site-verification" content="${process.env.GOOGLE_SITE_VERIFICATION}" />`
     : '';
 
+  const canonicalUrl = `https://lebe.life${config.slug === 'index' ? '' : '/' + config.slug}`;
+  const ogType = config.ogType || 'website';
+  const ogImage = config.ogImage || 'https://lebe.life/assets/images/lebeHero1.jpg';
+
   // Substitute head place holders
   let head = headTemplate
     .replaceAll('{{TITLE}}', config.title)
     .replaceAll('{{DESCRIPTION}}', config.description)
     .replaceAll('{{GOOGLE_SITE_VERIFICATION}}', googleVerification)
+    .replaceAll('{{CANONICAL_URL}}', canonicalUrl)
+    .replaceAll('{{OG_TYPE}}', ogType)
+    .replaceAll('{{OG_IMAGE}}', ogImage)
     .replaceAll('{{EXTRA_HEAD}}', config.extraHead || '')
     .replaceAll('{{BODY_CLASS}}', config.bodyClass || 'bg-white text-[#050505]');
 
@@ -417,11 +424,18 @@ policies.forEach((policy) => {
     ? `<meta name="google-site-verification" content="${process.env.GOOGLE_SITE_VERIFICATION}" />`
     : '';
 
+  const canonicalUrl = `https://lebe.life/${policy.slug}`;
+  const ogType = 'website';
+  const ogImage = 'https://lebe.life/assets/images/lebeHero1.jpg';
+
   // Compile full page html
   let head = headTemplate
     .replaceAll('{{TITLE}}', config.title)
     .replaceAll('{{DESCRIPTION}}', config.description)
     .replaceAll('{{GOOGLE_SITE_VERIFICATION}}', googleVerification)
+    .replaceAll('{{CANONICAL_URL}}', canonicalUrl)
+    .replaceAll('{{OG_TYPE}}', ogType)
+    .replaceAll('{{OG_IMAGE}}', ogImage)
     .replaceAll('{{EXTRA_HEAD}}', config.extraHead)
     .replaceAll('{{BODY_CLASS}}', config.bodyClass);
 

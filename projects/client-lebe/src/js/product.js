@@ -6,6 +6,104 @@ let colorVariants = null;
 let allProducts = null;
 
 const SIZE_ORDER = ['XS', 'S', 'M', 'L', 'XL'];
+
+function updateProductSeoAndStructuredData(product, selectedVariant) {
+  if (!product) return;
+
+  const origin = window.location.origin;
+  const productUrl = `${origin}/product?id=${product.id}`;
+  const description = `${product.name} — High-performance, made-to-order activewear designed for natural alignment, strength, and comfort. Hand-crafted in approximately 14 days.`;
+  const firstImage = product.images && product.images[0] ? (product.images[0].startsWith('http') ? product.images[0] : `${origin}/${product.images[0]}`) : '';
+
+  // 1. Update Title and Meta tags
+  document.title = `${product.name} — LEBE`;
+  
+  const updateMeta = (selector, attribute, value) => {
+    let el = document.querySelector(selector);
+    if (!el && selector.startsWith('meta[')) {
+      // Create it if it doesn't exist
+      el = document.createElement('meta');
+      if (selector.includes('property=')) {
+        const prop = selector.match(/property="([^"]+)"/)[1];
+        el.setAttribute('property', prop);
+      } else if (selector.includes('name=')) {
+        const name = selector.match(/name="([^"]+)"/)[1];
+        el.setAttribute('name', name);
+      }
+      document.head.appendChild(el);
+    }
+    if (el) el.setAttribute(attribute, value);
+  };
+
+  updateMeta('meta[name="description"]', 'content', description);
+  updateMeta('meta[property="og:title"]', 'content', `${product.name} — LEBE`);
+  updateMeta('meta[property="og:description"]', 'content', description);
+  updateMeta('meta[property="og:url"]', 'content', productUrl);
+  updateMeta('meta[property="og:type"]', 'content', 'product');
+  if (firstImage) {
+    updateMeta('meta[property="og:image"]', 'content', firstImage);
+    updateMeta('meta[name="twitter:image"]', 'content', firstImage);
+  }
+  updateMeta('meta[name="twitter:title"]', 'content', `${product.name} — LEBE`);
+  updateMeta('meta[name="twitter:description"]', 'content', description);
+  updateMeta('meta[name="twitter:url"]', 'content', productUrl);
+
+  // Update Canonical Link
+  let canonicalEl = document.querySelector('link[rel="canonical"]');
+  if (!canonicalEl) {
+    canonicalEl = document.createElement('link');
+    canonicalEl.setAttribute('rel', 'canonical');
+    document.head.appendChild(canonicalEl);
+  }
+  canonicalEl.setAttribute('href', productUrl);
+
+  // 2. Inject/Update JSON-LD Structured Data
+  const offers = product.variants ? product.variants.map(v => ({
+    "@type": "Offer",
+    "price": v.price,
+    "priceCurrency": "USD",
+    "itemCondition": "https://schema.org/NewCondition",
+    "availability": "https://schema.org/InStock",
+    "url": productUrl,
+    "sku": String(v.syncVariantId),
+    "priceSpecification": {
+      "@type": "PriceSpecification",
+      "price": v.price,
+      "priceCurrency": "USD",
+      "valueAddedTaxIncluded": "false"
+    }
+  })) : [];
+
+  const schemaData = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": product.name,
+    "image": product.images ? product.images.map(img => img.startsWith('http') ? img : `${origin}/${img}`) : [],
+    "description": description,
+    "sku": String(product.id),
+    "mpn": String(product.externalId || product.id),
+    "brand": {
+      "@type": "Brand",
+      "name": "LEBE"
+    },
+    "offers": offers.length > 0 ? (offers.length === 1 ? offers[0] : offers) : {
+      "@type": "Offer",
+      "price": selectedVariant ? selectedVariant.price : 0,
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock",
+      "url": productUrl
+    }
+  };
+
+  let scriptEl = document.getElementById('ld-json-product');
+  if (!scriptEl) {
+    scriptEl = document.createElement('script');
+    scriptEl.id = 'ld-json-product';
+    scriptEl.type = 'application/ld+json';
+    document.head.appendChild(scriptEl);
+  }
+  scriptEl.textContent = JSON.stringify(schemaData, null, 2);
+}
 const PRODUCT_CACHE_KEY = 'lebe_products_cache_v2';
 const PRODUCT_CACHE_MAX_AGE = 1000 * 60 * 60;
 
@@ -57,7 +155,7 @@ function applyProductPreview(product) {
   const productName = document.getElementById('product-name');
   const productPrice = document.getElementById('product-price');
 
-  document.title = `${product.name || 'Product'} — LEBE`;
+  updateProductSeoAndStructuredData(product, null);
   if (productName && product.name) productName.textContent = product.name;
   if (productPrice && Number.isFinite(Number(product.price))) {
     productPrice.textContent = `$${Number(product.price).toFixed(2)}`;
@@ -278,6 +376,9 @@ const loadProductData = async (productId) => {
       populateImageGallery(currentProduct.images);
     }
 
+    // Update SEO, Open Graph, and JSON-LD schema
+    updateProductSeoAndStructuredData(currentProduct, currentVariant);
+
     const renderSizeButtons = () => {
       if (!sizeSelector || !currentProduct.variants) return;
 
@@ -362,8 +463,8 @@ const loadProductData = async (productId) => {
         // Update URL without reload
         window.history.replaceState({}, '', `/product?id=${newProductId}`);
 
-        // Update page title
-        document.title = newProduct.name + ' — LEBE';
+        // Update SEO, Open Graph, and JSON-LD schema
+        updateProductSeoAndStructuredData(currentProduct, currentVariant);
 
         // Update all images with fade effect
         if (newProduct.images && newProduct.images.length > 0) {
