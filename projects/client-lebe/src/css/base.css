@@ -1,9 +1,9 @@
 @layer base {
   :root {
-    --text-rgb: 10 10 10;
-    --bg: #e9e9e9;
-    --fg: #0a0a0a;
-    --muted: rgba(10, 10, 10, 0.55);
+    --text-rgb: 5 5 5;
+    --bg: var(--color-brand-bg);
+    --fg: var(--color-brand-fg);
+    --muted: rgba(5, 5, 5, 0.55);
   }
 
   html {

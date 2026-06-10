@@ -75,43 +75,30 @@ window.renderCart = function() {
     cartTotal.textContent = `$${subtotal.toFixed(2)}`;
   }
 
-  // Event handlers — dataset values are always strings; compare with String() to handle numeric IDs
-  cartItems.querySelectorAll('.qty-minus').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+  // Event delegation - single listener on the parent container, bound once
+  if (cartItems && cartItems.dataset.eventsBound !== 'true') {
+    cartItems.dataset.eventsBound = 'true';
+    cartItems.addEventListener('click', (e) => {
+      const btn = e.target.closest('.qty-minus, .qty-plus, .remove-btn');
+      if (!btn) return;
+
       e.preventDefault();
       const svid = btn.dataset.syncVariantId;
       const item = Cart.getCart().find(i => String(i.syncVariantId) === svid);
-      if (item) {
+      if (!item) return;
+
+      if (btn.classList.contains('qty-minus')) {
         Cart.updateQuantity(item.syncVariantId, item.quantity - 1);
-        window.resetCheckoutState?.();
-        window.renderCart();
-      }
-    });
-  });
-
-  cartItems.querySelectorAll('.qty-plus').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const svid = btn.dataset.syncVariantId;
-      const item = Cart.getCart().find(i => String(i.syncVariantId) === svid);
-      if (item) {
+      } else if (btn.classList.contains('qty-plus')) {
         Cart.updateQuantity(item.syncVariantId, item.quantity + 1);
-        window.resetCheckoutState?.();
-        window.renderCart();
+      } else if (btn.classList.contains('remove-btn')) {
+        Cart.removeItem(item.syncVariantId);
       }
-    });
-  });
 
-  cartItems.querySelectorAll('.remove-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const svid = btn.dataset.syncVariantId;
-      const item = Cart.getCart().find(i => String(i.syncVariantId) === svid);
-      if (item) Cart.removeItem(item.syncVariantId);
       window.resetCheckoutState?.();
       window.renderCart();
     });
-  });
+  }
 
   // Upsell logic: suggest complementary products for incomplete sets
   const upsellModule = document.getElementById('upsell-module');
