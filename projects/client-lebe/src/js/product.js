@@ -217,7 +217,7 @@ const loadProductData = async (productId) => {
     const response = await fetch(`/api/product?id=${productId}`);
     if (!response.ok) throw new Error('Product not found');
     currentProduct = await response.json();
-    renderSizeGuide(currentProduct);
+    window.LebeSizeGuide.render(currentProduct);
     colorVariants = buildColorVariantMap(currentProduct) || colorVariants || findColorVariants(productId);
 
     document.title = currentProduct.name + ' — LEBE';
@@ -334,7 +334,7 @@ const loadProductData = async (productId) => {
 
         // Update global state
         currentProduct = newProduct;
-        renderSizeGuide(newProduct);
+        window.LebeSizeGuide.render(newProduct);
         colorVariants = buildColorVariantMap(newProduct) || findColorVariants(newProductId);
         currentVariant = getPreferredDefaultVariant() || newProduct.variants[0];
         currentColor = window.LebeProductModel?.getProductColor(newProduct)
