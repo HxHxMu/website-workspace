@@ -1,5 +1,3 @@
-console.log('product.js loaded');
-
 let currentProduct = null;
 let currentVariant = null;
 let currentQuantity = 1;
@@ -561,8 +559,6 @@ function initSizeGuide() {
 }
 
 window.handleBuyClick = function(e) {
-  console.log('=== HANDLE BUY CLICK CALLED ===');
-
   if (e) {
     e.preventDefault();
     e.stopPropagation();
@@ -592,9 +588,7 @@ window.handleBuyClick = function(e) {
     options: currentVariant.options || []
   };
 
-  console.log('✓ ADDING TO CART:', cartItem);
   Cart.addItem(cartItem);
-  console.log('✓ Item added, REDIRECTING TO /cart');
   window.location.href = '/cart';
   return false;
 };
@@ -677,7 +671,6 @@ async function loadCatalogForColorVariants(productId) {
       allProducts = await productsRes.json();
       cacheProducts(allProducts);
       colorVariants = findColorVariants(productId);
-      console.log('Color variants:', colorVariants);
     }
   } catch (_) {}
 }
@@ -713,7 +706,6 @@ const loadProductData = async (productId) => {
     const response = await fetch(`/api/product?id=${productId}`);
     if (!response.ok) throw new Error('Product not found');
     currentProduct = await response.json();
-    console.log('Product loaded:', currentProduct);
     renderSizeGuide(currentProduct);
     colorVariants = buildColorVariantMap(currentProduct) || colorVariants || findColorVariants(productId);
 
@@ -929,8 +921,6 @@ const loadProductData = async (productId) => {
 };
 
 async function initProductPage() {
-  console.log('DOMContentLoaded - initializing product page');
-
   const buyButton = document.getElementById('buy-button');
   const qtyDisplay = document.getElementById('qty-display');
   const qtyInput = document.getElementById('quantity');
