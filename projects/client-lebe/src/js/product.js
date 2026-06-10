@@ -100,6 +100,23 @@ window.handleBuyClick = function(e) {
   };
 
   Cart.addItem(cartItem);
+
+  // GA4 Enhanced E-commerce: add_to_cart
+  if (typeof gtag === 'function') {
+    gtag('event', 'add_to_cart', {
+      currency: 'USD',
+      value: cartItem.price * cartItem.quantity,
+      items: [{
+        item_id: String(cartItem.productId),
+        item_name: cartItem.name,
+        price: cartItem.price,
+        item_variant: cartItem.size,
+        item_category: cartItem.color,
+        quantity: cartItem.quantity
+      }]
+    });
+  }
+
   window.location.href = '/cart';
   return false;
 };
@@ -379,6 +396,21 @@ const loadProductData = async (productId) => {
         // Re-render size and color selectors
         renderSizeButtons();
         renderColorSelectors();
+
+        // GA4 Enhanced E-commerce: view_item
+        if (typeof gtag === 'function') {
+          gtag('event', 'view_item', {
+            currency: 'USD',
+            value: currentVariant ? currentVariant.price : 0,
+            items: [{
+              item_id: String(currentProduct.id),
+              item_name: currentProduct.name,
+              price: currentVariant ? currentVariant.price : 0,
+              item_category: window.LebeProductModel?.getProductColor(currentProduct) || 'Default',
+              quantity: 1
+            }]
+          });
+        }
       } catch (error) {
         console.error('Error switching product:', error);
       }
@@ -423,6 +455,21 @@ const loadProductData = async (productId) => {
 
     if (colorSelector && colorVariants) {
       renderColorSelectors();
+    }
+
+    // GA4 Enhanced E-commerce: view_item
+    if (typeof gtag === 'function') {
+      gtag('event', 'view_item', {
+        currency: 'USD',
+        value: currentVariant ? currentVariant.price : 0,
+        items: [{
+          item_id: String(currentProduct.id),
+          item_name: currentProduct.name,
+          price: currentVariant ? currentVariant.price : 0,
+          item_category: window.LebeProductModel?.getProductColor(currentProduct) || 'Default',
+          quantity: 1
+        }]
+      });
     }
 
   } catch (error) {

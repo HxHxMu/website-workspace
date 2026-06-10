@@ -814,6 +814,23 @@ document.addEventListener('DOMContentLoaded', () => {
     setCheckoutMode('checkout');
     setStep(1);
     resetCartSummary();
+
+    // GA4 Enhanced E-commerce: begin_checkout
+    if (typeof gtag === 'function') {
+      const cartItems = Cart.getCart();
+      gtag('event', 'begin_checkout', {
+        currency: 'USD',
+        value: Cart.getSubtotal(),
+        items: cartItems.map(item => ({
+          item_id: String(item.productId),
+          item_name: item.name,
+          price: item.price,
+          item_variant: item.size,
+          item_category: item.color,
+          quantity: item.quantity
+        }))
+      });
+    }
   });
 
   refs.continueToMethodsBtn?.addEventListener('click', async (event) => {
@@ -987,6 +1004,25 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await readJsonResponse(response, 'Checkout API returned a non-JSON response. Please refresh and try again.');
       if (!response.ok) {
         throw new Error(data.message || data.error || 'Order failed');
+      }
+
+      // GA4 Enhanced E-commerce: purchase
+      if (typeof gtag === 'function') {
+        gtag('event', 'purchase', {
+          transaction_id: String(data.orderId || paymentIntent.id),
+          value: state.paymentSetup ? state.paymentSetup.total : Cart.getSubtotal(),
+          currency: 'USD',
+          shipping: state.paymentSetup ? state.paymentSetup.shipping : 0,
+          tax: state.paymentSetup ? state.paymentSetup.tax : 0,
+          items: cart.map(item => ({
+            item_id: String(item.productId),
+            item_name: item.name,
+            price: item.price,
+            item_variant: item.size,
+            item_category: item.color,
+            quantity: item.quantity
+          }))
+        });
       }
 
       Cart.clearCart();

@@ -19,10 +19,15 @@ const policyTemplate = fs.readFileSync(getPath('src/partials/policies/_policy.ht
 function assemblePage(config) {
   const content = fs.readFileSync(getPath(config.contentFile), 'utf8');
 
+  const googleVerification = process.env.GOOGLE_SITE_VERIFICATION
+    ? `<meta name="google-site-verification" content="${process.env.GOOGLE_SITE_VERIFICATION}" />`
+    : '';
+
   // Substitute head place holders
   let head = headTemplate
     .replaceAll('{{TITLE}}', config.title)
     .replaceAll('{{DESCRIPTION}}', config.description)
+    .replaceAll('{{GOOGLE_SITE_VERIFICATION}}', googleVerification)
     .replaceAll('{{EXTRA_HEAD}}', config.extraHead || '')
     .replaceAll('{{BODY_CLASS}}', config.bodyClass || 'bg-white text-[#050505]');
 
@@ -408,10 +413,15 @@ policies.forEach((policy) => {
     scripts: '' // base scripts only (Meta Pixel will be loaded by scriptsTemplate)
   };
 
+  const googleVerification = process.env.GOOGLE_SITE_VERIFICATION
+    ? `<meta name="google-site-verification" content="${process.env.GOOGLE_SITE_VERIFICATION}" />`
+    : '';
+
   // Compile full page html
   let head = headTemplate
     .replaceAll('{{TITLE}}', config.title)
     .replaceAll('{{DESCRIPTION}}', config.description)
+    .replaceAll('{{GOOGLE_SITE_VERIFICATION}}', googleVerification)
     .replaceAll('{{EXTRA_HEAD}}', config.extraHead)
     .replaceAll('{{BODY_CLASS}}', config.bodyClass);
 
