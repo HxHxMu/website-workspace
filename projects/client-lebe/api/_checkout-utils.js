@@ -549,11 +549,100 @@ function getMetadataDiscountCents(metadata, subtotalCents) {
   return discountCents;
 }
 
+async function assertPaymentCaptured(stripe, intent) {
+  if (intent.status !== 'succeeded') {
+    throw new CheckoutError(
+      400,
+      'Payment has not been fully confirmed yet.',
+      `Stripe PaymentIntent status is '${intent.status}', expected 'succeeded'.`
+    );
+  }
+
+  if (!intent.latest_charge) {
+    throw new CheckoutError(
+      400,
+      'Payment has not been fully confirmed yet.',
+      'Stripe PaymentIntent is missing the latest charge ID.'
+    );
+  }
+
+  let charge = intent.latest_charge;
+  if (typeof charge === 'string') {
+    try {
+      charge = await stripe.charges.retrieve(charge);
+    } catch (error) {
+      throw new CheckoutError(
+        502,
+        'Payment has not been fully confirmed yet.',
+        `Failed to retrieve Stripe charge '${intent.latest_charge}': ${error.message}`
+      );
+    }
+  }
+
+  if (!charge || typeof charge !== 'object') {
+    throw new CheckoutError(
+      400,
+      'Payment has not been fully confirmed yet.',
+      'Stripe charge data is invalid or could not be loaded.'
+    );
+  }
+
+  if (charge.status !== 'succeeded') {
+    throw new CheckoutError(
+      400,
+      'Payment has not been fully confirmed yet.',
+      `Stripe charge status is '${charge.status}', expected 'succeeded'.`
+    );
+  }
+
+  if (charge.paid !== true) {
+    throw new CheckoutError(
+      400,
+      'Payment has not been fully confirmed yet.',
+      'Stripe charge is not paid.'
+    );
+  }
+
+  if (charge.captured !== true) {
+    throw new CheckoutError(
+      400,
+      'Payment has not been fully confirmed yet.',
+      'Stripe charge was not captured.'
+    );
+  }
+
+  if (charge.payment_intent && charge.payment_intent !== intent.id) {
+    throw new CheckoutError(
+      400,
+      'Payment has not been fully confirmed yet.',
+      `Stripe charge payment_intent '${charge.payment_intent}' does not match PaymentIntent ID '${intent.id}'.`
+    );
+  }
+
+  if (typeof charge.amount_captured === 'number' && charge.amount_captured !== intent.amount) {
+    throw new CheckoutError(
+      400,
+      'Payment has not been fully confirmed yet.',
+      `Stripe charge amount_captured (${charge.amount_captured}) does not match PaymentIntent amount (${intent.amount}).`
+    );
+  }
+
+  if (charge.refunded === true || (typeof charge.amount_refunded === 'number' && charge.amount_refunded > 0)) {
+    throw new CheckoutError(
+      400,
+      'Payment has been refunded.',
+      `Stripe charge has been refunded (amount_refunded: ${charge.amount_refunded}).`
+    );
+  }
+}
+
 async function fulfillPaidOrder({ stripe, paymentIntentId, paymentIntent, apiKey, requestOrder = null }) {
   const intent = paymentIntent || await stripe.paymentIntents.retrieve(paymentIntentId);
   if (intent.status !== 'succeeded') {
     throw new CheckoutError(400, 'Payment not confirmed.');
   }
+
+  await assertPaymentCaptured(stripe, intent);
 
   const metadata = intent.metadata || {};
   let recipient;
@@ -672,6 +761,7 @@ module.exports = {
   PRINTFUL_API_BASE,
   SUPPORTED_COUNTRY_CODE,
   amountFromCents,
+  assertPaymentCaptured,
   buildShippingRateItems,
   createOrderMetadata,
   estimatePrintfulOrder,
