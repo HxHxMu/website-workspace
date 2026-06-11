@@ -139,6 +139,7 @@
   }
 
   .lebe-bag {
+    position: relative;
     width: 56px;
     height: 56px;
     border-radius: 999px;
@@ -146,6 +147,35 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .lebe-bag-count {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 19px;
+    height: 19px;
+    padding: 0 5px;
+    border: 1px solid rgba(255, 255, 255, 0.78);
+    border-radius: 999px;
+    background: #050505;
+    color: #fff;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  .lebe-bag.has-items {
+    background: rgba(255, 255, 255, 0.24);
+  }
+
+  .lebe-bag.has-items .lebe-bag-count {
+    display: inline-flex;
   }
 
   .lebe-kicker {

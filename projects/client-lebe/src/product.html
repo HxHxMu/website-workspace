@@ -60,12 +60,13 @@
 <header class="lebe-header ">
   <nav class="lebe-shell h-full flex items-center justify-between">
     <a href="/" class="lebe-brand">lebe.</a>
-    <a href="/cart" class="lebe-bag group">
+    <a href="/cart" class="lebe-bag group" aria-label="Shopping bag">
       <svg class="h-5 w-5 transition duration-300 group-hover:scale-95" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <path d="M5 1.66667L2.5 5V16.6667C2.5 17.1087 2.67559 17.5326 2.98816 17.8452C3.30072 18.1577 3.72464 18.3333 4.16667 18.3333H15.8333C16.2754 18.3333 16.6993 18.1577 17.0118 17.8452C17.3244 17.5326 17.5 17.1087 17.5 16.6667V5L15 1.66667H5Z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M2.5 5H17.5" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M13.3333 8.33333C13.3333 9.21739 12.9821 10.0652 12.357 10.6904C11.7319 11.3155 10.884 11.6667 9.99996 11.6667C9.1159 11.6667 8.26806 11.3155 7.64294 10.6904C7.01782 10.0652 6.66663 9.21739 6.66663 8.33333" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
+      <span class="lebe-bag-count" data-bag-count aria-hidden="true"></span>
     </a>
   </nav>
 </header>
@@ -351,6 +352,7 @@
 <script src="js/product-gallery.js" defer></script>
 <script src="js/product-size-guide.js" defer></script>
 <script src="js/product.js" defer></script>
+<script src="js/bag-indicator.js" defer></script>
 
 <!-- Meta Pixel Code -->
 <script>

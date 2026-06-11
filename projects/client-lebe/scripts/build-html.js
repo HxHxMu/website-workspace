@@ -14,6 +14,7 @@ const headerTemplate = fs.readFileSync(getPath('src/partials/shared/_header.html
 const footerTemplate = fs.readFileSync(getPath('src/partials/shared/_footer.html'), 'utf8');
 const scriptsTemplate = fs.readFileSync(getPath('src/partials/shared/_scripts.html'), 'utf8');
 const policyTemplate = fs.readFileSync(getPath('src/partials/policies/_policy.html'), 'utf8');
+const bagIndicatorScript = '<script src="js/bag-indicator.js" defer></script>';
 
 // 2. Define compilation engine
 function assemblePage(config) {
@@ -44,7 +45,7 @@ function assemblePage(config) {
 
   // Substitute scripts placeholder
   let scripts = scriptsTemplate
-    .replaceAll('{{SCRIPTS}}', config.scripts || '');
+    .replaceAll('{{SCRIPTS}}', `${config.scripts || ''}\n${bagIndicatorScript}`);
 
   // Concatenate parts
   return `${head}\n${header}\n${content}\n${footerTemplate}\n${scripts}`;
@@ -443,7 +444,7 @@ policies.forEach((policy) => {
     .replaceAll('{{HEADER_CLASS}}', config.headerClass);
 
   let scripts = scriptsTemplate
-    .replaceAll('{{SCRIPTS}}', config.scripts);
+    .replaceAll('{{SCRIPTS}}', `${config.scripts || ''}\n${bagIndicatorScript}`);
 
   const fullHtml = `${head}\n${header}\n${contentHtml}\n${footerTemplate}\n${scripts}`;
   
