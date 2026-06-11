@@ -27,6 +27,7 @@ module.exports = async (req, res) => {
       code,
       subtotalCents,
       currency: 'usd',
+      allowFirstTimeTransaction: true,
     });
 
     return res.status(200).json({

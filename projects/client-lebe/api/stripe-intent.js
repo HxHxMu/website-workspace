@@ -58,6 +58,9 @@ module.exports = async (req, res) => {
       code: promoCode,
       subtotalCents: estimate.subtotalCents,
       currency: 'usd',
+      allowFirstTimeTransaction: true,
+      enforceFirstTimeTransaction: true,
+      customerEmail: recipient.email,
     });
 
     const discountedSubtotalCents = Math.max(0, estimate.subtotalCents - promo.discountCents);

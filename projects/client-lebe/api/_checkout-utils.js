@@ -293,7 +293,7 @@ function summarizePromotionCode(promotionCode) {
   };
 }
 
-function validatePromotionCode(promotionCode, subtotalCents, currency = 'usd') {
+function validatePromotionCode(promotionCode, subtotalCents, currency = 'usd', options = {}) {
   const coupon = promotionCode?.coupon || {};
   if (!promotionCode || !promotionCode.active || !coupon || coupon.valid === false) {
     throw new CheckoutError(400, 'This discount code is invalid or expired.');
@@ -311,7 +311,7 @@ function validatePromotionCode(promotionCode, subtotalCents, currency = 'usd') {
     throw new CheckoutError(400, 'This discount code has already been fully redeemed.');
   }
 
-  if (promotionCode.restrictions?.first_time_transaction) {
+  if (promotionCode.restrictions?.first_time_transaction && !options.allowFirstTimeTransaction) {
     throw new CheckoutError(400, 'This discount code can’t be used in this checkout.');
   }
 
@@ -331,6 +331,31 @@ function validatePromotionCode(promotionCode, subtotalCents, currency = 'usd') {
   }
 }
 
+function escapeStripeSearchValue(value) {
+  return String(value || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+}
+
+async function hasPriorSuccessfulPaymentForEmail(stripe, email) {
+  const normalizedEmail = String(email || '').trim().toLowerCase();
+  if (!normalizedEmail) return false;
+
+  const query = `status:'succeeded' AND metadata['rec_email']:'${escapeStripeSearchValue(normalizedEmail)}'`;
+  const result = await stripe.paymentIntents.search({ query, limit: 1 });
+  return (result.data || []).length > 0;
+}
+
+async function validateFirstTimePromotion(stripe, promotionCode, customerEmail) {
+  if (!promotionCode?.restrictions?.first_time_transaction) return;
+  if (!customerEmail) {
+    throw new CheckoutError(400, 'Please enter your email before using this discount code.');
+  }
+
+  const hasPriorPayment = await hasPriorSuccessfulPaymentForEmail(stripe, customerEmail);
+  if (hasPriorPayment) {
+    throw new CheckoutError(400, 'This discount code is only valid for first-time orders.');
+  }
+}
+
 function calculateDiscountCents(subtotalCents, promotionCode) {
   const coupon = promotionCode?.coupon || {};
   if (Number.isFinite(Number(coupon.percent_off)) && Number(coupon.percent_off) > 0) {
@@ -344,7 +369,14 @@ function calculateDiscountCents(subtotalCents, promotionCode) {
   return 0;
 }
 
-async function resolvePromotionDiscount(stripe, { code, subtotalCents, currency = 'usd' }) {
+async function resolvePromotionDiscount(stripe, {
+  code,
+  subtotalCents,
+  currency = 'usd',
+  allowFirstTimeTransaction = false,
+  enforceFirstTimeTransaction = false,
+  customerEmail = '',
+} = {}) {
   const normalizedCode = String(code || '').trim();
   if (!normalizedCode) {
     return { promotionCode: null, summary: null, discountCents: 0 };
@@ -358,7 +390,11 @@ async function resolvePromotionDiscount(stripe, { code, subtotalCents, currency 
   });
 
   const promotionCode = promoResult.data?.[0];
-  validatePromotionCode(promotionCode, subtotalCents, currency);
+  validatePromotionCode(promotionCode, subtotalCents, currency, { allowFirstTimeTransaction });
+
+  if (enforceFirstTimeTransaction) {
+    await validateFirstTimePromotion(stripe, promotionCode, customerEmail);
+  }
 
   return {
     promotionCode,
