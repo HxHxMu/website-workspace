@@ -3,7 +3,7 @@ const {
   CheckoutError,
   fulfillPaidOrder,
 } = require('./_checkout-utils');
-const { trySendOrderConfirmationEmail } = require('./_order-email');
+const { trySendOrderConfirmationEmail, trySendAdminAlertEmail } = require('./_order-email');
 
 async function readRawBody(req) {
   if (Buffer.isBuffer(req.body)) return req.body;
@@ -73,6 +73,7 @@ module.exports = async (req, res) => {
     });
   } catch (error) {
     console.error('stripe-webhook fulfillment error:', error);
+    await trySendAdminAlertEmail({ paymentIntent, error });
     if (error instanceof CheckoutError && error.status < 500) {
       return res.status(200).json({ received: true, ignored: error.publicMessage });
     }

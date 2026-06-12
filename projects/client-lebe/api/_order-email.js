@@ -401,10 +401,88 @@ async function sendShipmentEmailOnce({ stripe, paymentIntent, order, shipment, m
   return { sent: true, skipped: false, shipmentId: email.shipment.id };
 }
 
+async function trySendAdminAlertEmail({ paymentIntent, error }) {
+  try {
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) return;
+
+    const to = process.env.SUPPORT_INBOX || 'support@lebe.life';
+    const from = process.env.SUPPORT_FROM_EMAIL || 'LEBE Store <support@mail.lebe.life>';
+    const replyTo = getReplyTo();
+
+    const subject = `⚠️ ACTION REQUIRED: Webhook Fulfillment Failure - ${paymentIntent.id}`;
+    const text = [
+      'LEBE Webhook Fulfillment Failed.',
+      '',
+      `PaymentIntent ID: ${paymentIntent.id}`,
+      `Amount: $${((paymentIntent.amount || 0) / 100).toFixed(2)}`,
+      `Customer Email: ${paymentIntent.metadata?.rec_email || 'Unknown'}`,
+      `Customer Name: ${paymentIntent.metadata?.rec_name || 'Unknown'}`,
+      '',
+      'Error Message:',
+      error.message || String(error),
+      '',
+      'Stack Trace:',
+      error.stack || 'No stack trace available',
+      '',
+      'A customer was charged, but their Printful order was not successfully created. Please check Stripe and Printful to reconcile this order.',
+    ].join('\n');
+
+    const html = `
+      <div style="font-family: sans-serif; padding: 20px; line-height: 1.6; max-width: 600px; color: #050505;">
+        <h2 style="color: #d93838; margin-top: 0; font-family: serif; border-bottom: 2px solid #d93838; padding-bottom: 10px;">⚠️ Action Required: Fulfillment Failure</h2>
+        <p>A customer was charged, but their order could not be fulfilled on Printful automatically.</p>
+        <table style="border-collapse: collapse; width: 100%; margin-bottom: 20px;">
+          <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: bold; width: 140px;">PaymentIntent ID</td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;"><code>${paymentIntent.id}</code></td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: bold;">Amount</td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;">$${((paymentIntent.amount || 0) / 100).toFixed(2)}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: bold;">Customer Email</td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${escapeHtml(paymentIntent.metadata?.rec_email || 'Unknown')}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: bold;">Customer Name</td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${escapeHtml(paymentIntent.metadata?.rec_name || 'Unknown')}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: bold;">Error details</td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd; color: #d93838;">${escapeHtml(error.message || String(error))}</td>
+          </tr>
+        </table>
+        <p style="font-size: 14px; color: #555;">Please inspect the Vercel logs, Stripe payments, and Printful dashboard to resolve this order manually.</p>
+      </div>
+    `;
+
+    await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from,
+        to,
+        reply_to: replyTo,
+        subject,
+        text,
+        html,
+      }),
+    });
+  } catch (err) {
+    console.error('Failed to send admin webhook alert email:', err);
+  }
+}
+
 module.exports = {
   buildProductionEmail,
   buildShipmentEmail,
   trySendOrderConfirmationEmail,
   sendProductionEmailOnce,
   sendShipmentEmailOnce,
+  trySendAdminAlertEmail,
 };
