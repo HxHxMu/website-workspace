@@ -1,11 +1,89 @@
 const fs = require('fs');
 const path = require('path');
+const { fetchFromPrintful } = require('../api/_lib/printful');
+const { getColorVariants, getProductImages, productsData } = require('../api/_lib/products-data');
 
 const ROOT = path.join(__dirname, '..');
+const DOMAIN = 'https://lebe.life';
 
 // Helper to resolve absolute path in the workspace
 function getPath(...parts) {
   return path.join(ROOT, ...parts);
+}
+
+function loadEnvFile(filePath) {
+  if (!fs.existsSync(filePath)) return;
+
+  const lines = fs.readFileSync(filePath, 'utf8').split(/\r?\n/);
+  lines.forEach((line) => {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#') || !trimmed.includes('=')) return;
+
+    const [key, ...valueParts] = trimmed.split('=');
+    const name = key.trim();
+    if (!name || process.env[name]) return;
+
+    let value = valueParts.join('=').trim();
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
+    process.env[name] = value;
+  });
+}
+
+loadEnvFile(getPath('.env'));
+loadEnvFile(getPath('.env.local'));
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+function escapeXml(value) {
+  return escapeHtml(value);
+}
+
+function escapeJsString(value) {
+  return JSON.stringify(String(value ?? '')).slice(1, -1);
+}
+
+function normalizeFeedUrl(value) {
+  if (!value) return '';
+  const raw = String(value);
+  if (/^https?:\/\//i.test(raw)) return raw;
+  return `${DOMAIN}/${raw.replace(/^\/+/, '')}`;
+}
+
+function getMetaPixelCode() {
+  const pixelId = String(process.env.META_PIXEL_ID || '').trim();
+  if (!pixelId) return '';
+
+  const safePixelId = escapeJsString(pixelId);
+  const noscriptUrl = `https://www.facebook.com/tr?id=${encodeURIComponent(pixelId)}&ev=PageView&noscript=1`;
+
+  return `
+  <!-- Meta Pixel Code -->
+  <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '${safePixelId}');
+    fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none" alt="" src="${noscriptUrl}" /></noscript>
+  <!-- End Meta Pixel Code -->`;
 }
 
 // 1. Load layout partial templates
@@ -28,12 +106,14 @@ function assemblePage(config) {
   const canonicalUrl = `https://lebe.life${config.slug === 'index' ? '' : '/' + config.slug}`;
   const ogType = config.ogType || 'website';
   const ogImage = config.ogImage || 'https://lebe.life/assets/images/lebeHero1.jpg';
+  const metaPixelCode = getMetaPixelCode();
 
   // Substitute head place holders
   let head = headTemplate
     .replaceAll('{{TITLE}}', config.title)
     .replaceAll('{{DESCRIPTION}}', config.description)
     .replaceAll('{{GOOGLE_SITE_VERIFICATION}}', googleVerification)
+    .replaceAll('{{META_PIXEL_CODE}}', metaPixelCode)
     .replaceAll('{{CANONICAL_URL}}', canonicalUrl)
     .replaceAll('{{OG_TYPE}}', ogType)
     .replaceAll('{{OG_IMAGE}}', ogImage)
@@ -178,6 +258,13 @@ const policies = [
         heading: 'How we use information.',
         body: [
           'We use your information to process and fulfill orders, provide customer support, communicate about your purchase, improve our products and website, prevent fraud and unauthorized transactions, and comply with legal obligations.',
+        ],
+      },
+      {
+        heading: 'Analytics & advertising.',
+        body: [
+          'We may use analytics and advertising pixels, including Google Analytics and Meta Pixel, to understand site performance, measure product interest, and improve marketing.',
+          'These tools may collect device, browser, page view, and interaction information. We do not use them to store full payment card details.',
         ],
       },
       {
@@ -465,12 +552,14 @@ policies.forEach((policy) => {
   const canonicalUrl = `https://lebe.life/${policy.slug}`;
   const ogType = 'website';
   const ogImage = 'https://lebe.life/assets/images/lebeHero1.jpg';
+  const metaPixelCode = getMetaPixelCode();
 
   // Compile full page html
   let head = headTemplate
     .replaceAll('{{TITLE}}', config.title)
     .replaceAll('{{DESCRIPTION}}', config.description)
     .replaceAll('{{GOOGLE_SITE_VERIFICATION}}', googleVerification)
+    .replaceAll('{{META_PIXEL_CODE}}', metaPixelCode)
     .replaceAll('{{CANONICAL_URL}}', canonicalUrl)
     .replaceAll('{{OG_TYPE}}', ogType)
     .replaceAll('{{OG_IMAGE}}', ogImage)
@@ -527,3 +616,181 @@ ${urls.map(url => `  <url>
 }
 
 buildSitemap();
+
+function productKind(product = {}, productId = '') {
+  const haystack = [
+    product.name,
+    productsData.colorVariants?.[String(productId)]?.displayName,
+  ].filter(Boolean).join(' ').toLowerCase();
+
+  if (haystack.includes('bra')) {
+    return {
+      category: 'Clothing & Accessories > Clothing > Activewear > Sports Bras',
+      productType: 'Apparel & Accessories > Clothing > Activewear > Sports Bras',
+      titleBase: 'Saguanari Sports Bra',
+      description: 'Made-to-order LEBE sports bra with premium all-over print artwork.',
+    };
+  }
+
+  return {
+    category: 'Clothing & Accessories > Clothing > Activewear > Leggings',
+    productType: 'Apparel & Accessories > Clothing > Activewear > Leggings',
+    titleBase: 'Saguanari Leggings',
+    description: 'Made-to-order LEBE leggings with premium all-over print artwork.',
+  };
+}
+
+function variantOption(variant = {}, key = '') {
+  const option = (variant.options || []).find((item) => String(item.id || '').toLowerCase() === key.toLowerCase());
+  return option?.value || '';
+}
+
+function variantColor(product = {}, variant = {}) {
+  const storefrontColor = productsData.productColorByExternalId?.[product.external_id];
+  if (storefrontColor) return storefrontColor;
+
+  const colors = getColorVariants(product.id) || [];
+  const current = colors.find((color) => String(color.productId) === String(product.id));
+  if (current?.name) return current.name;
+
+  return variant.color || variantOption(variant, 'color') || 'Default';
+}
+
+function productGroupId(product = {}) {
+  const externalId = String(product.external_id || '');
+  const group = (productsData.colorGroupsByExternalId || [])
+    .find((entry) => Object.values(entry).map(String).includes(externalId));
+
+  if (!group) return `lebe-${product.id}`;
+
+  return `lebe-${Object.values(group).map(String).sort().join('-')}`;
+}
+
+function variantSize(variant = {}) {
+  return variant.size || variantOption(variant, 'size') || 'One Size';
+}
+
+function formatFeedPrice(value) {
+  const amount = Number.parseFloat(value);
+  if (!Number.isFinite(amount) || amount <= 0) return '';
+  return `${amount.toFixed(2)} USD`;
+}
+
+function buildFeedItem({ product, variant, image, itemGroupId, kind }) {
+  const productId = product.id;
+  const syncVariantId = variant.id || variant.sync_variant_id || `${productId}-${variant.variant_id || variantSize(variant)}`;
+  const color = variantColor(product, variant);
+  const size = variantSize(variant);
+  const titleParts = [kind.titleBase || product.name, color, size].filter(Boolean);
+  const link = `${DOMAIN}/product?id=${encodeURIComponent(productId)}`;
+  const price = formatFeedPrice(variant.retail_price || variant.price);
+
+  if (!price || !image) return '';
+
+  return `    <item>
+      <g:id>${escapeXml(syncVariantId)}</g:id>
+      <g:item_group_id>${escapeXml(itemGroupId)}</g:item_group_id>
+      <title>${escapeXml(titleParts.join(' - '))}</title>
+      <description>${escapeXml(kind.description)}</description>
+      <link>${escapeXml(link)}</link>
+      <g:image_link>${escapeXml(normalizeFeedUrl(image))}</g:image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>${escapeXml(price)}</g:price>
+      <g:brand>LEBE</g:brand>
+      <g:condition>new</g:condition>
+      <g:google_product_category>${escapeXml(kind.category)}</g:google_product_category>
+      <g:product_type>${escapeXml(kind.productType)}</g:product_type>
+      <g:color>${escapeXml(color)}</g:color>
+      <g:size>${escapeXml(size)}</g:size>
+      <g:gender>female</g:gender>
+      <g:age_group>adult</g:age_group>
+      <g:identifier_exists>no</g:identifier_exists>
+    </item>`;
+}
+
+async function getFeedProducts(apiKey) {
+  const publishedProductIds = Object.keys(productsData.previews || {});
+
+  return Promise.all(publishedProductIds.map(async (productId) => {
+    const detail = await fetchFromPrintful(`/store/products/${encodeURIComponent(productId)}`, apiKey);
+    const syncProduct = detail?.result?.sync_product;
+    const syncVariants = detail?.result?.sync_variants || [];
+
+    if (!syncProduct || syncVariants.length === 0) return null;
+
+    const fallbackImages = [
+      syncProduct.thumbnail_url,
+      ...syncVariants
+        .flatMap((variant) => variant.files || [])
+        .filter((file) => file.type === 'preview' && file.preview_url)
+        .map((file) => file.preview_url),
+    ].filter(Boolean);
+
+    return {
+      product: syncProduct,
+      variants: syncVariants,
+      images: getProductImages(syncProduct.external_id, fallbackImages),
+    };
+  }));
+}
+
+function buildEmptyProductsFeed() {
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
+  <channel>
+    <title>LEBE — Saguanari Yoga Wear</title>
+    <link>${DOMAIN}</link>
+    <description>Made-to-order activewear.</description>
+  </channel>
+</rss>`;
+}
+
+async function buildProductsFeed() {
+  const apiKey = process.env.PRINTFUL_API_KEY;
+
+  if (!apiKey) {
+    fs.writeFileSync(getPath('src', 'products-feed.xml'), buildEmptyProductsFeed());
+    console.warn('Built XML: products-feed.xml without products because PRINTFUL_API_KEY is not set.');
+    return;
+  }
+
+  try {
+    const feedProducts = (await getFeedProducts(apiKey)).filter(Boolean);
+    const items = [];
+
+    feedProducts.forEach(({ product, variants, images }) => {
+      const kind = productKind(product, product.id);
+      const itemGroupId = productGroupId(product);
+      const image = images[0] || '';
+
+      variants.forEach((variant) => {
+        const item = buildFeedItem({
+          product,
+          variant,
+          image,
+          itemGroupId,
+          kind,
+        });
+        if (item) items.push(item);
+      });
+    });
+
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
+  <channel>
+    <title>LEBE — Saguanari Yoga Wear</title>
+    <link>${DOMAIN}</link>
+    <description>Made-to-order activewear.</description>
+${items.join('\n')}
+  </channel>
+</rss>`;
+
+    fs.writeFileSync(getPath('src', 'products-feed.xml'), xml);
+    console.log(`Built XML: products-feed.xml (${items.length} items)`);
+  } catch (error) {
+    fs.writeFileSync(getPath('src', 'products-feed.xml'), buildEmptyProductsFeed());
+    console.error('Error building products feed:', error.message);
+  }
+}
+
+buildProductsFeed();

@@ -2,10 +2,81 @@
   const BRAND = 'LEBE';
   const CURRENCY = 'USD';
   const onceKeys = new Set();
+  const META_STANDARD_EVENTS = {
+    view_item: 'ViewContent',
+    add_to_cart: 'AddToCart',
+    begin_checkout: 'InitiateCheckout',
+    add_payment_info: 'AddPaymentInfo',
+    purchase: 'Purchase',
+    generate_lead: 'Lead',
+  };
+  const META_CUSTOM_EVENTS = new Set([
+    'add_shipping_info',
+    'open_product_gallery',
+    'open_size_guide',
+    'promo_code_applied',
+    'select_item_color',
+    'select_item_size',
+    'select_promotion',
+    'zoom_product_image',
+  ]);
 
-  function track(eventName, params = {}) {
+  function trackGoogle(eventName, params = {}) {
     if (typeof window.gtag !== 'function') return;
     window.gtag('event', eventName, params);
+  }
+
+  function metaParams(params = {}) {
+    const items = Array.isArray(params.items) ? params.items : [];
+    const contentIds = items
+      .map((item) => item.item_id)
+      .filter(Boolean)
+      .map(String);
+    const contents = items.map((item) => ({
+      id: String(item.item_id || ''),
+      quantity: Number(item.quantity) || 1,
+      item_price: Number(item.price) || 0,
+    })).filter((item) => item.id);
+
+    const payload = {
+      currency: params.currency || CURRENCY,
+    };
+
+    if (Number.isFinite(Number(params.value))) {
+      payload.value = Number(params.value);
+    }
+    if (contentIds.length > 0) {
+      payload.content_ids = contentIds;
+      payload.contents = contents;
+      payload.content_type = 'product';
+    }
+    if (params.item_name || items[0]?.item_name) {
+      payload.content_name = params.item_name || items[0].item_name;
+    }
+    if (params.coupon || params.promotion_name || params.method) {
+      payload.label = params.coupon || params.promotion_name || params.method;
+    }
+
+    return payload;
+  }
+
+  function trackMeta(eventName, params = {}) {
+    if (typeof window.fbq !== 'function') return;
+
+    const standardEvent = META_STANDARD_EVENTS[eventName];
+    if (standardEvent) {
+      window.fbq('track', standardEvent, metaParams(params));
+      return;
+    }
+
+    if (META_CUSTOM_EVENTS.has(eventName)) {
+      window.fbq('trackCustom', eventName, metaParams(params));
+    }
+  }
+
+  function track(eventName, params = {}) {
+    trackGoogle(eventName, params);
+    trackMeta(eventName, params);
   }
 
   function trackOnce(key, eventName, params = {}) {
