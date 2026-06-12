@@ -86,14 +86,14 @@
     // Used by backend for API payload generation and by model.
     colorVariants: {
       "309483674": {
-        "displayName": "Sanguanari Sports Bra",
+        "displayName": "Saguanari Sports Bra",
         "colors": [
           { "name": "White", "productId": 309483674 },
           { "name": "Black", "productId": 309483736 }
         ]
       },
       "309483736": {
-        "displayName": "Sanguanari Sports Bra",
+        "displayName": "Saguanari Sports Bra",
         "colors": [
           { "name": "White", "productId": 309483674 },
           { "name": "Black", "productId": 309483736 }

@@ -152,6 +152,83 @@ function setHeroImages(images, name) {
   });
 }
 
+function getProductColorLabel(product = currentProduct, variant = currentVariant) {
+  const modelColor = window.LebeProductModel?.getProductColor(product);
+  const variantColor = variant?.color;
+  const nameColor = String(product?.name || '').toLowerCase().includes('black')
+    ? 'Black'
+    : String(product?.name || '').toLowerCase().includes('white')
+      ? 'White'
+      : '';
+  return modelColor || variantColor || currentColor || nameColor || 'Selected color';
+}
+
+function getProductProfile(product = currentProduct) {
+  const name = String(product?.name || '').toLowerCase();
+  const isBra = name.includes('bra');
+  const isLegging = name.includes('legging');
+  const color = getProductColorLabel(product);
+  const colorTone = color.toLowerCase() === 'black'
+    ? 'a sharper graphic read'
+    : color.toLowerCase() === 'white'
+      ? 'a clean, gallery-like read'
+      : 'a clean studio read';
+
+  if (isBra) {
+    return {
+      story: `A sculptural active top with a close, supportive feel and ${colorTone}. Designed for training, layering, and the moments between.`,
+      highlights: ['Supportive stretch', 'Cropped active fit', 'Pairs as a set'],
+      why: 'The Saguanari bra is built to hold the body visually and physically without over-explaining itself. The graphic placement gives the piece its identity while the silhouette stays clean enough to layer.',
+      fit: 'Close, supportive fit with a cropped profile. Choose your usual size for a held-in feel, or size up if you prefer more ease through the band.',
+      fabric: 'Smooth performance knit with stretch and recovery. The surface is meant to feel substantial, flexible, and easy to move in.',
+    };
+  }
+
+  if (isLegging) {
+    return {
+      story: `High-rise active leggings with a smooth stretch feel and ${colorTone}. Designed for studio movement, travel days, and everyday uniform dressing.`,
+      highlights: ['High-rise waist', 'Smooth stretch feel', 'Full set pairing'],
+      why: 'The Saguanari legging carries the artwork like a long vertical composition, so the piece works both as activewear and as a styled layer. The restraint is the point: clean shape, clear graphic, no extra noise.',
+      fit: 'High-rise, body-skimming fit with flexible stretch. If you are between sizes, use the size guide and consider sizing down for a more held fit.',
+      fabric: 'Soft performance knit with a smooth handfeel and enough stretch for yoga, walking, travel, and daily wear.',
+    };
+  }
+
+  return {
+    story: `Made-to-order activewear with a clean studio feel and ${colorTone}. Designed to move easily and style without excess.`,
+    highlights: ['Made after purchase', 'Soft stretch feel', 'Limited-run piece'],
+    why: 'This piece is intentionally simple in structure so the material, artwork, and silhouette can do the work.',
+    fit: 'Designed for a close activewear fit. Use the size guide before ordering if you are between sizes.',
+    fabric: 'Soft stretch performance knit selected for comfort, movement, and everyday wear.',
+  };
+}
+
+function renderProductDetails(product = currentProduct) {
+  if (!product) return;
+
+  const profile = getProductProfile(product);
+  const colorLabel = getProductColorLabel(product);
+  const sizeLabel = currentVariant?.size ? String(currentVariant.size).toUpperCase() : 'size pending';
+  const selectedSummary = colorLabel && currentVariant?.size
+    ? `${colorLabel}, size ${sizeLabel}. Made after purchase and added to your bag as selected.`
+    : `${colorLabel}. Choose a size before adding to your bag.`;
+
+  const setText = (id, text) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  };
+
+  setText('product-story', profile.story);
+  setText('pdp-highlight-1', profile.highlights[0]);
+  setText('pdp-highlight-2', profile.highlights[1]);
+  setText('pdp-highlight-3', profile.highlights[2]);
+  setText('pdp-why-copy', profile.why);
+  setText('pdp-fit-copy', profile.fit);
+  setText('pdp-fabric-copy', profile.fabric);
+  setText('selected-color-label', colorLabel ? `Shown in ${colorLabel}.` : '');
+  setText('selected-variant-summary', selectedSummary);
+}
+
 
 
 function applyProductPreview(product) {
@@ -165,6 +242,7 @@ function applyProductPreview(product) {
   if (productPrice && Number.isFinite(Number(product.price))) {
     productPrice.textContent = formatProductPrice(product.price);
   }
+  renderProductDetails(product);
   populateImageGallery(product.images);
   setHeroImages(product.images, product.name);
   window.LebeSizeGuide.render(product);
@@ -231,6 +309,7 @@ const updateCareInstructions = () => {
   } else {
     careEl.textContent = 'Cold wash only. Hang dry. Gold may soften with wear.';
   }
+  renderProductDetails();
 };
 
 const populateImageGallery = (images) => {
@@ -415,6 +494,7 @@ const loadProductData = async (productId) => {
             || preferredVariant.color
             || currentColor;
           productPrice.textContent = formatProductPrice(currentVariant.price);
+          renderProductDetails();
 
           sizeSelector.querySelectorAll('button').forEach((b) => {
             b.classList.remove('bg-[#050505]', 'text-white');
@@ -443,6 +523,7 @@ const loadProductData = async (productId) => {
     // Client-side color switching (no page reload)
     const switchProduct = async (newProductId) => {
       try {
+        const selectedSize = currentVariant?.size;
         const response = await fetch(`/api/product?id=${newProductId}`);
         if (!response.ok) throw new Error('Product not found');
         const newProduct = await response.json();
@@ -456,7 +537,7 @@ const loadProductData = async (productId) => {
         currentProduct = newProduct;
         window.LebeSizeGuide.render(newProduct);
         colorVariants = buildColorVariantMap(newProduct) || findColorVariants(newProductId);
-        currentVariant = getPreferredDefaultVariant() || newProduct.variants[0];
+        currentVariant = getFirstVariantForSize(selectedSize) || getPreferredDefaultVariant() || newProduct.variants[0];
         currentColor = window.LebeProductModel?.getProductColor(newProduct)
           || currentVariant?.color
           || newProduct.variants[0].color;
