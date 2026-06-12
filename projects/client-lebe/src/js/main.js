@@ -27,6 +27,11 @@ window.renderCart = function() {
 
   cartEmpty.classList.add('hidden');
   cartContent.classList.remove('hidden');
+  window.LebeAnalytics?.trackOnce('view_cart', 'view_cart', {
+    currency: window.LebeAnalytics.CURRENCY,
+    value: Cart.getSubtotal(),
+    items: window.LebeAnalytics.cartItems(cart),
+  });
 
   // Render items
   cartItems.innerHTML = cart.map(item => {
@@ -88,10 +93,22 @@ window.renderCart = function() {
       if (!item) return;
 
       if (btn.classList.contains('qty-minus')) {
+        if (item.quantity <= 1) {
+          window.LebeAnalytics?.track('remove_from_cart', {
+            currency: window.LebeAnalytics.CURRENCY,
+            value: item.price,
+            items: [window.LebeAnalytics.ecommerceItem({ ...item, quantity: 1 })],
+          });
+        }
         Cart.updateQuantity(item.syncVariantId, item.quantity - 1);
       } else if (btn.classList.contains('qty-plus')) {
         Cart.updateQuantity(item.syncVariantId, item.quantity + 1);
       } else if (btn.classList.contains('remove-btn')) {
+        window.LebeAnalytics?.track('remove_from_cart', {
+          currency: window.LebeAnalytics.CURRENCY,
+          value: item.price * item.quantity,
+          items: [window.LebeAnalytics.ecommerceItem(item)],
+        });
         Cart.removeItem(item.syncVariantId);
       }
 
@@ -185,6 +202,12 @@ async function checkAndShowUpsell(cart) {
         options: []
       };
       Cart.addItem(cartItem);
+      window.LebeAnalytics?.track('add_to_cart', {
+        currency: window.LebeAnalytics.CURRENCY,
+        value: cartItem.price * cartItem.quantity,
+        items: [window.LebeAnalytics.ecommerceItem(cartItem)],
+        item_list_name: 'cart_upsell',
+      });
       window.renderCart();
     };
 

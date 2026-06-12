@@ -126,6 +126,12 @@
     gallery.hidden = false;
     document.body.classList.add('pdp-gallery-open');
     renderProductGallery();
+    window.LebeAnalytics?.track('open_product_gallery', {
+      item_id: String(new URLSearchParams(window.location.search).get('id') || ''),
+      item_name: document.getElementById('product-name')?.textContent || 'LEBE Item',
+      image_index: productGalleryIndex + 1,
+      image_count: productGalleryImages.length,
+    });
     window.setTimeout(() => {
       preloadProductGalleryFullImage(productGalleryIndex);
       preloadProductGalleryFullImage(productGalleryIndex + 1);
@@ -158,6 +164,11 @@
     applyProductGalleryTransform();
     if (productGalleryZoomed) {
       upgradeProductGalleryImageToFull();
+      window.LebeAnalytics?.track('zoom_product_image', {
+        item_id: String(new URLSearchParams(window.location.search).get('id') || ''),
+        item_name: document.getElementById('product-name')?.textContent || 'LEBE Item',
+        image_index: productGalleryIndex + 1,
+      });
     }
   }
 

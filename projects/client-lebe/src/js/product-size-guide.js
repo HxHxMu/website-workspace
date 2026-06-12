@@ -99,6 +99,11 @@
     modal.hidden = false;
     trigger?.setAttribute('aria-expanded', 'true');
     document.body.classList.add('pdp-size-guide-open');
+    window.LebeAnalytics?.track('open_size_guide', {
+      item_id: String(new URLSearchParams(window.location.search).get('id') || ''),
+      item_name: document.getElementById('product-name')?.textContent || 'LEBE Item',
+      size_guide_type: document.getElementById('size-guide-figure-image')?.alt || 'size guide',
+    });
     close?.focus({ preventScroll: true });
   }
 

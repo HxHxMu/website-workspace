@@ -194,6 +194,21 @@ document.addEventListener('DOMContentLoaded', () => {
     throw new Error(isHtml ? fallbackMessage : (text || fallbackMessage));
   }
 
+  function checkoutAnalyticsPayload(cart = Cart.getCart()) {
+    return {
+      currency: window.LebeAnalytics?.CURRENCY || 'USD',
+      value: state.paymentSetup ? Number(state.paymentSetup.total || 0) : Cart.getSubtotal(),
+      items: window.LebeAnalytics?.cartItems ? window.LebeAnalytics.cartItems(cart) : [],
+    };
+  }
+
+  function trackCheckoutError(step, message) {
+    window.LebeAnalytics?.track('checkout_error', {
+      checkout_step: step,
+      error_type: window.LebeAnalytics.classifyCheckoutError(message),
+    });
+  }
+
   function renderAppliedPromoNote() {
     const showNote = state.mode === 'checkout' && !!state.appliedDiscount?.code;
     refs.appliedPromoNote?.classList.toggle('hidden', !showNote);
@@ -645,6 +660,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       showStep2State({ loading: false, error: error.message });
+      trackCheckoutError('payment_setup', error.message);
       refs.continueToPaymentBtn.disabled = true;
       refs.continueToPaymentBtn.textContent = error.isLocalDevPaymentSetup ? 'Use Vercel Preview' : 'Continue to Payment';
       resetCartSummary();
@@ -805,6 +821,7 @@ document.addEventListener('DOMContentLoaded', () => {
       await preparePaymentSetup();
     } catch (error) {
       showStep2State({ loading: false, error: error.message });
+      trackCheckoutError('shipping_rates', error.message);
     } finally {
       setShippingFormDisabled(false);
     }
@@ -815,22 +832,12 @@ document.addEventListener('DOMContentLoaded', () => {
     setStep(1);
     resetCartSummary();
 
-    // GA4 Enhanced E-commerce: begin_checkout
-    if (typeof gtag === 'function') {
-      const cartItems = Cart.getCart();
-      gtag('event', 'begin_checkout', {
-        currency: 'USD',
-        value: Cart.getSubtotal(),
-        items: cartItems.map(item => ({
-          item_id: String(item.productId),
-          item_name: item.name,
-          price: item.price,
-          item_variant: item.size,
-          item_category: item.color,
-          quantity: item.quantity
-        }))
-      });
-    }
+    const cartItems = Cart.getCart();
+    window.LebeAnalytics?.track('begin_checkout', {
+      currency: window.LebeAnalytics.CURRENCY,
+      value: Cart.getSubtotal(),
+      items: window.LebeAnalytics.cartItems(cartItems),
+    });
   });
 
   refs.continueToMethodsBtn?.addEventListener('click', async (event) => {
@@ -841,6 +848,10 @@ document.addEventListener('DOMContentLoaded', () => {
   refs.continueToPaymentBtn?.addEventListener('click', async (event) => {
     event.preventDefault();
     if (!state.paymentSetup) return;
+    window.LebeAnalytics?.track('add_shipping_info', {
+      ...checkoutAnalyticsPayload(state.checkoutItems || Cart.getCart()),
+      shipping_tier: state.selectedShipping?.label || state.selectedShipping?.id || 'selected_shipping',
+    });
     setStep(3);
     await mountPaymentElement();
   });
@@ -906,6 +917,11 @@ document.addEventListener('DOMContentLoaded', () => {
     refs.promoApplyBtn.disabled = true;
     refs.promoApplyBtn.textContent = '...';
     setPromoStatus('Checking code...', false);
+    window.LebeAnalytics?.track('select_promotion', {
+      promotion_name: code,
+      currency: window.LebeAnalytics?.CURRENCY || 'USD',
+      value: Cart.getSubtotal(),
+    });
 
     try {
       const response = await fetch('/api/promo-code', {
@@ -923,6 +939,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const discountAmount = Math.min(subtotal, Math.max(0, Number(data.discountAmount) || 0));
       state.appliedDiscount = { ...data.discount, amount: discountAmount };
       setPromoStatus(`${code} applied.`, false);
+      window.LebeAnalytics?.track('promo_code_applied', {
+        promotion_name: code,
+        discount: discountAmount,
+        currency: window.LebeAnalytics?.CURRENCY || 'USD',
+        value: Cart.getSubtotal(),
+      });
 
       if (state.selectedShipping && state.verifiedAddress) {
         await preparePaymentSetup();
@@ -933,6 +955,10 @@ document.addEventListener('DOMContentLoaded', () => {
       state.promoCode = '';
       state.appliedDiscount = null;
       setPromoStatus(error.message, true);
+      window.LebeAnalytics?.track('promo_code_rejected', {
+        promotion_name: code,
+        error_type: window.LebeAnalytics?.classifyCheckoutError(error.message) || 'promo',
+      });
       resetCartSummary();
     } finally {
       refs.promoApplyBtn.disabled = false;
@@ -953,6 +979,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!stripeInstance || !stripeElements || !cardNumberElementInstance || !state.selectedShipping || !state.verifiedAddress) {
       refs.checkoutError.textContent = 'Payment form not ready. Please review your shipping details and try again.';
       refs.checkoutError.classList.remove('hidden');
+      trackCheckoutError('payment_form_not_ready', refs.checkoutError.textContent);
       return;
     }
 
@@ -965,6 +992,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (billingValidationError) {
         throw new Error(billingValidationError);
       }
+
+      window.LebeAnalytics?.track('add_payment_info', {
+        ...checkoutAnalyticsPayload(state.checkoutItems || Cart.getCart()),
+        payment_type: 'card',
+      });
 
       const { paymentIntent, error: stripeError } = await stripeInstance.confirmCardPayment(
         state.paymentSetup.clientSecret,
@@ -1006,24 +1038,14 @@ document.addEventListener('DOMContentLoaded', () => {
         throw new Error(data.message || data.error || 'Order failed');
       }
 
-      // GA4 Enhanced E-commerce: purchase
-      if (typeof gtag === 'function') {
-        gtag('event', 'purchase', {
-          transaction_id: String(data.orderId || paymentIntent.id),
-          value: state.paymentSetup ? state.paymentSetup.total : Cart.getSubtotal(),
-          currency: 'USD',
-          shipping: state.paymentSetup ? state.paymentSetup.shipping : 0,
-          tax: state.paymentSetup ? state.paymentSetup.tax : 0,
-          items: cart.map(item => ({
-            item_id: String(item.productId),
-            item_name: item.name,
-            price: item.price,
-            item_variant: item.size,
-            item_category: item.color,
-            quantity: item.quantity
-          }))
-        });
-      }
+      window.LebeAnalytics?.track('purchase', {
+        transaction_id: String(data.orderId || paymentIntent.id),
+        value: state.paymentSetup ? state.paymentSetup.total : Cart.getSubtotal(),
+        currency: window.LebeAnalytics?.CURRENCY || 'USD',
+        shipping: state.paymentSetup ? state.paymentSetup.shipping : 0,
+        tax: state.paymentSetup ? state.paymentSetup.tax : 0,
+        items: window.LebeAnalytics?.cartItems ? window.LebeAnalytics.cartItems(cart) : [],
+      });
 
       Cart.clearCart();
       refs.confirmOrderIdKicker.textContent = formatOrderId(data.orderId);
@@ -1048,6 +1070,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       setCheckoutMode('success');
     } catch (error) {
+      trackCheckoutError(`step_${state.step}`, error.message);
       refs.checkoutError.textContent = error.message;
       refs.checkoutError.classList.remove('hidden');
       refs.placeOrderBtn.disabled = false;

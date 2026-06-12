@@ -199,21 +199,11 @@ window.handleBuyClick = function(e) {
 
   Cart.addItem(cartItem);
 
-  // GA4 Enhanced E-commerce: add_to_cart
-  if (typeof gtag === 'function') {
-    gtag('event', 'add_to_cart', {
-      currency: 'USD',
-      value: cartItem.price * cartItem.quantity,
-      items: [{
-        item_id: String(cartItem.productId),
-        item_name: cartItem.name,
-        price: cartItem.price,
-        item_variant: cartItem.size,
-        item_category: cartItem.color,
-        quantity: cartItem.quantity
-      }]
-    });
-  }
+  window.LebeAnalytics?.track('add_to_cart', {
+    currency: window.LebeAnalytics.CURRENCY,
+    value: cartItem.price * cartItem.quantity,
+    items: [window.LebeAnalytics.ecommerceItem(cartItem)],
+  });
 
   window.location.href = '/cart';
   return false;
@@ -430,6 +420,13 @@ const loadProductData = async (productId) => {
           btn.classList.add('bg-[#050505]', 'text-white');
           btn.classList.remove('bg-white', 'text-[#050505]');
           btn.setAttribute('aria-pressed', 'true');
+
+          window.LebeAnalytics?.track('select_item_size', {
+            item_id: String(currentProduct.id),
+            item_name: currentProduct.name,
+            item_brand: 'LEBE',
+            item_variant: String(nextSize || ''),
+          });
         });
       });
     };
@@ -498,20 +495,18 @@ const loadProductData = async (productId) => {
         renderSizeButtons();
         renderColorSelectors();
 
-        // GA4 Enhanced E-commerce: view_item
-        if (typeof gtag === 'function') {
-          gtag('event', 'view_item', {
-            currency: 'USD',
-            value: currentVariant ? currentVariant.price : 0,
-            items: [{
-              item_id: String(currentProduct.id),
-              item_name: currentProduct.name,
-              price: currentVariant ? currentVariant.price : 0,
-              item_category: window.LebeProductModel?.getProductColor(currentProduct) || 'Default',
-              quantity: 1
-            }]
-          });
-        }
+        window.LebeAnalytics?.track('select_item_color', {
+          item_id: String(currentProduct.id),
+          item_name: currentProduct.name,
+          item_brand: 'LEBE',
+          item_category: window.LebeProductModel?.getProductColor(currentProduct) || 'Default',
+        });
+
+        window.LebeAnalytics?.track('view_item', {
+          currency: window.LebeAnalytics.CURRENCY,
+          value: currentVariant ? currentVariant.price : 0,
+          items: [window.LebeAnalytics.productItem(currentProduct, currentVariant, 1, currentColor)],
+        });
       } catch (error) {
         console.error('Error switching product:', error);
       }
@@ -558,20 +553,11 @@ const loadProductData = async (productId) => {
       renderColorSelectors();
     }
 
-    // GA4 Enhanced E-commerce: view_item
-    if (typeof gtag === 'function') {
-      gtag('event', 'view_item', {
-        currency: 'USD',
-        value: currentVariant ? currentVariant.price : 0,
-        items: [{
-          item_id: String(currentProduct.id),
-          item_name: currentProduct.name,
-          price: currentVariant ? currentVariant.price : 0,
-          item_category: window.LebeProductModel?.getProductColor(currentProduct) || 'Default',
-          quantity: 1
-        }]
-      });
-    }
+    window.LebeAnalytics?.track('view_item', {
+      currency: window.LebeAnalytics.CURRENCY,
+      value: currentVariant ? currentVariant.price : 0,
+      items: [window.LebeAnalytics.productItem(currentProduct, currentVariant, 1, currentColor)],
+    });
 
   } catch (error) {
     console.error('Error loading product:', error);
