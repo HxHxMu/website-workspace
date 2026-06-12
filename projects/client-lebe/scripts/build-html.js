@@ -328,6 +328,43 @@ const policies = [
     ],
   },
   {
+    slug: 'care',
+    title: 'Care',
+    eyebrow: 'fabric & product care',
+    sideTitle: 'garment notes.',
+    sideNote: 'Handle with care.',
+    metaTitle: 'Care — LEBE',
+    metaDescription: 'Garment care, fabric notes, and product details for LEBE made-to-order pieces.',
+    sections: [
+      {
+        heading: 'Overview.',
+        body: [
+          'LEBE pieces are made to order. Treat the fabric gently to preserve the surface, print, and color over time.',
+        ],
+      },
+      {
+        heading: 'Washing.',
+        body: [
+          'Cold wash only. Hang dry. Avoid bleach, high heat, and rough laundering.',
+        ],
+      },
+      {
+        heading: 'Fabric notes.',
+        body: [
+          'In areas where the fabric is double-layered, such as pockets, details from the inner fabric layer may subtly show through, especially with lighter designs.',
+          'Avoid contact with rough surfaces, as they can pull white fibers from the fabric and damage the garment.',
+          'In case of low fabric stock, we may use comparable fabric to fulfill the order. Any substitute fabric will be as close to the original as possible.',
+        ],
+      },
+      {
+        heading: 'Color care.',
+        body: [
+          'Gold details may soften with wear. Black garments should be kept away from high heat, which can fade the color.',
+        ],
+      },
+    ],
+  },
+  {
     slug: 'terms',
     title: 'Terms',
     eyebrow: 'use & purchase terms',
@@ -346,14 +383,6 @@ const policies = [
         heading: 'Product information.',
         body: [
           'We strive to present products as accurately as possible. However, actual colors, print placement, and appearance may vary slightly due to manufacturing processes and screen settings.',
-        ],
-      },
-      {
-        heading: 'Product & fabric disclaimers.',
-        body: [
-          'In areas where the fabric is double-layered, such as pockets, details from the inner fabric layer may subtly show through, especially with lighter designs.',
-          'Contact with rough surfaces should be avoided, as they can pull white fibers from the fabric and damage the leggings.',
-          'In case of low fabric stock, we may use comparable fabric to fulfill the order. Any substitute fabric will be as close to the original as possible.',
         ],
       },
       {
@@ -468,7 +497,7 @@ function buildSitemap() {
     const urls = [];
 
     // Core static pages
-    const staticSlugs = ['index', 'cart', 'contact', 'order-issue', 'privacy', 'shipping', 'returns', 'terms'];
+    const staticSlugs = ['index', 'cart', 'contact', 'order-issue', 'privacy', 'shipping', 'returns', 'care', 'terms'];
     staticSlugs.forEach((slug) => {
       const path = slug === 'index' ? '' : `/${slug}`;
       urls.push(`${DOMAIN}${path}`);
