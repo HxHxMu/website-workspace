@@ -73,7 +73,7 @@ module.exports = async (req, res) => {
     });
   } catch (error) {
     console.error('stripe-webhook fulfillment error:', error);
-    await trySendAdminAlertEmail({ paymentIntent, error });
+    await trySendAdminAlertEmail({ stripe, paymentIntent, error });
     if (error instanceof CheckoutError && error.status < 500) {
       return res.status(200).json({ received: true, ignored: error.publicMessage });
     }

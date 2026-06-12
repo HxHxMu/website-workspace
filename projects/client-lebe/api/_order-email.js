@@ -401,23 +401,30 @@ async function sendShipmentEmailOnce({ stripe, paymentIntent, order, shipment, m
   return { sent: true, skipped: false, shipmentId: email.shipment.id };
 }
 
-async function trySendAdminAlertEmail({ paymentIntent, error }) {
+async function trySendAdminAlertEmail({ stripe, paymentIntent, error }) {
   try {
     const apiKey = process.env.RESEND_API_KEY;
     if (!apiKey) return;
 
+    const latestIntent = stripe
+      ? await stripe.paymentIntents.retrieve(paymentIntent.id)
+      : paymentIntent;
+
+    if (latestIntent.metadata?.admin_fulfillment_alert_sent === 'true') {
+      return { sent: false, skipped: true };
+    }
+
     const to = process.env.SUPPORT_INBOX || 'support@lebe.life';
-    const from = process.env.SUPPORT_FROM_EMAIL || 'LEBE Store <support@mail.lebe.life>';
     const replyTo = getReplyTo();
 
-    const subject = `⚠️ ACTION REQUIRED: Webhook Fulfillment Failure - ${paymentIntent.id}`;
+    const subject = `⚠️ ACTION REQUIRED: Webhook Fulfillment Failure - ${latestIntent.id}`;
     const text = [
       'LEBE Webhook Fulfillment Failed.',
       '',
-      `PaymentIntent ID: ${paymentIntent.id}`,
-      `Amount: $${((paymentIntent.amount || 0) / 100).toFixed(2)}`,
-      `Customer Email: ${paymentIntent.metadata?.rec_email || 'Unknown'}`,
-      `Customer Name: ${paymentIntent.metadata?.rec_name || 'Unknown'}`,
+      `PaymentIntent ID: ${latestIntent.id}`,
+      `Amount: $${((latestIntent.amount || 0) / 100).toFixed(2)}`,
+      `Customer Email: ${latestIntent.metadata?.rec_email || 'Unknown'}`,
+      `Customer Name: ${latestIntent.metadata?.rec_name || 'Unknown'}`,
       '',
       'Error Message:',
       error.message || String(error),
@@ -435,19 +442,19 @@ async function trySendAdminAlertEmail({ paymentIntent, error }) {
         <table style="border-collapse: collapse; width: 100%; margin-bottom: 20px;">
           <tr>
             <td style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: bold; width: 140px;">PaymentIntent ID</td>
-            <td style="padding: 8px; border-bottom: 1px solid #ddd;"><code>${paymentIntent.id}</code></td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;"><code>${escapeHtml(latestIntent.id)}</code></td>
           </tr>
           <tr>
             <td style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: bold;">Amount</td>
-            <td style="padding: 8px; border-bottom: 1px solid #ddd;">$${((paymentIntent.amount || 0) / 100).toFixed(2)}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;">$${((latestIntent.amount || 0) / 100).toFixed(2)}</td>
           </tr>
           <tr>
             <td style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: bold;">Customer Email</td>
-            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${escapeHtml(paymentIntent.metadata?.rec_email || 'Unknown')}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${escapeHtml(latestIntent.metadata?.rec_email || 'Unknown')}</td>
           </tr>
           <tr>
             <td style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: bold;">Customer Name</td>
-            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${escapeHtml(paymentIntent.metadata?.rec_name || 'Unknown')}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${escapeHtml(latestIntent.metadata?.rec_name || 'Unknown')}</td>
           </tr>
           <tr>
             <td style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: bold;">Error details</td>
@@ -458,23 +465,28 @@ async function trySendAdminAlertEmail({ paymentIntent, error }) {
       </div>
     `;
 
-    await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from,
-        to,
-        reply_to: replyTo,
-        subject,
-        text,
-        html,
-      }),
+    await sendResendEmail({
+      to,
+      reply_to: replyTo,
+      subject,
+      text,
+      html,
     });
+
+    if (stripe) {
+      await stripe.paymentIntents.update(latestIntent.id, {
+        metadata: {
+          admin_fulfillment_alert_sent: 'true',
+          admin_fulfillment_alert_sent_at: new Date().toISOString(),
+          admin_fulfillment_alert_error: String(error.message || error || '').slice(0, 450),
+        },
+      });
+    }
+
+    return { sent: true, skipped: false };
   } catch (err) {
     console.error('Failed to send admin webhook alert email:', err);
+    return { sent: false, skipped: false, error: err.message };
   }
 }
 
