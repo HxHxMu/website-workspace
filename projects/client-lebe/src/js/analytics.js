@@ -2,6 +2,15 @@
   const BRAND = 'LEBE';
   const CURRENCY = 'USD';
   const onceKeys = new Set();
+  const pendingMetaEvents = [];
+  const debugPixel = new URLSearchParams(window.location.search).has('debug_pixel')
+    || (() => {
+      try {
+        return window.localStorage?.getItem('LEBE_DEBUG_PIXEL') === '1';
+      } catch (_) {
+        return false;
+      }
+    })();
   const META_STANDARD_EVENTS = {
     view_item: 'ViewContent',
     add_to_cart: 'AddToCart',
@@ -24,6 +33,11 @@
   function trackGoogle(eventName, params = {}) {
     if (typeof window.gtag !== 'function') return;
     window.gtag('event', eventName, params);
+  }
+
+  function debugLog(message, data = {}) {
+    if (!debugPixel) return;
+    console.info(`[LEBE pixel] ${message}`, data);
   }
 
   function metaParams(params = {}) {
@@ -61,22 +75,41 @@
   }
 
   function trackMeta(eventName, params = {}) {
-    if (typeof window.fbq !== 'function') return;
+    if (typeof window.fbq !== 'function') {
+      pendingMetaEvents.push([eventName, params]);
+      debugLog('queued; fbq unavailable', { eventName, params });
+      return;
+    }
 
     const standardEvent = META_STANDARD_EVENTS[eventName];
     if (standardEvent) {
-      window.fbq('track', standardEvent, metaParams(params));
+      const payload = metaParams(params);
+      window.fbq('track', standardEvent, payload);
+      debugLog('sent standard event', { eventName, standardEvent, payload });
       return;
     }
 
     if (META_CUSTOM_EVENTS.has(eventName)) {
-      window.fbq('trackCustom', eventName, metaParams(params));
+      const payload = metaParams(params);
+      window.fbq('trackCustom', eventName, payload);
+      debugLog('sent custom event', { eventName, payload });
+      return;
     }
+
+    debugLog('ignored unmapped Meta event', { eventName, params });
   }
 
   function track(eventName, params = {}) {
     trackGoogle(eventName, params);
     trackMeta(eventName, params);
+  }
+
+  function flushMetaQueue() {
+    if (typeof window.fbq !== 'function' || pendingMetaEvents.length === 0) return;
+    debugLog('flushing queued Meta events', { count: pendingMetaEvents.length });
+    pendingMetaEvents.splice(0).forEach(([eventName, params]) => {
+      trackMeta(eventName, params);
+    });
   }
 
   function trackOnce(key, eventName, params = {}) {
@@ -139,10 +172,20 @@
     CURRENCY,
     track,
     trackOnce,
+    flushMetaQueue,
     ecommerceItem,
     cartItems,
     cartValue,
     productItem,
     classifyCheckoutError,
+    debugState: () => ({
+      debugPixel,
+      fbqType: typeof window.fbq,
+      pendingMetaEvents: pendingMetaEvents.length,
+    }),
   };
+
+  window.addEventListener('load', flushMetaQueue);
+  window.setTimeout(flushMetaQueue, 250);
+  window.setTimeout(flushMetaQueue, 1000);
 })();
