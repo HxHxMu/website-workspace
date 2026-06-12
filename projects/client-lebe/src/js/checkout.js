@@ -147,10 +147,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (state.step === 2) {
-      return 'Shipping rates are calculated live based on your address and items. Fulfillment typically takes around 2–5 business days before shipment. You’ll receive tracking as soon as your order ships.';
+      return 'Shipping rates are calculated live based on your address and items. Production usually takes 2–7 business days before shipment. Tracking is sent once the carrier receives your package.';
     }
 
-    return 'Made-to-order. Ships in ~14 days. You’ll receive tracking once your order ships.';
+    return 'Made-to-order. Production comes first; delivery time starts after shipment.';
   }
 
   function resetCartSummary() {

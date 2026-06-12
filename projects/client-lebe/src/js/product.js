@@ -107,6 +107,11 @@ function updateProductSeoAndStructuredData(product, selectedVariant) {
 const PRODUCT_CACHE_KEY = 'lebe_products_cache_v2';
 const PRODUCT_CACHE_MAX_AGE = 1000 * 60 * 60;
 
+function formatProductPrice(value) {
+  const amount = Number(value) || 0;
+  return `$${Math.round(amount)}.`;
+}
+
 function getCachedProducts() {
   try {
     const cached = JSON.parse(sessionStorage.getItem(PRODUCT_CACHE_KEY) || 'null');
@@ -158,7 +163,7 @@ function applyProductPreview(product) {
   updateProductSeoAndStructuredData(product, null);
   if (productName && product.name) productName.textContent = product.name;
   if (productPrice && Number.isFinite(Number(product.price))) {
-    productPrice.textContent = `$${Number(product.price).toFixed(2)}`;
+    productPrice.textContent = formatProductPrice(product.price);
   }
   populateImageGallery(product.images);
   setHeroImages(product.images, product.name);
@@ -222,9 +227,9 @@ const updateCareInstructions = () => {
   if (!careEl) return;
 
   if (currentColor && currentColor.toLowerCase() === 'black') {
-    careEl.textContent = 'Printful all-over-print. Cold wash only. Hang dry. Heat will fade the black.';
+    careEl.textContent = 'Cold wash only. Hang dry. Heat will fade the black.';
   } else {
-    careEl.textContent = 'Printful all-over-print. Cold wash, hang dry. Gold may soften with wear.';
+    careEl.textContent = 'Cold wash only. Hang dry. Gold may soften with wear.';
   }
 };
 
@@ -353,7 +358,7 @@ const loadProductData = async (productId) => {
         || currentVariant?.color
         || currentProduct.variants[0].color;
 
-      productPrice.textContent = `$${currentVariant.price.toFixed(2)}`;
+      productPrice.textContent = formatProductPrice(currentVariant.price);
       updateCareInstructions();
       buyButton?.removeAttribute('disabled');
     } else {
@@ -409,7 +414,7 @@ const loadProductData = async (productId) => {
           currentColor = window.LebeProductModel?.getProductColor(currentProduct)
             || preferredVariant.color
             || currentColor;
-          productPrice.textContent = `$${currentVariant.price.toFixed(2)}`;
+          productPrice.textContent = formatProductPrice(currentVariant.price);
 
           sizeSelector.querySelectorAll('button').forEach((b) => {
             b.classList.remove('bg-[#050505]', 'text-white');
@@ -486,7 +491,7 @@ const loadProductData = async (productId) => {
 
         // Update text content
         productName.textContent = newProduct.name;
-        productPrice.textContent = `$${currentVariant.price.toFixed(2)}`;
+        productPrice.textContent = formatProductPrice(currentVariant.price);
         if (qtyDisplay) qtyDisplay.textContent = '1';
         if (qtyInput) qtyInput.value = '1';
         updateCareInstructions();

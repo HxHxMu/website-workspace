@@ -118,7 +118,9 @@ function buildOrderEmail({ paymentIntent, fulfillment }) {
     shippingLabel,
     '',
     'Production & tracking',
-    'Your pieces are made to order. Production typically takes 2–7 business days before shipment. Tracking will be available once the order ships.',
+    'Your pieces are made to order. Production usually takes 2–7 business days before shipment.',
+    'Delivery time starts after production, based on the shipping method selected at checkout.',
+    'Tracking will be available once the carrier receives your package.',
     '',
     'Questions? Use the contact or order issue forms on lebe.life.',
   ].filter(Boolean).join('\n');
@@ -131,7 +133,7 @@ function buildOrderEmail({ paymentIntent, fulfillment }) {
     footer: 'Questions? Use the contact or order issue forms on lebe.life.',
     children: `
       ${renderSection('Overview.', [
-        renderParagraph('Thank you for your LEBE order. We’ve received your payment and your order is queued for fulfillment.'),
+        renderParagraph('Thank you for your LEBE order. We’ve received your payment and your made-to-order pieces are queued for production.'),
         `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse; margin-top:18px;">${renderRows([
           { label: 'Order reference', value: orderReference },
           orderId ? { label: 'Printful order', value: orderId } : null,
@@ -148,8 +150,9 @@ function buildOrderEmail({ paymentIntent, fulfillment }) {
       ${renderSection('Shipping method.', renderParagraph(shippingLabel))}
       ${renderSection('Ship to.', `<p style="margin:0 0 16px;">${addressHtml(recipient)}</p>`)}
       ${renderSection('Production & tracking.', [
-        renderParagraph('Your pieces are made to order. Production typically takes 2–7 business days before shipment.'),
-        renderParagraph('Tracking will be available once the order ships, and we’ll send it to you automatically.'),
+        renderParagraph('Your pieces are made to order. Production usually takes 2–7 business days before shipment.'),
+        renderParagraph('Delivery time starts after production and depends on the shipping method selected at checkout.'),
+        renderParagraph('Tracking will be available once the carrier receives your package, and we’ll send it to you automatically.'),
       ].join(''))}
     `,
   });
@@ -169,7 +172,8 @@ function buildProductionEmail({ paymentIntent, order, metadataItems = [] }) {
     `Order reference: ${orderReference}`,
     '',
     'Production & tracking',
-    'Your pieces are made to order and are now being prepared for fulfillment. Production typically takes 2–7 business days before shipment.',
+    'Your pieces are made to order and are now being prepared for fulfillment. Production usually takes 2–7 business days before shipment.',
+    'Delivery time starts after production, based on your selected shipping method.',
     'We’ll send tracking information as soon as the carrier receives your package.',
     '',
     'Shipping method',
@@ -196,7 +200,8 @@ function buildProductionEmail({ paymentIntent, order, metadataItems = [] }) {
         ])}</table>`,
       ].join(''))}
       ${renderSection('Production & tracking.', [
-        renderParagraph('Production typically takes 2–7 business days before shipment.'),
+        renderParagraph('Production usually takes 2–7 business days before shipment.'),
+        renderParagraph('Delivery time starts after production and depends on the shipping method selected at checkout.'),
         renderParagraph('We’ll send tracking information as soon as the carrier receives your package.'),
       ].join(''))}
       ${renderSection('Shipping method.', renderParagraph(shippingLabel))}

@@ -233,20 +233,27 @@ const policies = [
       {
         heading: 'Overview.',
         body: [
-          'All LEBE products are made to order. Shipping rates are calculated live at checkout based on your address and selected shipping method.',
+          'All LEBE products are made to order. Production happens after purchase, then your selected carrier service begins once the package ships.',
+          'Shipping rates are calculated live at checkout based on your address, items, and selected shipping method.',
         ],
       },
       {
         heading: 'Processing time.',
         body: [
-          'Orders typically require 2–7 business days for production before shipment.',
+          'Orders typically require 2–7 business days for production before shipment. During higher-volume periods, production can take longer.',
         ],
       },
       {
         heading: 'Shipping time.',
         body: [
-          'Most domestic U.S. orders arrive within 3–10 business days after shipment.',
-          'Shipping times are estimates and are not guaranteed.',
+          'Most domestic U.S. orders arrive within 3–10 business days after shipment, depending on the selected shipping method and carrier conditions.',
+          'Shipping times are estimates, not guarantees. Delivery dates begin after production is complete.',
+        ],
+      },
+      {
+        heading: 'Tracking.',
+        body: [
+          'Tracking is sent automatically once the carrier receives your package. It can take a short time for carrier scans to appear after a label is created.',
         ],
       },
       {
