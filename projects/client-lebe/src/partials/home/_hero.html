@@ -1,7 +1,7 @@
 <main class="bg-[#e9e9e9] text-[#050505]">
   <!-- Hero Section -->
   <section class="relative flex min-h-screen items-end overflow-hidden bg-black text-white">
-    <img src="./assets/images/lebeHero1.jpg" alt="LEBE campaign hero image"
+    <img src="./assets/images/lebeHero1.jpg" alt="LEBE campaign hero image" data-random-hero
       class="absolute inset-0 h-full w-full object-cover" />
     <div class="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-black/10"></div>
     <div class="relative w-full pb-12 pt-32 md:pb-14">
@@ -39,6 +39,19 @@
     </div>
   </section>
 </main>
+
+<script>
+  (() => {
+    const hero = document.querySelector('[data-random-hero]');
+    if (!hero) return;
+
+    const images = [
+      './assets/images/lebeHero1.jpg',
+      './assets/images/lebeHero2.jpg',
+    ];
+    hero.src = images[Math.floor(Math.random() * images.length)];
+  })();
+</script>
 
 <script type="application/ld+json">
 {
