@@ -658,12 +658,7 @@ function variantColor(product = {}, variant = {}) {
 
 function productGroupId(product = {}) {
   const externalId = String(product.external_id || '');
-  const group = (productsData.colorGroupsByExternalId || [])
-    .find((entry) => Object.values(entry).map(String).includes(externalId));
-
-  if (!group) return `lebe-${product.id}`;
-
-  return `lebe-${Object.values(group).map(String).sort().join('-')}`;
+  return `lebe-${externalId || product.id}`;
 }
 
 function variantSize(variant = {}) {
