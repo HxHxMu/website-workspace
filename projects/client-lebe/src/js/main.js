@@ -5,6 +5,85 @@ function escHtml(v) {
     : String(v ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
+function parseCheckoutUrlProducts(value) {
+  return String(value || '')
+    .split(',')
+    .map((entry) => {
+      const [rawSyncVariantId, rawQuantity] = entry.split(':');
+      const syncVariantId = String(rawSyncVariantId || '').trim();
+      const quantity = Math.max(1, Math.min(25, Math.floor(Number(rawQuantity) || 1)));
+      return syncVariantId ? { syncVariantId, quantity } : null;
+    })
+    .filter(Boolean);
+}
+
+async function fetchJson(url) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Request failed: ${response.status}`);
+  }
+  return response.json();
+}
+
+async function resolveCheckoutUrlCartItems(requestedItems) {
+  const products = await fetchJson('/api/products');
+  const productSummaries = Array.isArray(products) ? products : [];
+  const requestedBySyncVariantId = new Map(
+    requestedItems.map((item) => [String(item.syncVariantId), item])
+  );
+  const resolvedItems = [];
+
+  for (const productSummary of productSummaries) {
+    if (requestedBySyncVariantId.size === 0) break;
+
+    const product = await fetchJson(`/api/product?id=${encodeURIComponent(productSummary.id)}`);
+    const variants = Array.isArray(product?.variants) ? product.variants : [];
+
+    variants.forEach((variant) => {
+      const requested = requestedBySyncVariantId.get(String(variant.syncVariantId));
+      if (!requested) return;
+
+      resolvedItems.push({
+        productId: Number(product.id),
+        variantId: Number(variant.id) || 0,
+        syncVariantId: String(variant.syncVariantId),
+        name: product.name,
+        size: variant.size || 'One Size',
+        color: variant.color || window.LebeProductModel?.getProductColor(product) || '',
+        price: Number(variant.price) || 0,
+        quantity: requested.quantity,
+        image: product.images?.[0] || '',
+        options: variant.options || []
+      });
+      requestedBySyncVariantId.delete(String(variant.syncVariantId));
+    });
+  }
+
+  return resolvedItems;
+}
+
+async function importCheckoutUrlCart() {
+  const params = new URLSearchParams(window.location.search);
+  const requestedItems = parseCheckoutUrlProducts(params.get('products'));
+  if (requestedItems.length === 0 || typeof Cart === 'undefined') return;
+
+  try {
+    const items = await resolveCheckoutUrlCartItems(requestedItems);
+    if (items.length === 0) return;
+
+    Cart.replaceCart(items);
+
+    window.LebeAnalytics?.trackOnce('meta_checkout_url_import', `meta_checkout_url_import:${params.get('products')}`, {
+      currency: window.LebeAnalytics.CURRENCY,
+      value: Cart.getSubtotal(),
+      items: window.LebeAnalytics.cartItems(items),
+      cart_origin: params.get('cart_origin') || 'checkout_url',
+    });
+  } catch (error) {
+    console.error('Unable to import checkout URL cart:', error);
+  }
+}
+
 window.renderCart = function() {
   const cartEmpty = document.getElementById('cart-empty');
   const cartContent = document.getElementById('cart-content');
@@ -217,6 +296,11 @@ async function checkAndShowUpsell(cart) {
     upsellModule.classList.add('hidden');
   }
 };
+
+document.addEventListener('DOMContentLoaded', async () => {
+  await importCheckoutUrlCart();
+  window.renderCart?.();
+}, { once: true });
 
 (function () {
   const menuButton = document.getElementById('menu-button');
