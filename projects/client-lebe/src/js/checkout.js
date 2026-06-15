@@ -183,6 +183,26 @@ document.addEventListener('DOMContentLoaded', () => {
     refs.promoStatus.classList.toggle('text-[#8a1f1f]', !!isError);
   }
 
+  function getCheckoutUrlPromoCode() {
+    const params = new URLSearchParams(window.location.search);
+    const explicitCode = [
+      params.get('coupon'),
+      params.get('promo'),
+      params.get('promo_code'),
+      params.get('discount_code'),
+    ].find((value) => String(value || '').trim());
+
+    if (explicitCode) {
+      return String(explicitCode).trim().toUpperCase();
+    }
+
+    if (params.has('coupon') && params.get('cart_origin') === 'meta_shops') {
+      return 'LEBE10';
+    }
+
+    return '';
+  }
+
   async function readJsonResponse(response, fallbackMessage) {
     const contentType = response.headers.get('content-type') || '';
     if (contentType.includes('application/json')) {
@@ -899,11 +919,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  refs.promoApplyBtn?.addEventListener('click', async () => {
-    const code = String(refs.promoInput.value || '').trim().toUpperCase();
-    refs.promoInput.value = code;
+  async function applyPromoCode(code, source = 'manual') {
+    const normalizedCode = String(code || '').trim().toUpperCase();
+    refs.promoInput.value = normalizedCode;
 
-    if (!code) {
+    if (!normalizedCode) {
       state.promoCode = '';
       state.appliedDiscount = null;
       setPromoStatus('Please enter a discount code.', true);
@@ -918,32 +938,34 @@ document.addEventListener('DOMContentLoaded', () => {
     refs.promoApplyBtn.textContent = '...';
     setPromoStatus('Checking code...', false);
     window.LebeAnalytics?.track('select_promotion', {
-      promotion_name: code,
+      promotion_name: normalizedCode,
       currency: window.LebeAnalytics?.CURRENCY || 'USD',
       value: Cart.getSubtotal(),
+      source,
     });
 
     try {
       const response = await fetch('/api/promo-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, subtotal: Cart.getSubtotal() }),
+        body: JSON.stringify({ code: normalizedCode, subtotal: Cart.getSubtotal() }),
       });
       const data = await readJsonResponse(response, 'Promo code API returned a non-JSON response. Please refresh and try again.');
       if (!response.ok) {
         throw new Error(data.error || 'We couldn’t validate that discount code.');
       }
 
-      state.promoCode = code;
+      state.promoCode = normalizedCode;
       const subtotal = Cart.getSubtotal();
       const discountAmount = Math.min(subtotal, Math.max(0, Number(data.discountAmount) || 0));
       state.appliedDiscount = { ...data.discount, amount: discountAmount };
-      setPromoStatus(`${code} applied.`, false);
+      setPromoStatus(`${normalizedCode} applied.`, false);
       window.LebeAnalytics?.track('promo_code_applied', {
-        promotion_name: code,
+        promotion_name: normalizedCode,
         discount: discountAmount,
         currency: window.LebeAnalytics?.CURRENCY || 'USD',
         value: Cart.getSubtotal(),
+        source,
       });
 
       if (state.selectedShipping && state.verifiedAddress) {
@@ -956,14 +978,19 @@ document.addEventListener('DOMContentLoaded', () => {
       state.appliedDiscount = null;
       setPromoStatus(error.message, true);
       window.LebeAnalytics?.track('promo_code_rejected', {
-        promotion_name: code,
+        promotion_name: normalizedCode,
         error_type: window.LebeAnalytics?.classifyCheckoutError(error.message) || 'promo',
+        source,
       });
       resetCartSummary();
     } finally {
       refs.promoApplyBtn.disabled = false;
       refs.promoApplyBtn.textContent = 'apply.';
     }
+  }
+
+  refs.promoApplyBtn?.addEventListener('click', async () => {
+    await applyPromoCode(refs.promoInput.value, 'manual');
   });
 
   refs.promoInput?.addEventListener('keydown', async (event) => {
@@ -972,6 +999,22 @@ document.addEventListener('DOMContentLoaded', () => {
       await refs.promoApplyBtn?.click();
     }
   });
+
+  const checkoutUrlPromoCode = getCheckoutUrlPromoCode();
+  if (checkoutUrlPromoCode) {
+    refs.promoInput.value = checkoutUrlPromoCode;
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('products')) {
+      window.addEventListener('lebe:checkout-url-cart-imported', async () => {
+        await applyPromoCode(checkoutUrlPromoCode, 'checkout_url');
+      }, { once: true });
+    } else {
+      setTimeout(() => {
+        applyPromoCode(checkoutUrlPromoCode, 'checkout_url');
+      }, 0);
+    }
+  }
 
   refs.paymentForm?.addEventListener('submit', async (event) => {
     event.preventDefault();

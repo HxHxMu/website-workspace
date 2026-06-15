@@ -72,6 +72,12 @@ async function importCheckoutUrlCart() {
     if (items.length === 0) return;
 
     Cart.replaceCart(items);
+    window.dispatchEvent(new CustomEvent('lebe:checkout-url-cart-imported', {
+      detail: {
+        items,
+        cartOrigin: params.get('cart_origin') || '',
+      },
+    }));
 
     window.LebeAnalytics?.trackOnce('meta_checkout_url_import', `meta_checkout_url_import:${params.get('products')}`, {
       currency: window.LebeAnalytics.CURRENCY,
