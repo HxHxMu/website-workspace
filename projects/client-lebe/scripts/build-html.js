@@ -699,7 +699,9 @@ function buildFeedItem({ product, variant, image, itemGroupId, kind }) {
       <description>${escapeXml(kind.description)}</description>
       <link>${escapeXml(link)}</link>
       <g:image_link>${escapeXml(normalizeFeedUrl(image))}</g:image_link>
-      <g:availability>in_stock</g:availability>
+      <g:availability>in stock</g:availability>
+      <g:inventory>999</g:inventory>
+      <g:quantity_to_sell_on_facebook>999</g:quantity_to_sell_on_facebook>
       <g:price>${escapeXml(price)}</g:price>
       <g:brand>LEBE</g:brand>
       <g:condition>new</g:condition>
