@@ -699,7 +699,7 @@ function buildFeedItem({ product, variant, image, itemGroupId, kind }) {
   const syncVariantId = variant.id || variant.sync_variant_id || `${productId}-${variant.variant_id || variantSize(variant)}`;
   const color = variantColor(product, variant);
   const size = variantSize(variant);
-  const titleParts = [kind.titleBase || product.name, color, size].filter(Boolean);
+  const titleParts = [kind.titleBase || product.name, color].filter(Boolean);
   const link = `${DOMAIN}/product?id=${encodeURIComponent(productId)}`;
   const price = formatFeedPrice(variant.retail_price || variant.price);
 
