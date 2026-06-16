@@ -219,6 +219,16 @@ const corePages = [
     extraHead: '',
     scripts: `<script src="./js/support-form.js" defer></script>`,
     contentFile: 'src/partials/order-issue/_order-issue.html'
+  },
+  {
+    slug: '404',
+    title: 'Page Not Found — LEBE',
+    description: 'The requested LEBE page could not be found.',
+    bodyClass: 'bg-[#e9e9e9] text-[#050505]',
+    headerClass: '',
+    extraHead: '<meta name="robots" content="noindex" />',
+    scripts: '',
+    contentFile: 'src/partials/errors/_404.html'
   }
 ];
 

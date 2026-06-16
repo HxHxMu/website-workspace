@@ -201,6 +201,8 @@ const server = http.createServer(async (req, res) => {
     urlPath = '/contact.html';
   } else if (urlPath === '/order-issue') {
     urlPath = '/order-issue.html';
+  } else if (urlPath === '/care') {
+    urlPath = '/care.html';
   } else if (urlPath === '/') {
     urlPath = '/index.html';
   } else if (!path.extname(urlPath)) {
@@ -209,8 +211,7 @@ const server = http.createServer(async (req, res) => {
     if (fs.existsSync(htmlPath)) {
       urlPath = urlPath + '.html';
     } else {
-      // Fall back to index.html for SPA routing
-      urlPath = '/index.html';
+      urlPath = '/404.html';
     }
   }
 
@@ -220,8 +221,17 @@ const server = http.createServer(async (req, res) => {
   fs.readFile(filePath, (err, content) => {
     if (err) {
       if (err.code === 'ENOENT') {
-        res.writeHead(404, { 'Content-Type': 'text/plain' });
-        res.end('404 Not Found');
+        const notFoundPath = path.join(__dirname, 'src', '404.html');
+        fs.readFile(notFoundPath, (notFoundErr, notFoundContent) => {
+          if (notFoundErr) {
+            res.writeHead(404, { 'Content-Type': 'text/plain' });
+            res.end('404 Not Found');
+            return;
+          }
+
+          res.writeHead(404, { 'Content-Type': 'text/html' });
+          res.end(notFoundContent);
+        });
       } else {
         res.writeHead(500);
         res.end('Server error');
@@ -242,7 +252,8 @@ const server = http.createServer(async (req, res) => {
     };
 
     const contentType = mimeTypes[ext] || 'application/octet-stream';
-    res.writeHead(200, { 'Content-Type': contentType });
+    const statusCode = urlPath === '/404.html' ? 404 : 200;
+    res.writeHead(statusCode, { 'Content-Type': contentType });
     res.end(content);
   });
 });
