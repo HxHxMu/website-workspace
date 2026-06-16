@@ -51,6 +51,11 @@
       quantity: Number(item.quantity) || 1,
       item_price: Number(item.price) || 0,
     })).filter((item) => item.id);
+    const isProductGroupEvent = items.length > 0 && items.every((item) => {
+      const itemId = String(item.item_id || '');
+      const groupId = String(item.item_group_id || '');
+      return itemId && groupId && itemId === groupId;
+    });
 
     const payload = {
       currency: params.currency || CURRENCY,
@@ -62,7 +67,7 @@
     if (contentIds.length > 0) {
       payload.content_ids = contentIds;
       payload.contents = contents;
-      payload.content_type = 'product';
+      payload.content_type = isProductGroupEvent ? 'product_group' : 'product';
     }
     if (params.item_name || items[0]?.item_name) {
       payload.content_name = params.item_name || items[0].item_name;
