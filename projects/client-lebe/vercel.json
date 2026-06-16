@@ -2,6 +2,18 @@
   "cleanUrls": true,
   "buildCommand": "npm run build",
   "outputDirectory": "src",
+  "redirects": [
+    { "source": "/pages/contact", "destination": "/contact", "permanent": true },
+    { "source": "/products/saguanari-high-waist-ainbo-legging", "destination": "/product?id=300307426", "permanent": true },
+    { "source": "/products/saguanari-seamless-ainbo-bra", "destination": "/product?id=309483674", "permanent": true },
+    { "source": "/products/saguanari-sports-bra-black", "destination": "/product?id=309483736", "permanent": true },
+    { "source": "/products/yoga-leggings", "destination": "/product?id=301596573", "permanent": true },
+    { "source": "/products/white-yoga-set", "destination": "/", "permanent": true },
+    { "source": "/products/harmony-hooded-yoga-set", "destination": "/", "permanent": true },
+    { "source": "/products/padded-sports-bra", "destination": "/", "permanent": true },
+    { "source": "/products/organic-dad-hat", "destination": "/", "permanent": true },
+    { "source": "/products/:slug", "destination": "/", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/product", "destination": "/product.html" },
     { "source": "/cart", "destination": "/cart.html" },
