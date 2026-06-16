@@ -124,13 +124,15 @@
   }
 
   function ecommerceItem(item = {}) {
-    const productId = item.productId ?? item.id ?? item.item_id;
+    const productId = item.productId ?? item.id ?? item.item_group_id;
+    const catalogId = item.syncVariantId ?? item.sync_variant_id ?? item.item_id ?? productId;
     const name = item.name ?? item.item_name ?? 'LEBE Item';
     const color = item.color ?? item.item_category ?? item.item_category2 ?? 'Default';
     const size = item.size ?? item.item_variant ?? '';
 
     return {
-      item_id: String(productId || ''),
+      item_id: String(catalogId || ''),
+      item_group_id: String(productId || catalogId || ''),
       item_name: String(name || 'LEBE Item'),
       item_brand: BRAND,
       item_category: String(color || 'Default'),
@@ -151,6 +153,7 @@
   function productItem(product = {}, variant = null, quantity = 1, color = '') {
     return ecommerceItem({
       productId: product.id,
+      syncVariantId: variant?.syncVariantId,
       name: product.name,
       price: variant?.price ?? product.price,
       size: variant?.size,
