@@ -677,11 +677,7 @@ function variantColor(product = {}, variant = {}) {
 }
 
 function productGroupId(product = {}) {
-  const publishedProduct = getPublishedProductByExternalId(product.external_id);
-  if (publishedProduct?.colorGroup) return `lebe-${publishedProduct.colorGroup}`;
-
-  const externalId = String(product.external_id || '');
-  return `lebe-${externalId || product.id}`;
+  return String(product.id || product.external_id || '');
 }
 
 function variantSize(variant = {}) {
@@ -699,7 +695,7 @@ function buildFeedItem({ product, variant, image, itemGroupId, kind }) {
   const syncVariantId = variant.id || variant.sync_variant_id || `${productId}-${variant.variant_id || variantSize(variant)}`;
   const color = variantColor(product, variant);
   const size = variantSize(variant);
-  const titleParts = [kind.titleBase || product.name, color].filter(Boolean);
+  const titleParts = [kind.titleBase || product.name].filter(Boolean);
   const link = `${DOMAIN}/product?id=${encodeURIComponent(productId)}`;
   const price = formatFeedPrice(variant.retail_price || variant.price);
 
