@@ -1,5 +1,5 @@
 const { fetchFromPrintful } = require('./_lib/printful');
-const { getColorVariants, getProductImages } = require('./_lib/products-data');
+const { getColorVariants, getProductImages, isPublishedProduct } = require('./_lib/products-data');
 
 module.exports = async (req, res) => {
   if (req.method !== 'GET') {
@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
 
   try {
     const data = await fetchFromPrintful('/store/products', PRINTFUL_API_KEY);
-    const printfulProducts = data.result || [];
+    const printfulProducts = (data.result || []).filter(isPublishedProduct);
 
     const products = await Promise.all(printfulProducts.map(async (product) => {
       const productImages = getProductImages(product.external_id, [product.thumbnail_url]);

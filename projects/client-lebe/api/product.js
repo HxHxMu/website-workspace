@@ -1,5 +1,5 @@
 const { fetchFromPrintful } = require('./_lib/printful');
-const { getColorVariants, getProductImages } = require('./_lib/products-data');
+const { getColorVariants, getProductImages, getPublishedProductById } = require('./_lib/products-data');
 
 module.exports = async (req, res) => {
   if (req.method !== 'GET') {
@@ -14,6 +14,10 @@ module.exports = async (req, res) => {
   const { id } = req.query;
   if (!id) {
     return res.status(400).json({ error: 'Product id is required' });
+  }
+
+  if (!getPublishedProductById(id)) {
+    return res.status(404).json({ error: 'Product not found' });
   }
 
   try {

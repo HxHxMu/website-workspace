@@ -46,17 +46,17 @@
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://lebe.life/product?id=300307426</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://lebe.life/product?id=301596573</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://lebe.life/product?id=309483674</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://lebe.life/product?id=300307426</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

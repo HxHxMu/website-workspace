@@ -1,7 +1,14 @@
 const fs = require('fs');
 const path = require('path');
 const { fetchFromPrintful } = require('../api/_lib/printful');
-const { getColorVariants, getProductImages, productsData } = require('../api/_lib/products-data');
+const {
+  getColorVariants,
+  getProductImages,
+  getPublishedProductByExternalId,
+  getPublishedProductById,
+  getPublishedProducts,
+  productsData,
+} = require('../api/_lib/products-data');
 
 const ROOT = path.join(__dirname, '..');
 const DOMAIN = 'https://lebe.life';
@@ -591,7 +598,6 @@ policies.forEach((policy) => {
 // 5. Generate Dynamic XML Sitemap
 function buildSitemap() {
   try {
-    const LebeProductData = require(getPath('src/js/product-data'));
     const DOMAIN = 'https://lebe.life';
     const urls = [];
 
@@ -603,11 +609,9 @@ function buildSitemap() {
     });
 
     // Dynamic product pages
-    if (LebeProductData && LebeProductData.previews) {
-      Object.keys(LebeProductData.previews).forEach((id) => {
-        urls.push(`${DOMAIN}/product?id=${id}`);
-      });
-    }
+    getPublishedProducts().forEach((product) => {
+      urls.push(`${DOMAIN}/product?id=${product.id}`);
+    });
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -628,6 +632,12 @@ ${urls.map(url => `  <url>
 buildSitemap();
 
 function productKind(product = {}, productId = '') {
+  const publishedProduct = getPublishedProductById(productId) ||
+    getPublishedProductByExternalId(product.external_id);
+  if (publishedProduct?.feed) {
+    return publishedProduct.feed;
+  }
+
   const haystack = [
     product.name,
     productsData.colorVariants?.[String(productId)]?.displayName,
@@ -656,8 +666,8 @@ function variantOption(variant = {}, key = '') {
 }
 
 function variantColor(product = {}, variant = {}) {
-  const storefrontColor = productsData.productColorByExternalId?.[product.external_id];
-  if (storefrontColor) return storefrontColor;
+  const publishedProduct = getPublishedProductByExternalId(product.external_id);
+  if (publishedProduct?.color) return publishedProduct.color;
 
   const colors = getColorVariants(product.id) || [];
   const current = colors.find((color) => String(color.productId) === String(product.id));
@@ -667,6 +677,9 @@ function variantColor(product = {}, variant = {}) {
 }
 
 function productGroupId(product = {}) {
+  const publishedProduct = getPublishedProductByExternalId(product.external_id);
+  if (publishedProduct?.colorGroup) return `lebe-${publishedProduct.colorGroup}`;
+
   const externalId = String(product.external_id || '');
   return `lebe-${externalId || product.id}`;
 }
@@ -716,7 +729,7 @@ function buildFeedItem({ product, variant, image, itemGroupId, kind }) {
 }
 
 async function getFeedProducts(apiKey) {
-  const publishedProductIds = Object.keys(productsData.previews || {});
+  const publishedProductIds = getPublishedProducts().map((product) => product.id);
 
   return Promise.all(publishedProductIds.map(async (productId) => {
     const detail = await fetchFromPrintful(`/store/products/${encodeURIComponent(productId)}`, apiKey);

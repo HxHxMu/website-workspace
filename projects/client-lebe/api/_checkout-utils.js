@@ -3,6 +3,7 @@ const {
   PRINTFUL_API_BASE,
   fetchFromPrintful: fetchFromPrintfulRaw,
 } = require('./_lib/printful');
+const { getPublishedProductById } = require('./_lib/products-data');
 
 const MAX_CART_QUANTITY = 25;
 const METADATA_CHUNK_SIZE = 450;
@@ -155,6 +156,10 @@ async function hydratePrintfulItems(items, apiKey, requirements = {}) {
   const productCache = new Map();
 
   const hydratedItems = await Promise.all(normalizedItems.map(async (item) => {
+    if (!item.productId || !getPublishedProductById(item.productId)) {
+      throw new CheckoutError(400, 'This item is no longer available. Please remove and re-add your items.');
+    }
+
     if (item.productId) {
       if (!productCache.has(item.productId)) {
         productCache.set(item.productId, fetchStoreProduct(item.productId, apiKey));

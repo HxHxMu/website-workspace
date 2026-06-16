@@ -1,198 +1,232 @@
 (function () {
+  const PUBLISHED_PRODUCTS = [
+    {
+      id: 301596573,
+      externalId: '64000b204a6de9',
+      name: 'Saguanari Leggings White',
+      displayName: 'Saguanari Leggings',
+      type: 'leggings',
+      color: 'White',
+      swatch: 'white',
+      colorGroup: 'saguanari-leggings',
+      published: true,
+      homepageOrder: 1,
+      sizeGuideType: 'leggings',
+      careCopy: 'Cold wash only. Hang dry. Gold may soften with wear.',
+      images: [
+        'assets/images/product-shots/saguanari_leggings/9.0-900.jpg',
+        'assets/images/product-shots/saguanari_leggings/9.1-900.jpg',
+        'assets/images/product-shots/saguanari_leggings/9.2-900.jpg',
+        'assets/images/product-shots/saguanari_leggings/9.3-900.jpg',
+      ],
+      homepageImages: [
+        'assets/images/product-shots/saguanari_leggings/9.0-900.jpg',
+        'assets/images/product-shots/saguanari_leggings/saguanari_leggin_wht_1-900.jpg',
+      ],
+      upsellProductId: 309483674,
+      feed: {
+        titleBase: 'Saguanari Leggings',
+        category: 'Clothing & Accessories > Clothing > Activewear > Leggings',
+        productType: 'Apparel & Accessories > Clothing > Activewear > Leggings',
+        description: 'Made-to-order LEBE leggings with premium all-over print artwork.',
+      },
+    },
+    {
+      id: 309483674,
+      externalId: '64775fcaef5f21',
+      name: 'Saguanari Sports Bra White',
+      displayName: 'Saguanari Sports Bra',
+      type: 'bra',
+      color: 'White',
+      swatch: 'white',
+      colorGroup: 'saguanari-bra',
+      published: true,
+      homepageOrder: 2,
+      sizeGuideType: 'bra',
+      careCopy: 'Cold wash only. Hang dry. Gold may soften with wear.',
+      images: [
+        'assets/images/product-shots/saguanari_bra/11-900.jpg',
+        'assets/images/product-shots/saguanari_bra/11.1-900.jpg',
+        'assets/images/product-shots/saguanari_bra/11.2-900.jpg',
+        'assets/images/product-shots/saguanari_bra/11.3-900.jpg',
+      ],
+      homepageImages: [
+        'assets/images/product-shots/saguanari_bra/11-900.jpg',
+        'assets/images/product-shots/saguanari_bra/saguanari_bra_wht_1-900.jpg',
+      ],
+      upsellProductId: 301596573,
+      feed: {
+        titleBase: 'Saguanari Sports Bra',
+        category: 'Clothing & Accessories > Clothing > Activewear > Sports Bras',
+        productType: 'Apparel & Accessories > Clothing > Activewear > Sports Bras',
+        description: 'Made-to-order LEBE sports bra with premium all-over print artwork.',
+      },
+    },
+    {
+      id: 300307426,
+      externalId: '63ec714091ff89',
+      name: 'Saguanari Leggings Black',
+      displayName: 'Saguanari Leggings',
+      type: 'leggings',
+      color: 'Black',
+      swatch: 'black',
+      colorGroup: 'saguanari-leggings',
+      published: true,
+      homepageOrder: 3,
+      sizeGuideType: 'leggings',
+      careCopy: 'Cold wash only. Hang dry. Heat will fade the black.',
+      images: [
+        'assets/images/product-shots/saguanari_leggings/15-900.jpg',
+        'assets/images/product-shots/saguanari_leggings/15.1-900.jpg',
+        'assets/images/product-shots/saguanari_leggings/15.2-900.jpg',
+        'assets/images/product-shots/saguanari_leggings/15.3-900.jpg',
+      ],
+      homepageImages: [
+        'assets/images/product-shots/saguanari_leggings/15-900.jpg',
+        'assets/images/product-shots/saguanari_leggings/saguanari_leggin_blk_1-900.jpg',
+      ],
+      upsellProductId: 309483736,
+      feed: {
+        titleBase: 'Saguanari Leggings',
+        category: 'Clothing & Accessories > Clothing > Activewear > Leggings',
+        productType: 'Apparel & Accessories > Clothing > Activewear > Leggings',
+        description: 'Made-to-order LEBE leggings with premium all-over print artwork.',
+      },
+    },
+    {
+      id: 309483736,
+      externalId: '6477600e15cb73',
+      name: 'Saguanari Sports Bra Black',
+      displayName: 'Saguanari Sports Bra',
+      type: 'bra',
+      color: 'Black',
+      swatch: 'black',
+      colorGroup: 'saguanari-bra',
+      published: true,
+      homepageOrder: 4,
+      sizeGuideType: 'bra',
+      careCopy: 'Cold wash only. Hang dry. Heat will fade the black.',
+      images: [
+        'assets/images/product-shots/saguanari_bra/17-900.jpg',
+        'assets/images/product-shots/saguanari_bra/17.1-900.jpg',
+        'assets/images/product-shots/saguanari_bra/17.2-900.jpg',
+        'assets/images/product-shots/saguanari_bra/17.3-900.jpg',
+      ],
+      homepageImages: [
+        'assets/images/product-shots/saguanari_bra/17-900.jpg',
+        'assets/images/product-shots/saguanari_bra/17.1-900.jpg',
+      ],
+      upsellProductId: 300307426,
+      feed: {
+        titleBase: 'Saguanari Sports Bra',
+        category: 'Clothing & Accessories > Clothing > Activewear > Sports Bras',
+        productType: 'Apparel & Accessories > Clothing > Activewear > Sports Bras',
+        description: 'Made-to-order LEBE sports bra with premium all-over print artwork.',
+      },
+    },
+  ];
+
+  const publishedProductList = PUBLISHED_PRODUCTS.filter((product) => product.published);
+
+  const publishedProducts = publishedProductList
+    .reduce((acc, product) => {
+      acc[String(product.id)] = product;
+      return acc;
+    }, {});
+
+  const imagesByExternalId = publishedProductList
+    .reduce((acc, product) => {
+      acc[product.externalId] = [...product.images];
+      return acc;
+    }, {});
+
+  const previews = publishedProductList
+    .reduce((acc, product) => {
+      acc[String(product.id)] = {
+        id: product.id,
+        name: product.name,
+        images: [...product.images],
+      };
+      return acc;
+    }, {});
+
+  const productColorByExternalId = publishedProductList
+    .reduce((acc, product) => {
+      acc[product.externalId] = product.color;
+      return acc;
+    }, {});
+
+  const groupedProducts = publishedProductList
+    .reduce((acc, product) => {
+      if (!product.colorGroup) return acc;
+      acc[product.colorGroup] = acc[product.colorGroup] || [];
+      acc[product.colorGroup].push(product);
+      return acc;
+    }, {});
+
+  const colorVariants = Object.values(groupedProducts)
+    .reduce((acc, group) => {
+      const colors = group
+        .map((product) => ({
+          name: product.color,
+          productId: product.id,
+        }));
+      const displayName = group[0]?.displayName || group[0]?.name || '';
+
+      group.forEach((product) => {
+        acc[String(product.id)] = {
+          displayName,
+          colors,
+        };
+      });
+
+      return acc;
+    }, {});
+
+  const colorGroupsByExternalId = Object.values(groupedProducts)
+    .map((group) => group.reduce((acc, product) => {
+      acc[product.color] = product.externalId;
+      return acc;
+    }, {}));
+
+  const designSlots = publishedProductList
+    .filter((product) => Number.isFinite(product.homepageOrder))
+    .sort((a, b) => a.homepageOrder - b.homepageOrder)
+    .map((product) => ({
+      productId: product.id,
+      externalId: product.externalId,
+      type: product.type,
+      color: product.swatch,
+      displayName: product.displayName.toUpperCase(),
+      images: [...(product.homepageImages || product.images)],
+      swatch: product.swatch,
+    }));
+
+  const upsellByProductId = publishedProductList
+    .reduce((acc, product) => {
+      const upsell = publishedProducts[String(product.upsellProductId)];
+      if (!upsell) return acc;
+
+      acc[String(product.id)] = {
+        productId: upsell.id,
+        name: upsell.displayName,
+        description: `Pair it with the matching ${upsell.type === 'bra' ? 'bra' : 'leggings'} for the full Saguanari set.`,
+      };
+      return acc;
+    }, {});
+
   const LebeProductData = {
-    // Mapping of Printful external_id (string) to custom images
-    // Used by backend to inject custom high-res images on API responses.
-    imagesByExternalId: {
-      "6a03a9f14842e6": [
-        "assets/images/product-shots/ainbo_bra_terracota_1-900.jpg",
-        "assets/images/product-shots/ainbo_bra_terracota_2-900.jpg"
-      ],
-      "6a03a9b1d61425": [
-        "assets/images/product-shots/ainbo_leggin_terracota_1-900.jpg",
-        "assets/images/product-shots/ainbo_leggin_terracota_2-900.jpg"
-      ],
-      "6477600e15cb73": [
-        "assets/images/product-shots/saguanari_bra/17-900.jpg",
-        "assets/images/product-shots/saguanari_bra/17.1-900.jpg",
-        "assets/images/product-shots/saguanari_bra/17.2-900.jpg",
-        "assets/images/product-shots/saguanari_bra/17.3-900.jpg"
-      ],
-      "64775fcaef5f21": [
-        "assets/images/product-shots/saguanari_bra/11-900.jpg",
-        "assets/images/product-shots/saguanari_bra/11.1-900.jpg",
-        "assets/images/product-shots/saguanari_bra/11.2-900.jpg",
-        "assets/images/product-shots/saguanari_bra/11.3-900.jpg"
-      ],
-      "64000b204a6de9": [
-        "assets/images/product-shots/saguanari_leggings/9.0-900.jpg",
-        "assets/images/product-shots/saguanari_leggings/9.1-900.jpg",
-        "assets/images/product-shots/saguanari_leggings/9.2-900.jpg",
-        "assets/images/product-shots/saguanari_leggings/9.3-900.jpg"
-      ],
-      "63ec714091ff89": [
-        "assets/images/product-shots/saguanari_leggings/15-900.jpg",
-        "assets/images/product-shots/saguanari_leggings/15.1-900.jpg",
-        "assets/images/product-shots/saguanari_leggings/15.2-900.jpg",
-        "assets/images/product-shots/saguanari_leggings/15.3-900.jpg"
-      ]
-    },
-
-    // Static product previews mapped by Printful numeric product ID
-    // Used for initial image preloading and fallback rendering in the frontend.
-    previews: {
-      309483674: {
-        id: 309483674,
-        name: 'Saguanari Sports Bra White',
-        images: [
-          'assets/images/product-shots/saguanari_bra/11-900.jpg',
-          'assets/images/product-shots/saguanari_bra/11.1-900.jpg',
-          'assets/images/product-shots/saguanari_bra/11.2-900.jpg',
-          'assets/images/product-shots/saguanari_bra/11.3-900.jpg'
-        ]
-      },
-      309483736: {
-        id: 309483736,
-        name: 'Saguanari Sports Bra Black',
-        images: [
-          'assets/images/product-shots/saguanari_bra/17-900.jpg',
-          'assets/images/product-shots/saguanari_bra/17.1-900.jpg',
-          'assets/images/product-shots/saguanari_bra/17.2-900.jpg',
-          'assets/images/product-shots/saguanari_bra/17.3-900.jpg'
-        ]
-      },
-      301596573: {
-        id: 301596573,
-        name: 'Saguanari Leggings White',
-        images: [
-          'assets/images/product-shots/saguanari_leggings/9.0-900.jpg',
-          'assets/images/product-shots/saguanari_leggings/9.1-900.jpg',
-          'assets/images/product-shots/saguanari_leggings/9.2-900.jpg',
-          'assets/images/product-shots/saguanari_leggings/9.3-900.jpg'
-        ]
-      },
-      300307426: {
-        id: 300307426,
-        name: 'Saguanari Leggings Black',
-        images: [
-          'assets/images/product-shots/saguanari_leggings/15-900.jpg',
-          'assets/images/product-shots/saguanari_leggings/15.1-900.jpg',
-          'assets/images/product-shots/saguanari_leggings/15.2-900.jpg',
-          'assets/images/product-shots/saguanari_leggings/15.3-900.jpg'
-        ]
-      }
-    },
-
-    // Mapping of product ID (string) to variant configuration
-    // Used by backend for API payload generation and by model.
-    colorVariants: {
-      "309483674": {
-        "displayName": "Saguanari Sports Bra",
-        "colors": [
-          { "name": "White", "productId": 309483674 },
-          { "name": "Black", "productId": 309483736 }
-        ]
-      },
-      "309483736": {
-        "displayName": "Saguanari Sports Bra",
-        "colors": [
-          { "name": "White", "productId": 309483674 },
-          { "name": "Black", "productId": 309483736 }
-        ]
-      },
-      "301596573": {
-        "displayName": "Saguanari Yoga Leggings",
-        "colors": [
-          { "name": "White", "productId": 301596573 },
-          { "name": "Black", "productId": 300307426 }
-        ]
-      },
-      "300307426": {
-        "displayName": "Saguanari Yoga Leggings",
-        "colors": [
-          { "name": "White", "productId": 301596573 },
-          { "name": "Black", "productId": 300307426 }
-        ]
-      }
-    },
-
-    // Curated homepage slots. Mapped to Printful external IDs.
-    designSlots: [
-      {
-        externalId: '64000b204a6de9',
-        type: 'leggings',
-        color: 'white',
-        displayName: 'SAGUANARI LEGGINGS',
-        images: [
-          'assets/images/product-shots/saguanari_leggings/9.0-900.jpg',
-          'assets/images/product-shots/saguanari_leggings/saguanari_leggin_wht_1-900.jpg'
-        ],
-        swatch: 'white'
-      },
-      {
-        externalId: '64775fcaef5f21',
-        type: 'bra',
-        color: 'white',
-        displayName: 'SAGUANARI BRA',
-        images: [
-          'assets/images/product-shots/saguanari_bra/11-900.jpg',
-          'assets/images/product-shots/saguanari_bra/saguanari_bra_wht_1-900.jpg'
-        ],
-        swatch: 'white'
-      },
-      {
-        externalId: '63ec714091ff89',
-        type: 'leggings',
-        color: 'black',
-        displayName: 'SAGUANARI LEGGINGS',
-        images: [
-          'assets/images/product-shots/saguanari_leggings/15-900.jpg',
-          'assets/images/product-shots/saguanari_leggings/saguanari_leggin_blk_1-900.jpg'
-        ],
-        swatch: 'black'
-      },
-      {
-        externalId: '6477600e15cb73',
-        type: 'bra',
-        color: 'black',
-        displayName: 'SAGUANARI BRA',
-        images: [
-          'assets/images/product-shots/saguanari_bra/17-900.jpg',
-          'assets/images/product-shots/saguanari_bra/17.1-900.jpg'
-        ],
-        swatch: 'black'
-      }
-    ],
-
-    // Upsell configurations mapped by dynamic product ID
-    upsellByProductId: {
-      309483674: { productId: 301596573, name: 'Saguanari Leggings', description: 'Pair it with the matching leggings for the full Saguanari set.' },
-      309483736: { productId: 300307426, name: 'Saguanari Leggings', description: 'Pair it with the matching leggings for the full Saguanari set.' },
-      301596573: { productId: 309483674, name: 'Saguanari Sports Bra', description: 'Pair it with the matching bra for the full Saguanari set.' },
-      300307426: { productId: 309483736, name: 'Saguanari Sports Bra', description: 'Pair it with the matching bra for the full Saguanari set.' }
-    },
-
-    // Individual external ID to color mapping
-    productColorByExternalId: {
-      '6477600e15cb73': 'Black',
-      '64775fcaef5f21': 'White',
-      '64000b204a6de9': 'White',
-      '63ec714091ff89': 'Black'
-    },
-
-    // Grouping of external IDs representing color options of the same core item
-    colorGroupsByExternalId: [
-      {
-        White: '64775fcaef5f21',
-        Black: '6477600e15cb73'
-      },
-      {
-        White: '64000b204a6de9',
-        Black: '63ec714091ff89'
-      }
-    ]
+    publishedProductIds: publishedProductList.map((product) => product.id),
+    publishedProducts,
+    imagesByExternalId,
+    previews,
+    colorVariants,
+    designSlots,
+    upsellByProductId,
+    productColorByExternalId,
+    colorGroupsByExternalId,
   };
 
-  // Dual-compatibility export pattern
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = LebeProductData;
   } else {
