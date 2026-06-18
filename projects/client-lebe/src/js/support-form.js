@@ -20,6 +20,18 @@
   }
 
   forms.forEach((form) => {
+    const startedAt = document.createElement('input');
+    startedAt.type = 'hidden';
+    startedAt.name = 'lebe_form_started_at';
+    startedAt.value = String(Date.now());
+    form.appendChild(startedAt);
+
+    const marker = document.createElement('input');
+    marker.type = 'hidden';
+    marker.name = 'lebe_support_marker';
+    marker.value = 'support-form-v1';
+    form.appendChild(marker);
+
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
       const endpoint = form.getAttribute('action');

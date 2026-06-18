@@ -7,6 +7,7 @@ const {
   sendSupportRequest,
   validateHoneypot,
 } = require('./_support-email');
+const { validateSupportSubmission } = require('./_support-spam');
 
 const ISSUE_TYPES = new Set([
   'damaged',
@@ -32,6 +33,10 @@ module.exports = async (req, res) => {
   try {
     const body = req.body || {};
     validateHoneypot(body);
+    validateSupportSubmission(req, body, SupportError, {
+      allowLinks: true,
+      textKeys: ['orderNumber', 'name', 'email', 'issueType', 'description'],
+    });
 
     const orderNumber = requiredText(body, 'orderNumber', 'Order number', 80);
     const name = requiredText(body, 'name', 'Name', 120);

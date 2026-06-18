@@ -5,3 +5,4 @@ src/output.css
 .env.local
 .vercel
 .env
+docs/current-handoff.md

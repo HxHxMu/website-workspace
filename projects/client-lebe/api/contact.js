@@ -7,6 +7,7 @@ const {
   sendSupportRequest,
   validateHoneypot,
 } = require('./_support-email');
+const { validateSupportSubmission } = require('./_support-spam');
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
@@ -16,6 +17,9 @@ module.exports = async (req, res) => {
   try {
     const body = req.body || {};
     validateHoneypot(body);
+    validateSupportSubmission(req, body, SupportError, {
+      textKeys: ['name', 'email', 'topic', 'message'],
+    });
 
     const name = requiredText(body, 'name', 'Name', 120);
     const email = normalizeEmail(body.email);
