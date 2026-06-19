@@ -11,7 +11,7 @@ const {
 } = require('../api/_lib/products-data');
 
 const ROOT = path.join(__dirname, '..');
-const DOMAIN = 'https://lebe.life';
+const DOMAIN = 'https://www.lebe.life';
 
 // Helper to resolve absolute path in the workspace
 function getPath(...parts) {
@@ -110,9 +110,9 @@ function assemblePage(config) {
     ? `<meta name="google-site-verification" content="${process.env.GOOGLE_SITE_VERIFICATION}" />`
     : '';
 
-  const canonicalUrl = `https://lebe.life${config.slug === 'index' ? '' : '/' + config.slug}`;
+  const canonicalUrl = `${DOMAIN}${config.slug === 'index' ? '' : '/' + config.slug}`;
   const ogType = config.ogType || 'website';
-  const ogImage = config.ogImage || 'https://lebe.life/assets/images/lebeHero1.jpg';
+  const ogImage = config.ogImage || `${DOMAIN}/assets/images/lebeHero1.jpg`;
   const metaPixelCode = getMetaPixelCode();
 
   // Substitute head place holders
@@ -566,9 +566,9 @@ policies.forEach((policy) => {
     ? `<meta name="google-site-verification" content="${process.env.GOOGLE_SITE_VERIFICATION}" />`
     : '';
 
-  const canonicalUrl = `https://lebe.life/${policy.slug}`;
+  const canonicalUrl = `${DOMAIN}/${policy.slug}`;
   const ogType = 'website';
-  const ogImage = 'https://lebe.life/assets/images/lebeHero1.jpg';
+  const ogImage = `${DOMAIN}/assets/images/lebeHero1.jpg`;
   const metaPixelCode = getMetaPixelCode();
 
   // Compile full page html
@@ -598,7 +598,6 @@ policies.forEach((policy) => {
 // 5. Generate Dynamic XML Sitemap
 function buildSitemap() {
   try {
-    const DOMAIN = 'https://lebe.life';
     const urls = [];
 
     // Core static pages

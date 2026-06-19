@@ -12,7 +12,8 @@
     { "source": "/products/harmony-hooded-yoga-set", "destination": "/", "permanent": true },
     { "source": "/products/padded-sports-bra", "destination": "/", "permanent": true },
     { "source": "/products/organic-dad-hat", "destination": "/", "permanent": true },
-    { "source": "/products/:slug", "destination": "/", "permanent": true }
+    { "source": "/products/:slug", "destination": "/", "permanent": true },
+    { "source": "/collections/:slug", "destination": "/", "permanent": true }
   ],
   "rewrites": [
     { "source": "/product", "destination": "/product.html" },

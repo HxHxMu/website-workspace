@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://lebe.life/sitemap.xml
+Sitemap: https://www.lebe.life/sitemap.xml
