@@ -30,9 +30,50 @@
     'zoom_product_image',
   ]);
 
+  function googleParams(params = {}) {
+    const { email, ...safeParams } = params;
+    return safeParams;
+  }
+
   function trackGoogle(eventName, params = {}) {
     if (typeof window.gtag !== 'function') return;
-    window.gtag('event', eventName, params);
+    window.gtag('event', eventName, googleParams(params));
+  }
+
+  function generateEventId() {
+    if (typeof window.crypto?.randomUUID === 'function') return window.crypto.randomUUID();
+    return `evt_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+  }
+
+  async function hashEmail(email) {
+    const normalized = String(email || '').trim().toLowerCase();
+    if (!normalized || typeof window.crypto?.subtle?.digest !== 'function') return undefined;
+    try {
+      const encoded = new TextEncoder().encode(normalized);
+      const digest = await window.crypto.subtle.digest('SHA-256', encoded);
+      return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('');
+    } catch (_) {
+      return undefined;
+    }
+  }
+
+  async function sendCapi(standardEvent, eventId, email) {
+    try {
+      const emailHash = await hashEmail(email);
+      await fetch('/api/capi', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event_name: standardEvent,
+          event_id: eventId,
+          url: window.location.href,
+          emailHash,
+        }),
+        keepalive: true,
+      });
+    } catch (_) {
+      // best-effort; browser pixel is the primary signal
+    }
   }
 
   function debugLog(message, data = {}) {
@@ -79,25 +120,28 @@
     return payload;
   }
 
-  function trackMeta(eventName, params = {}) {
+  function trackMeta(eventName, params = {}, eventId = '') {
+    const metaEventId = eventId || generateEventId();
+
     if (typeof window.fbq !== 'function') {
-      pendingMetaEvents.push([eventName, params]);
-      debugLog('queued; fbq unavailable', { eventName, params });
+      pendingMetaEvents.push([eventName, params, metaEventId]);
+      debugLog('queued; fbq unavailable', { eventName, params, eventId: metaEventId });
       return;
     }
 
     const standardEvent = META_STANDARD_EVENTS[eventName];
     if (standardEvent) {
       const payload = metaParams(params);
-      window.fbq('track', standardEvent, payload);
-      debugLog('sent standard event', { eventName, standardEvent, payload });
+      window.fbq('track', standardEvent, payload, { eventID: metaEventId });
+      debugLog('sent standard event', { eventName, standardEvent, payload, eventId: metaEventId });
+      sendCapi(standardEvent, metaEventId, params.email);
       return;
     }
 
     if (META_CUSTOM_EVENTS.has(eventName)) {
       const payload = metaParams(params);
-      window.fbq('trackCustom', eventName, payload);
-      debugLog('sent custom event', { eventName, payload });
+      window.fbq('trackCustom', eventName, payload, { eventID: metaEventId });
+      debugLog('sent custom event', { eventName, payload, eventId: metaEventId });
       return;
     }
 
@@ -106,14 +150,14 @@
 
   function track(eventName, params = {}) {
     trackGoogle(eventName, params);
-    trackMeta(eventName, params);
+    trackMeta(eventName, params, generateEventId());
   }
 
   function flushMetaQueue() {
     if (typeof window.fbq !== 'function' || pendingMetaEvents.length === 0) return;
     debugLog('flushing queued Meta events', { count: pendingMetaEvents.length });
-    pendingMetaEvents.splice(0).forEach(([eventName, params]) => {
-      trackMeta(eventName, params);
+    pendingMetaEvents.splice(0).forEach(([eventName, params, eventId]) => {
+      trackMeta(eventName, params, eventId);
     });
   }
 

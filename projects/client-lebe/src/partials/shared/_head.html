@@ -1,16 +1,26 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-E8GJJV71XT"></script>
+  <!-- Google tag (gtag.js) — production hosts only, keeps previews/localhost out of GA4 -->
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+    (function () {
+      var PROD_HOSTS = ['www.lebe.life', 'lebe.life'];
+      if (PROD_HOSTS.indexOf(window.location.hostname) === -1) return;
 
-    gtag('config', 'G-E8GJJV71XT');
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag;
+      gtag('js', new Date());
+      gtag('config', 'G-E8GJJV71XT');
+
+      var gtagScript = document.createElement('script');
+      gtagScript.async = true;
+      gtagScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-E8GJJV71XT';
+      document.head.appendChild(gtagScript);
+    })();
   </script>
   {{META_PIXEL_CODE}}
+  {{PINTEREST_TAG_CODE}}
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   {{GOOGLE_SITE_VERIFICATION}}

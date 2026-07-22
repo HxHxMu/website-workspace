@@ -61,6 +61,12 @@ function escapeJsString(value) {
   return JSON.stringify(String(value ?? '')).slice(1, -1);
 }
 
+function configuredEnv(name) {
+  const value = String(process.env[name] || '').trim();
+  if (!value || /^your_/i.test(value)) return '';
+  return value;
+}
+
 function normalizeFeedUrl(value) {
   if (!value) return '';
   const raw = String(value);
@@ -68,29 +74,58 @@ function normalizeFeedUrl(value) {
   return `${DOMAIN}/${raw.replace(/^\/+/, '')}`;
 }
 
+const PROD_HOSTS_JS = "['www.lebe.life', 'lebe.life']";
+
 function getMetaPixelCode() {
-  const pixelId = String(process.env.META_PIXEL_ID || '').trim();
+  const pixelId = configuredEnv('META_PIXEL_ID');
   if (!pixelId) return '';
 
   const safePixelId = escapeJsString(pixelId);
   const noscriptUrl = `https://www.facebook.com/tr?id=${encodeURIComponent(pixelId)}&ev=PageView&noscript=1`;
 
   return `
-  <!-- Meta Pixel Code -->
+  <!-- Meta Pixel Code — production hosts only, keeps previews/localhost out of Meta data -->
   <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '${safePixelId}');
-    fbq('track', 'PageView');
+    if (${PROD_HOSTS_JS}.indexOf(window.location.hostname) !== -1) {
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '${safePixelId}');
+      fbq('track', 'PageView');
+    }
   </script>
   <noscript><img height="1" width="1" style="display:none" alt="" src="${noscriptUrl}" /></noscript>
   <!-- End Meta Pixel Code -->`;
+}
+
+function getPinterestTagCode() {
+  const tagId = configuredEnv('PINTEREST_TAG_ID');
+  if (!tagId) return '';
+
+  const safeTagId = escapeJsString(tagId);
+  const noscriptUrl = `https://ct.pinterest.com/v3/?tid=${encodeURIComponent(tagId)}&event=init&noscript=1`;
+
+  return `
+  <!-- Pinterest Tag — production hosts only, keeps previews/localhost out of Pinterest data -->
+  <script>
+    if (${PROD_HOSTS_JS}.indexOf(window.location.hostname) !== -1) {
+      !function(e){if(!window.pintrk){window.pintrk = function () {
+      window.pintrk.queue.push(Array.prototype.slice.call(arguments))};var
+      n=window.pintrk;n.queue=[],n.version="3.0";var
+      t=document.createElement("script");t.async=!0,t.src=e;var
+      r=document.getElementsByTagName("script")[0];
+      r.parentNode.insertBefore(t,r)}}("https://s.pinimg.com/ct/core.js");
+      pintrk('load', '${safeTagId}');
+      pintrk('page');
+    }
+  </script>
+  <noscript><img height="1" width="1" style="display:none" alt="" src="${noscriptUrl}" /></noscript>
+  <!-- End Pinterest Tag -->`;
 }
 
 // 1. Load layout partial templates
@@ -101,6 +136,30 @@ const scriptsTemplate = fs.readFileSync(getPath('src/partials/shared/_scripts.ht
 const policyTemplate = fs.readFileSync(getPath('src/partials/policies/_policy.html'), 'utf8');
 const analyticsScript = '<script src="js/analytics.js" defer></script>';
 const bagIndicatorScript = '<script src="js/bag-indicator.js" defer></script>';
+
+const klaviyoCompanyId = configuredEnv('KLAVIYO_COMPANY_ID');
+const klaviyoListId = configuredEnv('KLAVIYO_LIST_ID');
+const klaviyoSignupScript = (klaviyoCompanyId && klaviyoListId)
+  ? '<script src="js/klaviyo-footer-signup.js" defer></script>'
+  : '';
+
+function getFooterSignupHtml() {
+  if (!klaviyoCompanyId || !klaviyoListId) return '';
+
+  return `
+  <div class="mx-auto max-w-md px-6 py-10 text-center md:px-10">
+    <form data-klaviyo-signup data-company-id="${escapeHtml(klaviyoCompanyId)}" data-list-id="${escapeHtml(klaviyoListId)}" class="footer-signup">
+      <label for="footer-signup-email" class="footer-signup__label">Be the first.</label>
+      <div class="footer-signup__row">
+        <input id="footer-signup-email" name="email" type="email" required autocomplete="email" placeholder="Email address" class="footer-signup__input" />
+        <button type="submit" class="footer-signup__submit">Join</button>
+      </div>
+      <p class="footer-signup__status" data-form-status aria-live="polite"></p>
+    </form>
+  </div>`;
+}
+
+const footerHtml = footerTemplate.replaceAll('{{FOOTER_SIGNUP}}', getFooterSignupHtml());
 
 // 2. Define compilation engine
 function assemblePage(config) {
@@ -114,6 +173,7 @@ function assemblePage(config) {
   const ogType = config.ogType || 'website';
   const ogImage = config.ogImage || `${DOMAIN}/assets/images/lebeHero1.jpg`;
   const metaPixelCode = getMetaPixelCode();
+  const pinterestTagCode = getPinterestTagCode();
 
   // Substitute head place holders
   let head = headTemplate
@@ -121,6 +181,7 @@ function assemblePage(config) {
     .replaceAll('{{DESCRIPTION}}', config.description)
     .replaceAll('{{GOOGLE_SITE_VERIFICATION}}', googleVerification)
     .replaceAll('{{META_PIXEL_CODE}}', metaPixelCode)
+    .replaceAll('{{PINTEREST_TAG_CODE}}', pinterestTagCode)
     .replaceAll('{{CANONICAL_URL}}', canonicalUrl)
     .replaceAll('{{OG_TYPE}}', ogType)
     .replaceAll('{{OG_IMAGE}}', ogImage)
@@ -133,10 +194,10 @@ function assemblePage(config) {
 
   // Substitute scripts placeholder
   let scripts = scriptsTemplate
-    .replaceAll('{{SCRIPTS}}', `${analyticsScript}\n${config.scripts || ''}\n${bagIndicatorScript}`);
+    .replaceAll('{{SCRIPTS}}', `${analyticsScript}\n${config.scripts || ''}\n${bagIndicatorScript}\n${klaviyoSignupScript}`);
 
   // Concatenate parts
-  return `${head}\n${header}\n${content}\n${footerTemplate}\n${scripts}`;
+  return `${head}\n${header}\n${content}\n${footerHtml}\n${scripts}`;
 }
 
 // 3. Define configuration for core HTML pages
@@ -570,6 +631,7 @@ policies.forEach((policy) => {
   const ogType = 'website';
   const ogImage = `${DOMAIN}/assets/images/lebeHero1.jpg`;
   const metaPixelCode = getMetaPixelCode();
+  const pinterestTagCode = getPinterestTagCode();
 
   // Compile full page html
   let head = headTemplate
@@ -577,6 +639,7 @@ policies.forEach((policy) => {
     .replaceAll('{{DESCRIPTION}}', config.description)
     .replaceAll('{{GOOGLE_SITE_VERIFICATION}}', googleVerification)
     .replaceAll('{{META_PIXEL_CODE}}', metaPixelCode)
+    .replaceAll('{{PINTEREST_TAG_CODE}}', pinterestTagCode)
     .replaceAll('{{CANONICAL_URL}}', canonicalUrl)
     .replaceAll('{{OG_TYPE}}', ogType)
     .replaceAll('{{OG_IMAGE}}', ogImage)
@@ -587,9 +650,9 @@ policies.forEach((policy) => {
     .replaceAll('{{HEADER_CLASS}}', config.headerClass);
 
   let scripts = scriptsTemplate
-    .replaceAll('{{SCRIPTS}}', `${analyticsScript}\n${config.scripts || ''}\n${bagIndicatorScript}`);
+    .replaceAll('{{SCRIPTS}}', `${analyticsScript}\n${config.scripts || ''}\n${bagIndicatorScript}\n${klaviyoSignupScript}`);
 
-  const fullHtml = `${head}\n${header}\n${contentHtml}\n${footerTemplate}\n${scripts}`;
+  const fullHtml = `${head}\n${header}\n${contentHtml}\n${footerHtml}\n${scripts}`;
   
   fs.writeFileSync(getPath('src', `${policy.slug}.html`), fullHtml);
   console.log(`Built HTML: ${policy.slug}.html`);

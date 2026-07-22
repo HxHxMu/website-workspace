@@ -1,31 +1,26 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-E8GJJV71XT"></script>
+  <!-- Google tag (gtag.js) — production hosts only, keeps previews/localhost out of GA4 -->
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+    (function () {
+      var PROD_HOSTS = ['www.lebe.life', 'lebe.life'];
+      if (PROD_HOSTS.indexOf(window.location.hostname) === -1) return;
 
-    gtag('config', 'G-E8GJJV71XT');
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag;
+      gtag('js', new Date());
+      gtag('config', 'G-E8GJJV71XT');
+
+      var gtagScript = document.createElement('script');
+      gtagScript.async = true;
+      gtagScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-E8GJJV71XT';
+      document.head.appendChild(gtagScript);
+    })();
   </script>
   
-  <!-- Meta Pixel Code -->
-  <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '1697401754023773');
-    fbq('track', 'PageView');
-  </script>
-  <noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=1697401754023773&ev=PageView&noscript=1" /></noscript>
-  <!-- End Meta Pixel Code -->
+  
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
@@ -130,6 +125,7 @@
       </svg>
     </a>
   </div>
+  
   <div class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 border-t border-[#050505]/15 py-5 text-center md:flex-row">
     <p class="font-serif text-[12px] italic text-[#050505]/60">© lebe 2026</p>
     <nav class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[11px] font-bold uppercase tracking-[0.24em] text-[#050505]/45">
@@ -146,6 +142,7 @@
 <script src="js/analytics.js" defer></script>
 
 <script src="js/bag-indicator.js" defer></script>
+
 
 </body>
 </html>

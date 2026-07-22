@@ -25,11 +25,26 @@ RESEND_API_KEY=...
 SUPPORT_INBOX=support@lebe.life
 SUPPORT_FROM_EMAIL="LEBE Store <support@mail.lebe.life>"
 SUPPORT_REPLY_TO=support@lebe.life
+META_PIXEL_ID=...
+META_CAPI_TOKEN=...
+PINTEREST_TAG_ID=...
+KLAVIYO_COMPANY_ID=...
+KLAVIYO_LIST_ID=...
 ```
 
 `FULFILLMENT_ADMIN_TOKEN` should be a long random value. It protects the manual reconciliation endpoint.
 
 `RESEND_API_KEY` powers support and order confirmation emails. `SUPPORT_INBOX` is where contact and order issue requests are delivered. `SUPPORT_FROM_EMAIL` must use a sender/domain verified in Resend. `SUPPORT_REPLY_TO` should point to the real customer support inbox.
+
+## Analytics & Marketing Setup
+
+GA4, Meta Pixel, and the Pinterest tag only fire on `www.lebe.life` / `lebe.life` — they're skipped on Vercel previews and localhost by hostname check in `src/partials/shared/_head.html` and `scripts/build-html.js`, so testing and preview traffic never pollutes production data.
+
+`META_PIXEL_ID` is required for both the browser pixel and server-side CAPI. `META_CAPI_TOKEN` comes from Events Manager -> your pixel -> Settings -> Conversions API -> Generate access token. With both set, `api/capi.js` mirrors standard browser pixel events (ViewContent, AddToCart, InitiateCheckout, AddPaymentInfo, Purchase, Lead) server-side, deduplicated against the browser event via a shared `event_id`. Email (when available, e.g. at purchase or lead submission) is SHA-256 hashed client-side before it's sent.
+
+`PINTEREST_TAG_ID` comes from a Pinterest Business account -> Ads -> Conversions -> install the tag. Domain claiming and catalog setup for Product Pins still happen in the Pinterest dashboard.
+
+`KLAVIYO_COMPANY_ID` (public API key) and `KLAVIYO_LIST_ID` control the quiet "Be the first." email field in the footer. Leave either unset and the field is omitted from the build entirely — no broken form. Submissions POST directly to Klaviyo's client API (`src/js/klaviyo-footer-signup.js`); no popup or discount code involved.
 
 ## Stripe Setup
 

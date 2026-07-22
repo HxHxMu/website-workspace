@@ -1088,6 +1088,7 @@ document.addEventListener('DOMContentLoaded', () => {
         shipping: state.paymentSetup ? state.paymentSetup.shipping : 0,
         tax: state.paymentSetup ? state.paymentSetup.tax : 0,
         items: window.LebeAnalytics?.cartItems ? window.LebeAnalytics.cartItems(cart) : [],
+        email: customer.email,
       });
 
       Cart.clearCart();

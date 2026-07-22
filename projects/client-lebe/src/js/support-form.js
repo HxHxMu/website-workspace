@@ -62,6 +62,7 @@
         window.LebeAnalytics?.track('generate_lead', {
           form_type: endpoint?.includes('order-issue') ? 'order_issue' : 'contact',
           lead_source: 'support_form',
+          email: payload.email,
         });
       } catch (error) {
         setStatus(form, error.message || 'We could not send this right now. Please try again.', true);
