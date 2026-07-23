@@ -706,12 +706,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       if (!stripeInstance) {
-        const configResponse = await fetch('/api/stripe-config');
-        const configData = await readJsonResponse(configResponse, 'Stripe config API returned a non-JSON response. Please refresh and try again.');
-        if (!configResponse.ok) {
-          throw new Error(configData.error || 'Stripe config is unavailable.');
+        let publishableKey = window.LEBE_STRIPE_PUBLISHABLE_KEY;
+        if (!publishableKey) {
+          const configResponse = await fetch('/api/stripe-config');
+          const configData = await readJsonResponse(configResponse, 'Stripe config API returned a non-JSON response. Please refresh and try again.');
+          if (!configResponse.ok) {
+            throw new Error(configData.error || 'Stripe config is unavailable.');
+          }
+          publishableKey = configData.publishableKey;
         }
-        stripeInstance = Stripe(configData.publishableKey);
+        stripeInstance = Stripe(publishableKey);
       }
 
       clearPaymentElement();

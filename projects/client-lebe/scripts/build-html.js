@@ -128,6 +128,13 @@ function getPinterestTagCode() {
   <!-- End Pinterest Tag -->`;
 }
 
+function getStripePublishableKeyScript() {
+  const publishableKey = configuredEnv('STRIPE_PUBLISHABLE_KEY');
+  if (!publishableKey) return '';
+
+  return `<script>window.LEBE_STRIPE_PUBLISHABLE_KEY="${escapeJsString(publishableKey)}";</script>`;
+}
+
 // 1. Load layout partial templates
 const headTemplate = fs.readFileSync(getPath('src/partials/shared/_head.html'), 'utf8');
 const headerTemplate = fs.readFileSync(getPath('src/partials/shared/_header.html'), 'utf8');
@@ -274,7 +281,7 @@ const corePages = [
     description: 'Review your cart and proceed to checkout.',
     bodyClass: 'bg-white text-[#050505]',
     headerClass: '',
-    extraHead: '<script src="https://js.stripe.com/v3/"></script>',
+    extraHead: `<script src="https://js.stripe.com/v3/"></script>\n${getStripePublishableKeyScript()}`,
     scripts: `
 <script src="js/product-data.js" defer></script>
 <script src="js/cart.js" defer></script>

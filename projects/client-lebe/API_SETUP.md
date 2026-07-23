@@ -60,7 +60,7 @@ Klaviyo setup:
 ## Stripe Setup
 
 1. Create or use a Stripe account in test mode first.
-2. Add `STRIPE_SECRET_KEY` and `STRIPE_PUBLISHABLE_KEY`.
+2. Add `STRIPE_SECRET_KEY` and `STRIPE_PUBLISHABLE_KEY`. The publishable key is injected into the cart page at build time so it does not consume a separate Vercel Serverless Function.
 3. In Stripe Dashboard, create a webhook endpoint:
    - URL: `https://<your-domain>/api/stripe-webhook`
    - Event: `payment_intent.succeeded`
