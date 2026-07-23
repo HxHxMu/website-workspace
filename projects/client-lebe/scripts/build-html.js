@@ -143,27 +143,42 @@ const klaviyoSignupScript = (klaviyoCompanyId && klaviyoListId)
   ? '<script src="js/klaviyo-footer-signup.js" defer></script>'
   : '';
 
-function getFooterSignupHtml() {
+function getHomeNewsletterSignupHtml() {
   if (!klaviyoCompanyId || !klaviyoListId) return '';
 
   return `
-  <div class="mx-auto max-w-md px-6 py-10 text-center md:px-10">
-    <form data-klaviyo-signup data-company-id="${escapeHtml(klaviyoCompanyId)}" data-list-id="${escapeHtml(klaviyoListId)}" class="footer-signup">
-      <label for="footer-signup-email" class="footer-signup__label">Be the first.</label>
-      <div class="footer-signup__row">
-        <input id="footer-signup-email" name="email" type="email" required autocomplete="email" placeholder="Email address" class="footer-signup__input" />
-        <button type="submit" class="footer-signup__submit">Join</button>
+  <section class="lebe-newsletter bg-[#f5f2ea] text-[#050505]" aria-labelledby="newsletter-title">
+    <div class="lebe-main-shell grid gap-8 py-16 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)] md:items-stretch md:py-24">
+      <figure class="lebe-newsletter__media">
+        <img src="./assets/images/newsletter/welcome15.jpg" alt="Close-up of black LEBE leggings with gold detailing" loading="lazy" />
+      </figure>
+      <div class="lebe-newsletter__content">
+        <p class="lebe-kicker">join the list</p>
+        <h2 id="newsletter-title" class="lebe-newsletter__title">Get 15% off your first order.</h2>
+        <p class="lebe-newsletter__copy">
+          Early access to new drops, restocks, and private notes from LEBE. Use code <strong>WELCOME15</strong> after signup.
+        </p>
+        <form data-klaviyo-signup data-company-id="${escapeHtml(klaviyoCompanyId)}" data-list-id="${escapeHtml(klaviyoListId)}" data-promo-code="WELCOME15" data-success-message="You’re in. Use code WELCOME15 at checkout." class="newsletter-signup">
+          <label for="home-newsletter-email" class="sr-only">Email address</label>
+          <div class="newsletter-signup__row">
+            <input id="home-newsletter-email" name="email" type="email" required autocomplete="email" placeholder="Email address" class="newsletter-signup__input" />
+            <button type="submit" class="newsletter-signup__submit">Sign up</button>
+          </div>
+          <p class="newsletter-signup__legal">
+            By signing up, you agree to receive LEBE emails. Unsubscribe anytime. Offer valid on first order only.
+          </p>
+          <p class="newsletter-signup__status" data-form-status aria-live="polite"></p>
+        </form>
       </div>
-      <p class="footer-signup__status" data-form-status aria-live="polite"></p>
-    </form>
-  </div>`;
+    </div>
+  </section>`;
 }
-
-const footerHtml = footerTemplate.replaceAll('{{FOOTER_SIGNUP}}', getFooterSignupHtml());
 
 // 2. Define compilation engine
 function assemblePage(config) {
-  const content = fs.readFileSync(getPath(config.contentFile), 'utf8');
+  const newsletterHtml = config.homeNewsletter ? getHomeNewsletterSignupHtml() : '';
+  const content = fs.readFileSync(getPath(config.contentFile), 'utf8')
+    .replaceAll('{{HOME_NEWSLETTER_SIGNUP}}', newsletterHtml);
 
   const googleVerification = process.env.GOOGLE_SITE_VERIFICATION
     ? `<meta name="google-site-verification" content="${process.env.GOOGLE_SITE_VERIFICATION}" />`
@@ -194,10 +209,10 @@ function assemblePage(config) {
 
   // Substitute scripts placeholder
   let scripts = scriptsTemplate
-    .replaceAll('{{SCRIPTS}}', `${analyticsScript}\n${config.scripts || ''}\n${bagIndicatorScript}\n${klaviyoSignupScript}`);
+    .replaceAll('{{SCRIPTS}}', `${analyticsScript}\n${config.scripts || ''}\n${bagIndicatorScript}\n${config.homeNewsletter ? klaviyoSignupScript : ''}`);
 
   // Concatenate parts
-  return `${head}\n${header}\n${content}\n${footerHtml}\n${scripts}`;
+  return `${head}\n${header}\n${content}\n${footerTemplate.replaceAll('{{FOOTER_SIGNUP}}', '')}\n${scripts}`;
 }
 
 // 3. Define configuration for core HTML pages
@@ -209,6 +224,7 @@ const corePages = [
     bodyClass: 'bg-white text-[#050505]',
     headerClass: 'lebe-header--hero',
     extraHead: '',
+    homeNewsletter: true,
     scripts: `
 <script src="js/product-data.js" defer></script>
 <script src="js/product-model.js" defer></script>
@@ -650,9 +666,9 @@ policies.forEach((policy) => {
     .replaceAll('{{HEADER_CLASS}}', config.headerClass);
 
   let scripts = scriptsTemplate
-    .replaceAll('{{SCRIPTS}}', `${analyticsScript}\n${config.scripts || ''}\n${bagIndicatorScript}\n${klaviyoSignupScript}`);
+    .replaceAll('{{SCRIPTS}}', `${analyticsScript}\n${config.scripts || ''}\n${bagIndicatorScript}`);
 
-  const fullHtml = `${head}\n${header}\n${contentHtml}\n${footerHtml}\n${scripts}`;
+  const fullHtml = `${head}\n${header}\n${contentHtml}\n${footerTemplate.replaceAll('{{FOOTER_SIGNUP}}', '')}\n${scripts}`;
   
   fs.writeFileSync(getPath('src', `${policy.slug}.html`), fullHtml);
   console.log(`Built HTML: ${policy.slug}.html`);

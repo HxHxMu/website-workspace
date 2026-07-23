@@ -44,7 +44,18 @@ GA4, Meta Pixel, and the Pinterest tag only fire on `www.lebe.life` / `lebe.life
 
 `PINTEREST_TAG_ID` comes from a Pinterest Business account -> Ads -> Conversions -> install the tag. Domain claiming and catalog setup for Product Pins still happen in the Pinterest dashboard.
 
-`KLAVIYO_COMPANY_ID` (public API key) and `KLAVIYO_LIST_ID` control the quiet "Be the first." email field in the footer. Leave either unset and the field is omitted from the build entirely — no broken form. Submissions POST directly to Klaviyo's client API (`src/js/klaviyo-footer-signup.js`); no popup or discount code involved.
+`KLAVIYO_COMPANY_ID` (public API key / Site ID) and `KLAVIYO_LIST_ID` control the homepage newsletter offer. Leave either unset and the homepage newsletter section is omitted from the build entirely — no broken form. Submissions POST directly to Klaviyo's client API (`src/js/klaviyo-footer-signup.js`).
+
+The newsletter offer uses the static code `WELCOME15`: 15% off a customer's first order. Stripe must have an active Promotion Code named `WELCOME15`; Klaviyo should include the same code in the welcome email.
+
+Klaviyo setup:
+
+1. Create or choose the newsletter list in Audience -> Lists & Segments.
+2. Copy the list ID into `KLAVIYO_LIST_ID`.
+3. Copy the public API key / Site ID into `KLAVIYO_COMPANY_ID`.
+4. Create a welcome flow triggered by subscribing to that list.
+5. Send the first email immediately with the code `WELCOME15` and a clear first-order-only note.
+6. Optional: add a reminder email for subscribers who have not purchased after 1-2 days.
 
 ## Stripe Setup
 
@@ -55,6 +66,7 @@ GA4, Meta Pixel, and the Pinterest tag only fire on `www.lebe.life` / `lebe.life
    - Event: `payment_intent.succeeded`
 4. Copy the endpoint signing secret into `STRIPE_WEBHOOK_SECRET`.
 5. Create Promotion Codes in Stripe for any customer-facing discount codes.
+6. For the newsletter offer, create a 15% off coupon and an active Promotion Code named `WELCOME15`. Enable Stripe's first-time-transaction restriction for this promotion code; otherwise repeat customers can still use the code.
 
 ## Printful Setup
 
