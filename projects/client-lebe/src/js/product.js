@@ -7,6 +7,19 @@ let allProducts = null;
 
 const SIZE_ORDER = ['XS', 'S', 'M', 'L', 'XL'];
 
+function normalizeAssetUrl(url) {
+  if (!url) return '';
+  if (/^(https?:)?\/\//.test(url) || url.startsWith('data:')) return url;
+  return url.startsWith('/') ? url : `/${url}`;
+}
+
+function toAbsoluteAssetUrl(url) {
+  const normalizedUrl = normalizeAssetUrl(url);
+  if (!normalizedUrl) return '';
+  if (/^(https?:)?\/\//.test(normalizedUrl)) return normalizedUrl;
+  return `${window.location.origin}${normalizedUrl}`;
+}
+
 function updateProductSeoAndStructuredData(product, selectedVariant) {
   if (!product) return;
 
@@ -15,7 +28,7 @@ function updateProductSeoAndStructuredData(product, selectedVariant) {
   const productUrl = `${origin}${productPath}`;
   const seo = product.seo || {};
   const description = seo.description || `${product.name} — High-performance, made-to-order activewear designed for natural alignment, strength, and comfort. Hand-crafted in approximately 14 days.`;
-  const firstImage = product.images && product.images[0] ? (product.images[0].startsWith('http') ? product.images[0] : `${origin}/${product.images[0]}`) : '';
+  const firstImage = product.images && product.images[0] ? toAbsoluteAssetUrl(product.images[0]) : '';
 
   // 1. Update Title and Meta tags
   document.title = seo.title || `${product.name} — LEBE`;
@@ -72,7 +85,7 @@ function updateProductSeoAndStructuredData(product, selectedVariant) {
     "@context": "https://schema.org",
     "@type": "Product",
     "name": seo.productName || product.name,
-    "image": product.images ? product.images.map(img => img.startsWith('http') ? img : `${origin}/${img}`) : [],
+    "image": product.images ? product.images.map(toAbsoluteAssetUrl) : [],
     "description": seo.schemaDescription || description,
     "sku": String(product.id),
     "mpn": String(product.externalId || product.id),
@@ -151,7 +164,7 @@ function getProductImageElements() {
 }
 
 function setHeroImages(images, name) {
-  const firstImage = Array.isArray(images) ? images[0] : '';
+  const firstImage = Array.isArray(images) ? normalizeAssetUrl(images[0]) : '';
   if (!firstImage) return;
 
   const imageAlt = currentProduct?.seo?.imageAlt || name || '';
@@ -372,17 +385,18 @@ const populateImageGallery = (images) => {
   if (!images || images.length === 0) {
     return;
   }
-  window.LebeProductGallery.setImages(images);
+  const normalizedImages = images.map(normalizeAssetUrl).filter(Boolean);
+  window.LebeProductGallery.setImages(normalizedImages);
 
   // Populate carousel slides (mobile)
   const carouselSlides = document.querySelectorAll('#image-carousel .splide__slide');
   carouselSlides.forEach((slide, index) => {
-    if (index < images.length) {
+    if (index < normalizedImages.length) {
       const img = slide.querySelector('img');
       if (!img) {
-        slide.innerHTML = `<div class="aspect-[4/5] overflow-hidden bg-neutral-100"><img src="${images[index]}" alt="${currentProduct?.name || 'Product image'}" class="h-full w-full object-cover" loading="eager" decoding="async" /></div>`;
+        slide.innerHTML = `<div class="aspect-[4/5] overflow-hidden bg-neutral-100"><img src="${normalizedImages[index]}" alt="${currentProduct?.name || 'Product image'}" class="h-full w-full object-cover" loading="eager" decoding="async" /></div>`;
       } else {
-        img.src = images[index];
+        img.src = normalizedImages[index];
         img.alt = currentProduct?.name || 'Product image';
         img.loading = 'eager';
       }
@@ -392,15 +406,15 @@ const populateImageGallery = (images) => {
   // Populate grid items (desktop)
   const gridItems = document.querySelectorAll('#image-grid > div');
   gridItems.forEach((item, index) => {
-    if (index < images.length) {
+    if (index < normalizedImages.length) {
       const img = item.querySelector('img');
       if (img) {
-        img.src = images[index];
+        img.src = normalizedImages[index];
         img.alt = currentProduct?.name || 'Product image';
         img.loading = 'eager';
       } else if (index > 0) {
         const newImg = document.createElement('img');
-        newImg.src = images[index];
+        newImg.src = normalizedImages[index];
         newImg.alt = currentProduct?.name || 'Product image';
         newImg.loading = 'eager';
         newImg.decoding = 'async';
