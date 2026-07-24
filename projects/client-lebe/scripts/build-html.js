@@ -7,6 +7,8 @@ const {
   getPublishedProductByExternalId,
   getPublishedProductById,
   getPublishedProducts,
+  getProductPath,
+  getProductUrl,
   productsData,
 } = require('../api/_lib/products-data');
 
@@ -135,13 +137,14 @@ const headerTemplate = fs.readFileSync(getPath('src/partials/shared/_header.html
 const footerTemplate = fs.readFileSync(getPath('src/partials/shared/_footer.html'), 'utf8');
 const scriptsTemplate = fs.readFileSync(getPath('src/partials/shared/_scripts.html'), 'utf8');
 const policyTemplate = fs.readFileSync(getPath('src/partials/policies/_policy.html'), 'utf8');
-const analyticsScript = '<script src="js/analytics.js" defer></script>';
-const bagIndicatorScript = '<script src="js/bag-indicator.js" defer></script>';
+const productTemplate = fs.readFileSync(getPath('src/partials/product/_product.html'), 'utf8');
+const analyticsScript = '<script src="/js/analytics.js" defer></script>';
+const bagIndicatorScript = '<script src="/js/bag-indicator.js" defer></script>';
 
 const klaviyoCompanyId = configuredEnv('KLAVIYO_COMPANY_ID');
 const klaviyoListId = configuredEnv('KLAVIYO_LIST_ID');
 const klaviyoSignupScript = (klaviyoCompanyId && klaviyoListId)
-  ? '<script src="js/klaviyo-footer-signup.js" defer></script>'
+  ? '<script src="/js/klaviyo-footer-signup.js" defer></script>'
   : '';
 
 function getHomeNewsletterSignupHtml() {
@@ -175,17 +178,274 @@ function getHomeNewsletterSignupHtml() {
   </section>`;
 }
 
+function normalizeAssetPath(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return '';
+  if (/^https?:\/\//i.test(raw)) return raw;
+  return `/${raw.replace(/^\.?\//, '').replace(/^\/+/, '')}`;
+}
+
+function absoluteAssetUrl(value) {
+  const pathValue = normalizeAssetPath(value);
+  if (!pathValue) return '';
+  if (/^https?:\/\//i.test(pathValue)) return pathValue;
+  return `${DOMAIN}${pathValue}`;
+}
+
+function formatMoney(value) {
+  const amount = Number.parseFloat(value);
+  if (!Number.isFinite(amount) || amount <= 0) return '';
+  return `$${Math.round(amount)}.`;
+}
+
+function productAlt(product = {}) {
+  return product.seo?.imageAlt || `${product.seo?.productName || product.name || 'LEBE product'} product image`;
+}
+
+function productDisplayName(product = {}) {
+  return product.seo?.productName || product.name || product.displayName || 'LEBE product';
+}
+
+function productStory(product = {}) {
+  return product.seo?.schemaDescription || product.seo?.description || '';
+}
+
+function productHighlights(product = {}) {
+  const type = String(product.type || '').toLowerCase();
+  if (type === 'bra') return ['Racerback support', 'Removable padding', 'Pairs as a set'];
+  if (type === 'leggings') return ['High-rise waist', 'Four-way stretch', 'Pairs as a set'];
+  return ['Made after purchase', 'Soft stretch handfeel', 'Limited-run piece'];
+}
+
+function renderParagraphs(value) {
+  return String(value || '')
+    .split(/\n{2,}/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean)
+    .map((paragraph, index) => `<p${index > 0 ? ' class="mt-3"' : ''}>${escapeHtml(paragraph)}</p>`)
+    .join('\n');
+}
+
+function renderHomeProductGridHtml() {
+  const products = getPublishedProducts()
+    .filter((product) => product.slug)
+    .sort((a, b) => Number(a.homepageOrder || 0) - Number(b.homepageOrder || 0));
+
+  return products.map((product) => {
+    const image = normalizeAssetPath(product.homepageImages?.[0] || product.images?.[0]);
+    const href = getProductPath(product);
+    const isWhite = String(product.swatch || product.color || '').toLowerCase() === 'white';
+    const displayName = productDisplayName(product);
+
+    return `
+      <article class="group flex h-full flex-col">
+        <a href="${escapeHtml(href)}" class="block aspect-[4/5] overflow-hidden bg-neutral-100">
+          <img
+            src="${escapeHtml(image)}"
+            alt="${escapeHtml(productAlt(product))}"
+            class="h-full w-full object-cover transition duration-700 ease-out group-hover:scale-105"
+            loading="lazy"
+            decoding="async"
+          />
+        </a>
+        <div class="flex min-h-[100px] flex-1 items-start justify-between gap-4 border-b border-[#050505]/15 py-5">
+          <div class="flex-1">
+            <h3 class="min-h-[3.25rem] text-base font-semibold leading-tight tracking-[-0.03em] text-[#050505] md:text-lg">
+              ${escapeHtml(displayName)}
+            </h3>
+            <div class="mt-2 flex items-center gap-3">
+              <span
+                style="width: 24px; height: 24px; background-color: ${isWhite ? '#ffffff' : '#050505'}; border: 1px solid rgba(5, 5, 5, 0.3); border-radius: 50%; display: inline-block;"
+              ></span>
+            </div>
+          </div>
+          <a
+            href="${escapeHtml(href)}"
+            class="shrink-0 border border-[#050505] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.22em] transition duration-300 hover:bg-[#050505] hover:text-white"
+          >
+            view.
+          </a>
+        </div>
+      </article>`;
+  }).join('\n');
+}
+
+function escapeScriptJson(value) {
+  return JSON.stringify(value, null, 2).replaceAll('<', '\\u003c');
+}
+
+function productImages(product = {}, detail = null) {
+  const images = detail?.images?.length ? detail.images : product.images || [];
+  return images.map(normalizeAssetPath).filter(Boolean);
+}
+
+function variantPrices(variants = []) {
+  return variants
+    .map((variant) => Number.parseFloat(variant.retail_price || variant.price))
+    .filter((price) => Number.isFinite(price) && price > 0);
+}
+
+function buildProductJsonLd(product, detail = null) {
+  const variants = detail?.variants || [];
+  const prices = variantPrices(variants);
+  const lowPrice = prices.length ? Math.min(...prices) : undefined;
+  const highPrice = prices.length ? Math.max(...prices) : undefined;
+  const url = getProductUrl(product, DOMAIN);
+
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.seo?.productName || product.name,
+    description: product.seo?.schemaDescription || product.seo?.description || '',
+    image: productImages(product, detail).map(absoluteAssetUrl),
+    sku: String(product.id),
+    brand: { '@type': 'Brand', name: 'LEBE' },
+    material: product.material || '82% polyester, 18% spandex',
+    color: product.color || '',
+    audience: { '@type': 'PeopleAudience', suggestedGender: product.audienceGender || 'female' },
+    offers: {
+      '@type': 'AggregateOffer',
+      priceCurrency: 'USD',
+      lowPrice: lowPrice === undefined ? undefined : lowPrice.toFixed(2),
+      highPrice: highPrice === undefined ? undefined : highPrice.toFixed(2),
+      offerCount: variants.length || undefined,
+      availability: 'https://schema.org/MadeToOrder',
+      itemCondition: 'https://schema.org/NewCondition',
+      url,
+      hasMerchantReturnPolicy: {
+        '@type': 'MerchantReturnPolicy',
+        applicableCountry: 'US',
+        returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted',
+        merchantReturnLink: `${DOMAIN}/returns`,
+      },
+    },
+  };
+
+  return schema;
+}
+
+function renderProductTemplate(product, detail = null) {
+  const images = productImages(product, detail);
+  const primaryImage = images[0] || '';
+  const alt = productAlt(product);
+  const prices = variantPrices(detail?.variants || []);
+  const displayPrice = prices.length ? formatMoney(Math.min(...prices)) : '';
+  const highlights = productHighlights(product);
+
+  const mobileSlides = images.slice(1, 4).map((image, index) => `
+          <li class="splide__slide">
+            <div class="aspect-[4/5] overflow-hidden bg-neutral-100">
+              <img src="${escapeHtml(image)}" alt="${escapeHtml(alt)}" class="h-full w-full object-cover" loading="lazy" decoding="async" />
+            </div>
+          </li>`).join('\n');
+
+  const desktopImages = images.slice(1, 4).map((image) => `
+      <div class="aspect-[4/5] overflow-hidden bg-neutral-100">
+        <img src="${escapeHtml(image)}" alt="${escapeHtml(alt)}" class="h-full w-full object-cover" loading="lazy" decoding="async" />
+      </div>`).join('\n');
+
+  return productTemplate
+    .replaceAll('{{PRODUCT_PRIMARY_IMAGE}}', escapeHtml(primaryImage))
+    .replaceAll('{{PRODUCT_MOBILE_SLIDES}}', mobileSlides)
+    .replaceAll('{{PRODUCT_DESKTOP_IMAGES}}', desktopImages)
+    .replaceAll('{{PRODUCT_IMAGE_ALT}}', escapeHtml(alt))
+    .replaceAll('{{PRODUCT_NAME}}', escapeHtml(productDisplayName(product)))
+    .replaceAll('{{PRODUCT_PRICE}}', escapeHtml(displayPrice))
+    .replaceAll('{{PRODUCT_STORY}}', escapeHtml(productStory(product)))
+    .replaceAll('{{PRODUCT_HIGHLIGHT_1}}', escapeHtml(highlights[0]))
+    .replaceAll('{{PRODUCT_HIGHLIGHT_2}}', escapeHtml(highlights[1]))
+    .replaceAll('{{PRODUCT_HIGHLIGHT_3}}', escapeHtml(highlights[2]))
+    .replaceAll('{{PRODUCT_WHY}}', escapeHtml(product.pdp?.why || ''))
+    .replaceAll('{{PRODUCT_FIT}}', escapeHtml(product.pdp?.fit || ''))
+    .replaceAll('{{PRODUCT_FABRIC}}', renderParagraphs(product.pdp?.fabric || ''));
+}
+
+function productDetailMap(feedProducts = []) {
+  return feedProducts.reduce((acc, item) => {
+    if (item?.product?.id) acc[String(item.product.id)] = item;
+    return acc;
+  }, {});
+}
+
+function cleanProductOutput() {
+  fs.rmSync(getPath('src', 'product.html'), { force: true });
+  fs.rmSync(getPath('src', 'product'), { recursive: true, force: true });
+  fs.mkdirSync(getPath('src', 'product'), { recursive: true });
+}
+
+function cleanAppleDoubleFiles(dirPath) {
+  if (!fs.existsSync(dirPath)) return;
+  fs.readdirSync(dirPath)
+    .filter((fileName) => fileName.startsWith('._'))
+    .forEach((fileName) => {
+      fs.rmSync(path.join(dirPath, fileName), { force: true });
+    });
+}
+
+function buildProductPages(feedProducts = []) {
+  const detailsById = productDetailMap(feedProducts);
+  const productDir = getPath('src', 'product');
+  cleanProductOutput();
+
+  getPublishedProducts().forEach((product) => {
+    if (!product.slug) return;
+
+    const detail = detailsById[String(product.id)] || null;
+    const images = productImages(product, detail);
+    const contentHtml = renderProductTemplate(product, detail);
+    const productUrl = getProductUrl(product, DOMAIN);
+    const jsonLd = buildProductJsonLd(product, detail);
+    const preloads = images.slice(0, 4).map((image, index) => `
+  <link rel="${index === 0 ? 'preload' : 'prefetch'}" as="image" href="${escapeHtml(image)}"${index === 0 ? ' fetchpriority="high"' : ''} />`).join('');
+
+    const html = assemblePage({
+      slug: `product/${product.slug}`,
+      canonicalUrl: productUrl,
+      title: product.seo?.title || `${product.name} | LEBE`,
+      description: product.seo?.description || product.feed?.description || '',
+      bodyClass: 'bg-[#e9e9e9] text-[#050505]',
+      headerClass: '',
+      ogType: 'product',
+      ogImage: absoluteAssetUrl(images[0] || ''),
+      extraHead: `
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" />${preloads}
+  <script>
+    window.LEBE_PRODUCT_ID = ${Number(product.id)};
+    window.LEBE_PDP_PRELOAD_IMAGES = ${escapeScriptJson(images)};
+    window.LEBE_PDP_IMAGE_ALT = ${escapeScriptJson(productAlt(product))};
+  </script>
+  <script id="ld-json-product" type="application/ld+json">${escapeScriptJson(jsonLd)}</script>`,
+      scripts: `
+<script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+<script src="/js/product-data.js" defer></script>
+<script src="/js/cart.js" defer></script>
+<script src="/js/product-model.js" defer></script>
+<script src="/js/product-gallery.js" defer></script>
+<script src="/js/product-size-guide.js" defer></script>
+<script src="/js/product.js" defer></script>`,
+      contentHtml,
+    });
+
+    fs.writeFileSync(getPath('src', 'product', `${product.slug}.html`), html);
+    console.log(`Built HTML: product/${product.slug}.html`);
+  });
+
+  cleanAppleDoubleFiles(productDir);
+}
+
 // 2. Define compilation engine
 function assemblePage(config) {
   const newsletterHtml = config.homeNewsletter ? getHomeNewsletterSignupHtml() : '';
-  const content = fs.readFileSync(getPath(config.contentFile), 'utf8')
-    .replaceAll('{{HOME_NEWSLETTER_SIGNUP}}', newsletterHtml);
+  const contentSource = config.contentHtml ?? fs.readFileSync(getPath(config.contentFile), 'utf8');
+  const content = contentSource
+    .replaceAll('{{HOME_NEWSLETTER_SIGNUP}}', newsletterHtml)
+    .replaceAll('{{HOME_PRODUCT_GRID}}', renderHomeProductGridHtml());
 
   const googleVerification = process.env.GOOGLE_SITE_VERIFICATION
     ? `<meta name="google-site-verification" content="${process.env.GOOGLE_SITE_VERIFICATION}" />`
     : '';
 
-  const canonicalUrl = `${DOMAIN}${config.slug === 'index' ? '' : '/' + config.slug}`;
+  const canonicalUrl = config.canonicalUrl || `${DOMAIN}${config.slug === 'index' ? '' : '/' + config.slug}`;
   const ogType = config.ogType || 'website';
   const ogImage = config.ogImage || `${DOMAIN}/assets/images/lebeHero1.jpg`;
   const metaPixelCode = getMetaPixelCode();
@@ -227,47 +487,12 @@ const corePages = [
     extraHead: '',
     homeNewsletter: true,
     scripts: `
-<script src="js/product-data.js" defer></script>
-<script src="js/product-model.js" defer></script>
-<script src="js/html-utils.js" defer></script>
-<script src="js/main.js" defer></script>
-<script src="js/printful.js" defer></script>`,
+<script src="/js/product-data.js" defer></script>
+<script src="/js/product-model.js" defer></script>
+<script src="/js/html-utils.js" defer></script>
+<script src="/js/main.js" defer></script>
+<script src="/js/printful.js" defer></script>`,
     contentFile: 'src/partials/home/_hero.html'
-  },
-  {
-    slug: 'product',
-    title: 'Product — LEBE',
-    description: 'Explore LEBE made-to-order activewear, product details, sizing, and gallery imagery.',
-    bodyClass: 'bg-[#e9e9e9] text-[#050505]',
-    headerClass: '',
-    extraHead: `
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" />
-  <script src="js/product-data.js"></script>
-  <script>
-    (() => {
-      const id = new URLSearchParams(window.location.search).get('id');
-      const previews = window.LebeProductData?.previews || {};
-      const product = previews[id];
-      const hrefs = product ? product.images : [];
-      window.LEBE_PDP_PRELOAD_IMAGES = hrefs;
-      hrefs.forEach((href, index) => {
-        const link = document.createElement('link');
-        link.rel = index === 0 ? 'preload' : 'prefetch';
-        link.as = 'image';
-        link.href = href;
-        if (index === 0) link.fetchPriority = 'high';
-        document.head.appendChild(link);
-      });
-    })();
-  </script>`,
-    scripts: `
-<script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
-<script src="js/cart.js" defer></script>
-<script src="js/product-model.js" defer></script>
-<script src="js/product-gallery.js" defer></script>
-<script src="js/product-size-guide.js" defer></script>
-<script src="js/product.js" defer></script>`,
-    contentFile: 'src/partials/product/_product.html'
   },
   {
     slug: 'cart',
@@ -277,12 +502,12 @@ const corePages = [
     headerClass: '',
     extraHead: `<script src="https://js.stripe.com/v3/"></script>\n${getStripePublishableKeyScript()}`,
     scripts: `
-<script src="js/product-data.js" defer></script>
-<script src="js/cart.js" defer></script>
-<script src="js/product-model.js" defer></script>
-<script src="js/html-utils.js" defer></script>
-<script src="js/main.js" defer></script>
-<script src="js/checkout.js" defer></script>`,
+<script src="/js/product-data.js" defer></script>
+<script src="/js/cart.js" defer></script>
+<script src="/js/product-model.js" defer></script>
+<script src="/js/html-utils.js" defer></script>
+<script src="/js/main.js" defer></script>
+<script src="/js/checkout.js" defer></script>`,
     contentFile: 'src/partials/cart/_cart.html'
   },
   {
@@ -302,7 +527,7 @@ const corePages = [
     bodyClass: 'bg-white text-[#050505]',
     headerClass: '',
     extraHead: '',
-    scripts: `<script src="./js/support-form.js" defer></script>`,
+    scripts: `<script src="/js/support-form.js" defer></script>`,
     contentFile: 'src/partials/contact/_contact.html'
   },
   {
@@ -312,7 +537,7 @@ const corePages = [
     bodyClass: 'bg-white text-[#050505]',
     headerClass: '',
     extraHead: '',
-    scripts: `<script src="./js/support-form.js" defer></script>`,
+    scripts: `<script src="/js/support-form.js" defer></script>`,
     contentFile: 'src/partials/order-issue/_order-issue.html'
   },
   {
@@ -333,6 +558,8 @@ corePages.forEach((page) => {
   fs.writeFileSync(getPath('src', `${page.slug}.html`), html);
   console.log(`Built HTML: ${page.slug}.html`);
 });
+
+buildProductPages();
 
 // 4. Define and Compile Policy Pages
 const UPDATED = 'June 2026';
@@ -728,7 +955,8 @@ function buildSitemap() {
 
     // Dynamic product pages
     getPublishedProducts().forEach((product) => {
-      urls.push(`${DOMAIN}/product?id=${product.id}`);
+      const url = getProductUrl(product, DOMAIN);
+      if (url) urls.push(url);
     });
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -813,8 +1041,8 @@ function buildFeedItem({ product, variant, image, itemGroupId, kind }) {
   const syncVariantId = variant.id || variant.sync_variant_id || `${productId}-${variant.variant_id || variantSize(variant)}`;
   const color = variantColor(product, variant);
   const size = variantSize(variant);
-  const titleParts = [kind.titleBase || product.name].filter(Boolean);
-  const link = `${DOMAIN}/product?id=${encodeURIComponent(productId)}`;
+  const title = kind.title || kind.titleBase || product.name;
+  const link = getProductUrl(productId, DOMAIN) || `${DOMAIN}/product?id=${encodeURIComponent(productId)}`;
   const price = formatFeedPrice(variant.retail_price || variant.price);
 
   if (!price || !image) return '';
@@ -822,7 +1050,7 @@ function buildFeedItem({ product, variant, image, itemGroupId, kind }) {
   return `    <item>
       <g:id>${escapeXml(syncVariantId)}</g:id>
       <g:item_group_id>${escapeXml(itemGroupId)}</g:item_group_id>
-      <title>${escapeXml(titleParts.join(' - '))}</title>
+      <title>${escapeXml(title)}</title>
       <description>${escapeXml(kind.description)}</description>
       <link>${escapeXml(link)}</link>
       <g:image_link>${escapeXml(normalizeFeedUrl(image))}</g:image_link>
@@ -836,6 +1064,9 @@ function buildFeedItem({ product, variant, image, itemGroupId, kind }) {
       <g:product_type>${escapeXml(kind.productType)}</g:product_type>
       <g:color>${escapeXml(color)}</g:color>
       <g:size>${escapeXml(size)}</g:size>
+      <g:size_type>regular</g:size_type>
+      <g:size_system>US</g:size_system>
+      <g:material>82% polyester, 18% spandex</g:material>
       <g:gender>female</g:gender>
       <g:age_group>adult</g:age_group>
       <g:identifier_exists>no</g:identifier_exists>
@@ -890,6 +1121,8 @@ async function buildProductsFeed() {
 
   try {
     const feedProducts = (await getFeedProducts(apiKey)).filter(Boolean);
+    buildProductPages(feedProducts);
+
     const items = [];
 
     feedProducts.forEach(({ product, variants, images }) => {

@@ -7,6 +7,21 @@
       displayName: 'Saguanari Leggings',
       type: 'leggings',
       color: 'White',
+      slug: 'saguanari-white-leggings',
+      material: '82% polyester, 18% spandex',
+      audienceGender: 'female',
+      seo: {
+        title: 'Saguanari White High-Waist Yoga Leggings | LEBE',
+        description: 'High-waist printed yoga leggings in white with a gold serpent pattern. Four-way stretch, made to order, ships in about 14 days.',
+        productName: 'Saguanari White High-Waist Yoga Leggings',
+        schemaDescription: 'High-waist printed yoga leggings in white with a gold serpent and dot pattern. Four-way stretch fabric in 82% polyester, 18% spandex.',
+        imageAlt: 'Saguanari white high-waist yoga leggings with gold serpent print',
+      },
+      pdp: {
+        why: 'White is the harder choice and the better one. The gold reads warmer against it, and the serpent is visible in full rather than emerging from the dark.',
+        fit: 'High-waist, compression fit. Four-way stretch. The raised waistband holds through inversion without rolling. Between sizes, order the smaller. Light-ground fabric shows more under stretch - size for comfort, not compression.',
+        fabric: '82% polyester, 18% spandex. Smooth microfiber yarn. Precision-cut and hand-sewn after printing.\n\nCold wash only. Hang dry. Gold may soften with wear.',
+      },
       swatch: 'white',
       colorGroup: 'saguanari-leggings',
       published: true,
@@ -25,10 +40,11 @@
       ],
       upsellProductId: 309483674,
       feed: {
+        title: 'LEBE Saguanari High-Waist Yoga Leggings - White & Gold Serpent Print',
         titleBase: 'Saguanari Leggings',
         category: 'Clothing & Accessories > Clothing > Activewear > Leggings',
         productType: 'Apparel & Accessories > Clothing > Activewear > Leggings',
-        description: 'Made-to-order LEBE leggings with premium all-over print artwork.',
+        description: 'High-waist printed yoga leggings in white with a gold serpent and dot pattern. Four-way stretch fabric in 82% polyester, 18% spandex with a smooth microfiber handfeel and a raised waistband that holds through movement. The print covers the full garment, then each pair is precision-cut and hand-sewn to order. Made after purchase in XS through XL. Ships in approximately 14 days.',
       },
     },
     {
@@ -38,6 +54,21 @@
       displayName: 'Saguanari Sports Bra',
       type: 'bra',
       color: 'White',
+      slug: 'saguanari-white-sports-bra',
+      material: '82% polyester, 18% spandex',
+      audienceGender: 'female',
+      seo: {
+        title: 'Saguanari White Racerback Sports Bra | LEBE',
+        description: 'Printed racerback sports bra in white with a gold serpent pattern. Removable padding, four-way stretch, made to order.',
+        productName: 'Saguanari White Racerback Sports Bra',
+        schemaDescription: 'Printed racerback sports bra in white with a gold serpent and dot pattern. Four-way stretch fabric in 82% polyester, 18% spandex with removable padding.',
+        imageAlt: 'Saguanari white racerback sports bra with gold serpent print',
+      },
+      pdp: {
+        why: 'The lightest piece in the capsule. Gold on white, cut to be worn on its own.',
+        fit: 'Scoop neck, racerback. Wide elastic under the bust, support material through the straps, removable padding. Best suited to A-C cups. Between sizes, order the larger - the band supports by sitting level, not by tension.',
+        fabric: '82% polyester, 18% spandex, 6.78 oz/yd². Sports mesh lining, 92% polyester and 8% spandex. Removable foam padding. Flat seams and bias binding.\n\nCold wash only. Hang dry. Remove padding before washing. Gold may soften with wear.',
+      },
       swatch: 'white',
       colorGroup: 'saguanari-bra',
       published: true,
@@ -56,10 +87,11 @@
       ],
       upsellProductId: 301596573,
       feed: {
+        title: 'LEBE Saguanari Racerback Sports Bra - White & Gold Serpent Print',
         titleBase: 'Saguanari Sports Bra',
         category: 'Clothing & Accessories > Clothing > Activewear > Sports Bras',
         productType: 'Apparel & Accessories > Clothing > Activewear > Sports Bras',
-        description: 'Made-to-order LEBE sports bra with premium all-over print artwork.',
+        description: 'Printed racerback sports bra in white with a gold serpent and dot pattern. Four-way stretch fabric in 82% polyester, 18% spandex with a moisture-wicking sports mesh lining, removable foam padding, and a wide elastic band under the bust. Scoop neckline, racerback cut, support material through the shoulder straps, flat seams and bias binding to prevent rubbing. Best for A-C cups. Made to order in XS through XL. Ships in approximately 14 days.',
       },
     },
     {
@@ -69,6 +101,21 @@
       displayName: 'Saguanari Leggings',
       type: 'leggings',
       color: 'Black',
+      slug: 'saguanari-black-leggings',
+      material: '82% polyester, 18% spandex',
+      audienceGender: 'female',
+      seo: {
+        title: 'Saguanari Black High-Waist Yoga Leggings | LEBE',
+        description: 'High-waist printed yoga leggings in black with a gold serpent pattern. Four-way stretch, made to order, ships in about 14 days.',
+        productName: 'Saguanari Black High-Waist Yoga Leggings',
+        schemaDescription: 'High-waist printed yoga leggings in black with a gold serpent and dot pattern. Four-way stretch fabric in 82% polyester, 18% spandex.',
+        imageAlt: 'Saguanari black high-waist yoga leggings with gold serpent print',
+      },
+      pdp: {
+        why: "Black that isn't plain. The serpent runs the length of the leg in gold, printed into the fabric rather than onto it, so the pattern moves with you instead of sitting on top.",
+        fit: 'High-waist, compression fit. Four-way stretch. The raised waistband holds through inversion without rolling. Between sizes, order the smaller - the flat waist measures five to seven inches under the body it is cut for.',
+        fabric: '82% polyester, 18% spandex. Smooth microfiber yarn. Precision-cut and hand-sewn after printing.\n\nCold wash only. Hang dry. Gold may soften with wear.',
+      },
       swatch: 'black',
       colorGroup: 'saguanari-leggings',
       published: true,
@@ -87,10 +134,11 @@
       ],
       upsellProductId: 309483736,
       feed: {
+        title: 'LEBE Saguanari High-Waist Yoga Leggings - Black & Gold Serpent Print',
         titleBase: 'Saguanari Leggings',
         category: 'Clothing & Accessories > Clothing > Activewear > Leggings',
         productType: 'Apparel & Accessories > Clothing > Activewear > Leggings',
-        description: 'Made-to-order LEBE leggings with premium all-over print artwork.',
+        description: 'High-waist printed yoga leggings in black with a gold serpent and dot pattern. Four-way stretch fabric in 82% polyester, 18% spandex with a smooth microfiber handfeel and a raised waistband that stays put through flow, lifting, and everyday wear. The print is applied across the full garment, then precision-cut and hand-sewn to order - no two pairs are identical. Made after purchase in XS through XL. Ships in approximately 14 days.',
       },
     },
     {
@@ -100,6 +148,21 @@
       displayName: 'Saguanari Sports Bra',
       type: 'bra',
       color: 'Black',
+      slug: 'saguanari-black-sports-bra',
+      material: '82% polyester, 18% spandex',
+      audienceGender: 'female',
+      seo: {
+        title: 'Saguanari Black Racerback Sports Bra | LEBE',
+        description: 'Printed racerback sports bra in black with a gold serpent pattern. Removable padding, four-way stretch, made to order.',
+        productName: 'Saguanari Black Racerback Sports Bra',
+        schemaDescription: 'Printed racerback sports bra in black with a gold serpent and dot pattern. Four-way stretch fabric in 82% polyester, 18% spandex with removable padding.',
+        imageAlt: 'Saguanari black racerback sports bra with gold serpent print',
+      },
+      pdp: {
+        why: 'Built to be seen, not layered over. The print carries across the front and back, so the racerback reads as intentional from every angle.',
+        fit: 'Scoop neck, racerback. Wide elastic under the bust, support material through the straps, removable padding. Best suited to A-C cups. Between sizes, order the larger - the band supports by sitting level, not by tension.',
+        fabric: '82% polyester, 18% spandex, 6.78 oz/yd². Sports mesh lining, 92% polyester and 8% spandex. Removable foam padding. Flat seams and bias binding.\n\nCold wash only. Hang dry. Remove padding before washing. Gold may soften with wear.',
+      },
       swatch: 'black',
       colorGroup: 'saguanari-bra',
       published: true,
@@ -118,10 +181,11 @@
       ],
       upsellProductId: 300307426,
       feed: {
+        title: 'LEBE Saguanari Racerback Sports Bra - Black & Gold Serpent Print',
         titleBase: 'Saguanari Sports Bra',
         category: 'Clothing & Accessories > Clothing > Activewear > Sports Bras',
         productType: 'Apparel & Accessories > Clothing > Activewear > Sports Bras',
-        description: 'Made-to-order LEBE sports bra with premium all-over print artwork.',
+        description: 'Printed racerback sports bra in black with a gold serpent and dot pattern. Four-way stretch fabric in 82% polyester, 18% spandex with a moisture-wicking sports mesh lining, removable foam padding, and a wide elastic band under the bust. Scoop neckline, racerback cut, support material through the shoulder straps, flat seams and bias binding to prevent rubbing. Best for A-C cups. Made to order in XS through XL. Ships in approximately 14 days.',
       },
     },
   ];
@@ -145,8 +209,23 @@
       acc[String(product.id)] = {
         id: product.id,
         name: product.name,
+        slug: product.slug,
+        path: `/product/${product.slug}`,
+        seo: { ...(product.seo || {}) },
         images: [...product.images],
       };
+      return acc;
+    }, {});
+
+  const productSlugsById = publishedProductList
+    .reduce((acc, product) => {
+      if (product.slug) acc[String(product.id)] = product.slug;
+      return acc;
+    }, {});
+
+  const productIdsBySlug = publishedProductList
+    .reduce((acc, product) => {
+      if (product.slug) acc[String(product.slug)] = product.id;
       return acc;
     }, {});
 
@@ -218,6 +297,8 @@
   const LebeProductData = {
     publishedProductIds: publishedProductList.map((product) => product.id),
     publishedProducts,
+    productSlugsById,
+    productIdsBySlug,
     imagesByExternalId,
     previews,
     colorVariants,

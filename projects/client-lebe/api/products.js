@@ -1,5 +1,5 @@
 const { fetchFromPrintful } = require('./_lib/printful');
-const { getColorVariants, getProductImages, isPublishedProduct } = require('./_lib/products-data');
+const { getColorVariants, getProductImages, getPublishedProductById, getProductPath, isPublishedProduct } = require('./_lib/products-data');
 
 module.exports = async (req, res) => {
   if (req.method !== 'GET') {
@@ -32,10 +32,19 @@ module.exports = async (req, res) => {
         console.warn(`Price lookup failed for product ${product.id}:`, e.message);
       }
 
+      const publishedProduct = getPublishedProductById(product.id);
+
       return {
         id: product.id,
         externalId: product.external_id,
         name: product.name,
+        displayName: publishedProduct?.displayName || product.name,
+        type: publishedProduct?.type || '',
+        color: publishedProduct?.color || '',
+        slug: publishedProduct?.slug || '',
+        path: publishedProduct ? getProductPath(publishedProduct) : `/product?id=${encodeURIComponent(product.id)}`,
+        seo: publishedProduct?.seo || {},
+        pdp: publishedProduct?.pdp || {},
         price,
         images: productImages,
         variantCount: product.variants,

@@ -132,7 +132,7 @@ async function renderProductGrid() {
     const displayName = product?.name || slot.displayName;
     const numericPrice = Number(product?.price);
     const displayPrice = Number.isFinite(numericPrice) ? `$${numericPrice.toFixed(0)}.` : '—';
-    const productHref = product ? `/product?id=${encodeURIComponent(product.id)}` : '#';
+    const productHref = product?.path || (product?.slug ? `/product/${encodeURIComponent(product.slug)}` : (product ? `/product?id=${encodeURIComponent(product.id)}` : '#'));
     const productAlt = product?.name || displayName;
 
     return `

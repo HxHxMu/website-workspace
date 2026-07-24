@@ -1,5 +1,5 @@
 const { fetchFromPrintful } = require('./_lib/printful');
-const { getColorVariants, getProductImages, getPublishedProductById } = require('./_lib/products-data');
+const { getColorVariants, getProductImages, getPublishedProductById, getProductPath } = require('./_lib/products-data');
 
 module.exports = async (req, res) => {
   if (req.method !== 'GET') {
@@ -16,7 +16,8 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'Product id is required' });
   }
 
-  if (!getPublishedProductById(id)) {
+  const publishedProduct = getPublishedProductById(id);
+  if (!publishedProduct) {
     return res.status(404).json({ error: 'Product not found' });
   }
 
@@ -40,6 +41,14 @@ module.exports = async (req, res) => {
       id: syncProduct.id,
       externalId: syncProduct.external_id,
       name: syncProduct.name,
+      displayName: publishedProduct.displayName,
+      type: publishedProduct.type,
+      color: publishedProduct.color,
+      slug: publishedProduct.slug,
+      path: getProductPath(publishedProduct),
+      seo: publishedProduct.seo || {},
+      pdp: publishedProduct.pdp || {},
+      material: publishedProduct.material || '',
       images: getProductImages(syncProduct.external_id, fallbackImages),
       colorVariants: getColorVariants(syncProduct.id),
       variants: syncVariants.map(v => ({

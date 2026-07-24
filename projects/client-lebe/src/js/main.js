@@ -5,6 +5,11 @@ function escHtml(v) {
     : String(v ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
+function productHref(productId) {
+  const slug = window.LebeProductData?.productSlugsById?.[String(productId)];
+  return slug ? `/product/${encodeURIComponent(slug)}` : `/product?id=${encodeURIComponent(productId)}`;
+}
+
 function parseCheckoutUrlProducts(value) {
   return String(value || '')
     .split(',')
@@ -123,13 +128,13 @@ window.renderCart = function() {
     const svid = escHtml(String(item.syncVariantId));
     return `
     <div class="grid grid-cols-[88px_minmax(0,1fr)] gap-4 border-b border-black/15 pb-6 sm:grid-cols-[96px_minmax(0,1fr)] lg:grid-cols-[140px_minmax(0,1fr)] lg:gap-5">
-      <a href="/product?id=${escHtml(item.productId)}" class="block overflow-hidden bg-neutral-100">
+      <a href="${escHtml(productHref(item.productId))}" class="block overflow-hidden bg-neutral-100">
         <img src="${escHtml(item.image)}" alt="${escHtml(item.name)}" class="aspect-[4/5] h-full w-full object-cover transition duration-500 hover:scale-105" />
       </a>
       <div class="flex min-w-0 flex-col justify-between gap-5">
         <div class="flex min-w-0 items-start justify-between gap-3">
           <div class="min-w-0">
-            <a href="/product?id=${escHtml(item.productId)}" class="font-semibold uppercase tracking-[-0.03em] transition hover:text-black/55">
+            <a href="${escHtml(productHref(item.productId))}" class="font-semibold uppercase tracking-[-0.03em] transition hover:text-black/55">
               ${escHtml(item.name)}
             </a>
             <p class="mt-2 text-sm text-black/55">${escHtml(item.size)}.</p>

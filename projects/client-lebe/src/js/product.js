@@ -11,12 +11,14 @@ function updateProductSeoAndStructuredData(product, selectedVariant) {
   if (!product) return;
 
   const origin = window.location.origin;
-  const productUrl = `${origin}/product?id=${product.id}`;
-  const description = `${product.name} — High-performance, made-to-order activewear designed for natural alignment, strength, and comfort. Hand-crafted in approximately 14 days.`;
+  const productPath = product.path || (product.slug ? `/product/${product.slug}` : `/product?id=${product.id}`);
+  const productUrl = `${origin}${productPath}`;
+  const seo = product.seo || {};
+  const description = seo.description || `${product.name} — High-performance, made-to-order activewear designed for natural alignment, strength, and comfort. Hand-crafted in approximately 14 days.`;
   const firstImage = product.images && product.images[0] ? (product.images[0].startsWith('http') ? product.images[0] : `${origin}/${product.images[0]}`) : '';
 
   // 1. Update Title and Meta tags
-  document.title = `${product.name} — LEBE`;
+  document.title = seo.title || `${product.name} — LEBE`;
   
   const updateMeta = (selector, attribute, value) => {
     let el = document.querySelector(selector);
@@ -36,7 +38,7 @@ function updateProductSeoAndStructuredData(product, selectedVariant) {
   };
 
   updateMeta('meta[name="description"]', 'content', description);
-  updateMeta('meta[property="og:title"]', 'content', `${product.name} — LEBE`);
+  updateMeta('meta[property="og:title"]', 'content', seo.title || `${product.name} — LEBE`);
   updateMeta('meta[property="og:description"]', 'content', description);
   updateMeta('meta[property="og:url"]', 'content', productUrl);
   updateMeta('meta[property="og:type"]', 'content', 'product');
@@ -44,7 +46,7 @@ function updateProductSeoAndStructuredData(product, selectedVariant) {
     updateMeta('meta[property="og:image"]', 'content', firstImage);
     updateMeta('meta[name="twitter:image"]', 'content', firstImage);
   }
-  updateMeta('meta[name="twitter:title"]', 'content', `${product.name} — LEBE`);
+  updateMeta('meta[name="twitter:title"]', 'content', seo.title || `${product.name} — LEBE`);
   updateMeta('meta[name="twitter:description"]', 'content', description);
   updateMeta('meta[name="twitter:url"]', 'content', productUrl);
 
@@ -58,40 +60,47 @@ function updateProductSeoAndStructuredData(product, selectedVariant) {
   canonicalEl.setAttribute('href', productUrl);
 
   // 2. Inject/Update JSON-LD Structured Data
-  const offers = product.variants ? product.variants.map(v => ({
-    "@type": "Offer",
-    "price": v.price,
-    "priceCurrency": "USD",
-    "itemCondition": "https://schema.org/NewCondition",
-    "availability": "https://schema.org/InStock",
-    "url": productUrl,
-    "sku": String(v.syncVariantId),
-    "priceSpecification": {
-      "@type": "PriceSpecification",
-      "price": v.price,
-      "priceCurrency": "USD",
-      "valueAddedTaxIncluded": "false"
-    }
-  })) : [];
+  const prices = Array.isArray(product.variants)
+    ? product.variants
+      .map((variant) => Number(variant.price))
+      .filter((price) => Number.isFinite(price) && price > 0)
+    : [];
+  const lowPrice = prices.length ? Math.min(...prices) : (selectedVariant ? Number(selectedVariant.price) : undefined);
+  const highPrice = prices.length ? Math.max(...prices) : (selectedVariant ? Number(selectedVariant.price) : undefined);
 
   const schemaData = {
     "@context": "https://schema.org",
     "@type": "Product",
-    "name": product.name,
+    "name": seo.productName || product.name,
     "image": product.images ? product.images.map(img => img.startsWith('http') ? img : `${origin}/${img}`) : [],
-    "description": description,
+    "description": seo.schemaDescription || description,
     "sku": String(product.id),
     "mpn": String(product.externalId || product.id),
+    "material": product.material || "82% polyester, 18% spandex",
+    "color": product.color || getProductColorLabel(product) || undefined,
+    "audience": {
+      "@type": "PeopleAudience",
+      "suggestedGender": product.audienceGender || "female"
+    },
     "brand": {
       "@type": "Brand",
       "name": "LEBE"
     },
-    "offers": offers.length > 0 ? (offers.length === 1 ? offers[0] : offers) : {
-      "@type": "Offer",
-      "price": selectedVariant ? selectedVariant.price : 0,
+    "offers": {
+      "@type": "AggregateOffer",
       "priceCurrency": "USD",
-      "availability": "https://schema.org/InStock",
-      "url": productUrl
+      "lowPrice": Number.isFinite(lowPrice) ? lowPrice.toFixed(2) : undefined,
+      "highPrice": Number.isFinite(highPrice) ? highPrice.toFixed(2) : undefined,
+      "offerCount": Array.isArray(product.variants) ? product.variants.length : undefined,
+      "availability": "https://schema.org/MadeToOrder",
+      "itemCondition": "https://schema.org/NewCondition",
+      "url": productUrl,
+      "hasMerchantReturnPolicy": {
+        "@type": "MerchantReturnPolicy",
+        "applicableCountry": "US",
+        "returnPolicyCategory": "https://schema.org/MerchantReturnNotPermitted",
+        "merchantReturnLink": `${origin}/returns`
+      }
     }
   };
 
@@ -145,10 +154,11 @@ function setHeroImages(images, name) {
   const firstImage = Array.isArray(images) ? images[0] : '';
   if (!firstImage) return;
 
+  const imageAlt = currentProduct?.seo?.imageAlt || name || '';
   getProductImageElements().forEach((img) => {
     if (img.src.endsWith(firstImage)) return;
     img.src = firstImage;
-    img.alt = name || '';
+    img.alt = imageAlt;
   });
 }
 
@@ -164,6 +174,20 @@ function getProductColorLabel(product = currentProduct, variant = currentVariant
 }
 
 function getProductProfile(product = currentProduct) {
+  if (product?.pdp) {
+    const isBra = String(product.type || product.name || '').toLowerCase().includes('bra');
+    const isLegging = String(product.type || product.name || '').toLowerCase().includes('legging');
+    return {
+      story: product.seo?.schemaDescription || product.seo?.description || '',
+      highlights: isBra
+        ? ['Racerback support', 'Removable padding', 'Pairs as a set']
+        : ['High-rise waist', 'Four-way stretch', 'Pairs as a set'],
+      why: product.pdp.why || '',
+      fit: product.pdp.fit || '',
+      fabric: product.pdp.fabric || '',
+    };
+  }
+
   const name = String(product?.name || '').toLowerCase();
   const isBra = name.includes('bra');
   const isLegging = name.includes('legging');
@@ -218,13 +242,45 @@ function renderProductDetails(product = currentProduct) {
     if (el) el.textContent = text;
   };
 
+  const setFitCopy = (text) => {
+    const el = document.getElementById('pdp-fit-copy');
+    if (!el) return;
+    el.textContent = text ? `${text} ` : '';
+    const link = document.createElement('a');
+    link.href = '/size-guide';
+    link.className = 'font-semibold text-[#050505] underline underline-offset-4 transition hover:text-[#050505]/60';
+    link.textContent = 'Full size guide';
+    el.appendChild(link);
+    el.append('.');
+  };
+
+  const setParagraphs = (id, text) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const paragraphs = String(text || '')
+      .split(/\n{2,}/)
+      .map((paragraph) => paragraph.trim())
+      .filter(Boolean);
+    if (paragraphs.length === 0) {
+      el.textContent = '';
+      return;
+    }
+    el.innerHTML = '';
+    paragraphs.forEach((paragraph, index) => {
+      const p = document.createElement('p');
+      if (index > 0) p.className = 'mt-3';
+      p.textContent = paragraph;
+      el.appendChild(p);
+    });
+  };
+
   setText('product-story', profile.story);
   setText('pdp-highlight-1', profile.highlights[0]);
   setText('pdp-highlight-2', profile.highlights[1]);
   setText('pdp-highlight-3', profile.highlights[2]);
   setText('pdp-why-copy', profile.why);
-  setText('pdp-fit-copy', profile.fit);
-  setText('pdp-fabric-copy', profile.fabric);
+  setFitCopy(profile.fit);
+  setParagraphs('pdp-fabric-copy', profile.fabric);
   setText('selected-color-label', colorLabel ? `Shown in ${colorLabel}.` : '');
   setText('selected-variant-summary', selectedSummary);
 }
@@ -238,7 +294,7 @@ function applyProductPreview(product) {
   const productPrice = document.getElementById('product-price');
 
   updateProductSeoAndStructuredData(product, null);
-  if (productName && product.name) productName.textContent = product.name;
+  if (productName && product.name) productName.textContent = product.seo?.productName || product.name;
   if (productPrice && Number.isFinite(Number(product.price))) {
     productPrice.textContent = formatProductPrice(product.price);
   }
@@ -409,8 +465,8 @@ const loadProductData = async (productId) => {
     window.LebeSizeGuide.render(currentProduct);
     colorVariants = buildColorVariantMap(currentProduct) || colorVariants || findColorVariants(productId);
 
-    document.title = currentProduct.name + ' — LEBE';
-    productName.textContent = currentProduct.name;
+    document.title = currentProduct.seo?.title || currentProduct.name + ' — LEBE';
+    productName.textContent = currentProduct.seo?.productName || currentProduct.name;
 
     const getFirstVariantForSize = (size) => currentProduct.variants.find(
       (variant) => String(variant.size || '').toUpperCase() === String(size || '').toUpperCase()
@@ -544,7 +600,8 @@ const loadProductData = async (productId) => {
         currentQuantity = 1;
 
         // Update URL without reload
-        window.history.replaceState({}, '', `/product?id=${newProductId}`);
+        const nextPath = newProduct.path || (newProduct.slug ? `/product/${newProduct.slug}` : `/product?id=${newProductId}`);
+        window.history.replaceState({}, '', nextPath);
 
         // Update SEO, Open Graph, and JSON-LD schema
         updateProductSeoAndStructuredData(currentProduct, currentVariant);
@@ -571,7 +628,7 @@ const loadProductData = async (productId) => {
         }
 
         // Update text content
-        productName.textContent = newProduct.name;
+        productName.textContent = newProduct.seo?.productName || newProduct.name;
         productPrice.textContent = formatProductPrice(currentVariant.price);
         if (qtyDisplay) qtyDisplay.textContent = '1';
         if (qtyInput) qtyInput.value = '1';
@@ -659,7 +716,7 @@ async function initProductPage() {
   const qtyPlus = document.getElementById('qty-plus');
 
   const params = new URLSearchParams(window.location.search);
-  const id = parseInt(params.get('id'));
+  const id = Number(window.LEBE_PRODUCT_ID) || parseInt(params.get('id'));
 
   if (!id) {
     document.getElementById('product-name').textContent = 'No product specified';
