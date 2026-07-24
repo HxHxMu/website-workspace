@@ -5,7 +5,6 @@
   forms.forEach((form) => {
     const companyId = form.getAttribute('data-company-id');
     const listId = form.getAttribute('data-list-id');
-    const promoCode = form.getAttribute('data-promo-code') || '';
     const successMessage = form.getAttribute('data-success-message') || 'You’re on the list.';
     if (!companyId || !listId) return;
 
@@ -48,7 +47,6 @@
         window.LebeAnalytics?.track('generate_lead', {
           form_type: 'newsletter',
           lead_source: 'home_newsletter',
-          coupon: promoCode || undefined,
           email,
         });
       } catch (_) {

@@ -46,7 +46,7 @@ GA4, Meta Pixel, and the Pinterest tag only fire on `www.lebe.life` / `lebe.life
 
 `KLAVIYO_COMPANY_ID` (public API key / Site ID) and `KLAVIYO_LIST_ID` control the homepage newsletter offer. Leave either unset and the homepage newsletter section is omitted from the build entirely — no broken form. Submissions POST directly to Klaviyo's client API (`src/js/klaviyo-footer-signup.js`).
 
-The newsletter offer uses the static code `WELCOME15`: 15% off a customer's first order. Stripe must have an active Promotion Code named `WELCOME15`; Klaviyo should include the same code in the welcome email.
+The newsletter offer is 15% off a customer's first order. The storefront does not reveal the discount code; Klaviyo sends it in the welcome email. Stripe must have an active Promotion Code named `WELCOME15`; Klaviyo should include the same code in the welcome email.
 
 Klaviyo setup:
 

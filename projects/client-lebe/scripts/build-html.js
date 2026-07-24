@@ -163,9 +163,9 @@ function getHomeNewsletterSignupHtml() {
         <p class="lebe-kicker">join the list</p>
         <h2 id="newsletter-title" class="lebe-newsletter__title">Get 15% off your first order.</h2>
         <p class="lebe-newsletter__copy">
-          Early access to new drops, restocks, and private notes from LEBE. Use code <strong>WELCOME15</strong> after signup.
+          Join the LEBE list for first access to new drops, restocks, and a welcome offer sent to your inbox.
         </p>
-        <form data-klaviyo-signup data-company-id="${escapeHtml(klaviyoCompanyId)}" data-list-id="${escapeHtml(klaviyoListId)}" data-promo-code="WELCOME15" data-success-message="You’re in. Use code WELCOME15 at checkout." class="newsletter-signup">
+        <form data-klaviyo-signup data-company-id="${escapeHtml(klaviyoCompanyId)}" data-list-id="${escapeHtml(klaviyoListId)}" data-success-message="You’re in. Check your email for your welcome offer." class="newsletter-signup">
           <label for="home-newsletter-email" class="sr-only">Email address</label>
           <div class="newsletter-signup__row">
             <input id="home-newsletter-email" name="email" type="email" required autocomplete="email" placeholder="Email address" class="newsletter-signup__input" />
