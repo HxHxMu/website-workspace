@@ -292,6 +292,16 @@ const corePages = [
     contentFile: 'src/partials/cart/_cart.html'
   },
   {
+    slug: 'size-guide',
+    title: 'Size Guide — LEBE',
+    description: 'Body and garment measurements for LEBE leggings and bras, with fit guidance for between sizes.',
+    bodyClass: 'bg-white text-[#050505]',
+    headerClass: '',
+    extraHead: '',
+    scripts: '',
+    contentFile: 'src/partials/size-guide/_size-guide.html'
+  },
+  {
     slug: 'contact',
     title: 'Contact — LEBE',
     description: 'Contact LEBE for general product, order, and policy questions.',
@@ -332,6 +342,25 @@ corePages.forEach((page) => {
 
 // 4. Define and Compile Policy Pages
 const UPDATED = 'June 2026';
+const returnsMerchantPolicyJsonLd = `<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "MerchantReturnPolicy",
+  "name": "LEBE Returns & Refunds",
+  "url": "https://www.lebe.life/returns",
+  "applicableCountry": "US",
+  "returnPolicyCategory": "https://schema.org/MerchantReturnNotPermitted",
+  "merchantReturnLink": "https://www.lebe.life/returns",
+  "returnMethod": "https://schema.org/ReturnByMail",
+  "returnFees": "https://schema.org/FreeReturn",
+  "returnShippingFeesAmount": {
+    "@type": "MonetaryAmount",
+    "value": 0,
+    "currency": "USD"
+  },
+  "refundType": "https://schema.org/FullRefund"
+}
+</script>`;
 const policies = [
   {
     slug: 'privacy',
@@ -484,6 +513,8 @@ const policies = [
     sideNote: 'Made for you.',
     metaTitle: 'Returns & Refunds — LEBE',
     metaDescription: 'Return, refund, damaged item, and cancellation information for LEBE orders.',
+    extraHead: returnsMerchantPolicyJsonLd,
+    updated: 'July 2026',
     sections: [
       {
         heading: 'Overview.',
@@ -498,6 +529,14 @@ const policies = [
           'If your order arrives damaged, defective, or incorrect, submit an <a href="/order-issue">order issue request</a> within 30 days of delivery.',
           'Include your order number, a description of the issue, and any available photo links. We may request photos before approving a replacement or refund.',
           'If approved, we will provide a replacement or refund at no additional cost.',
+          'Refunds are issued to the original payment method within 5–10 business days of approval.',
+        ],
+      },
+      {
+        heading: 'Return shipping.',
+        body: [
+          'Approved damaged, defective, or incorrect orders do not need to be shipped back. There is no return shipping cost.',
+          'Because every item is made to order, we do not accept returns for size, fit, or change of mind. No return shipping applies.',
         ],
       },
       {
@@ -629,7 +668,7 @@ function renderPolicyContent(policy) {
     .replaceAll('{{SIDE_TITLE}}', policy.sideTitle)
     .replaceAll('{{SIDE_NOTE}}', policy.sideNote)
     .replaceAll('{{CONTENT}}', renderSections(policy.sections))
-    .replaceAll('{{UPDATED}}', UPDATED);
+    .replaceAll('{{UPDATED}}', policy.updated || UPDATED);
 }
 
 // Compile policy pages
@@ -642,7 +681,7 @@ policies.forEach((policy) => {
     description: policy.metaDescription,
     bodyClass: 'bg-white text-[#050505]',
     headerClass: '',
-    extraHead: '',
+    extraHead: policy.extraHead || '',
     scripts: '' // base scripts only (Meta Pixel will be loaded by scriptsTemplate)
   };
 
@@ -687,7 +726,7 @@ function buildSitemap() {
     const urls = [];
 
     // Core static pages
-    const staticSlugs = ['index', 'cart', 'contact', 'order-issue', 'privacy', 'shipping', 'returns', 'care', 'terms'];
+    const staticSlugs = ['index', 'cart', 'contact', 'order-issue', 'privacy', 'shipping', 'returns', 'size-guide', 'care', 'terms'];
     staticSlugs.forEach((slug) => {
       const path = slug === 'index' ? '' : `/${slug}`;
       urls.push(`${DOMAIN}${path}`);

@@ -50,7 +50,25 @@
   <meta name="apple-mobile-web-app-title" content="lebe." />
   <link rel="manifest" href="/site.webmanifest" />
   <link rel="stylesheet" href="./output.css" />
-  
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "MerchantReturnPolicy",
+  "name": "LEBE Returns & Refunds",
+  "url": "https://www.lebe.life/returns",
+  "applicableCountry": "US",
+  "returnPolicyCategory": "https://schema.org/MerchantReturnNotPermitted",
+  "merchantReturnLink": "https://www.lebe.life/returns",
+  "returnMethod": "https://schema.org/ReturnByMail",
+  "returnFees": "https://schema.org/FreeReturn",
+  "returnShippingFeesAmount": {
+    "@type": "MonetaryAmount",
+    "value": 0,
+    "currency": "USD"
+  },
+  "refundType": "https://schema.org/FullRefund"
+}
+</script>
 </head>
 <body class="bg-white text-[#050505]">
 
@@ -95,6 +113,14 @@
             <p>If your order arrives damaged, defective, or incorrect, submit an <a href="/order-issue">order issue request</a> within 30 days of delivery.</p>
             <p>Include your order number, a description of the issue, and any available photo links. We may request photos before approving a replacement or refund.</p>
             <p>If approved, we will provide a replacement or refund at no additional cost.</p>
+            <p>Refunds are issued to the original payment method within 5–10 business days of approval.</p>
+          </section>
+
+
+          <section>
+            <h2>Return shipping.</h2>
+            <p>Approved damaged, defective, or incorrect orders do not need to be shipped back. There is no return shipping cost.</p>
+            <p>Because every item is made to order, we do not accept returns for size, fit, or change of mind. No return shipping applies.</p>
           </section>
 
 
@@ -111,7 +137,7 @@
           </section>
 
         <div class="mt-12 border-t border-[#050505]/12 pt-8 text-[14px] leading-7 text-[#050505]/48">
-          Last updated: June 2026.
+          Last updated: July 2026.
         </div>
       </article>
     </div>
@@ -135,6 +161,7 @@
       <a href="/terms" class="transition hover:text-[#050505]">terms</a>
       <a href="/shipping" class="transition hover:text-[#050505]">shipping</a>
       <a href="/returns" class="transition hover:text-[#050505]">returns</a>
+      <a href="/size-guide" class="transition hover:text-[#050505]">size guide</a>
       <a href="/care" class="transition hover:text-[#050505]">care</a>
       <a href="/contact" class="transition hover:text-[#050505]">contact</a>
     </nav>

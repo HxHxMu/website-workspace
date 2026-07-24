@@ -22,6 +22,7 @@
     { "source": "/terms", "destination": "/terms.html" },
     { "source": "/shipping", "destination": "/shipping.html" },
     { "source": "/returns", "destination": "/returns.html" },
+    { "source": "/size-guide", "destination": "/size-guide.html" },
     { "source": "/care", "destination": "/care.html" },
     { "source": "/contact", "destination": "/contact.html" },
     { "source": "/order-issue", "destination": "/order-issue.html" }
