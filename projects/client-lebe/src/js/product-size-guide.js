@@ -41,11 +41,14 @@
   };
 
   function getProductSizeGuideType(product) {
+    const configuredType = String(product?.sizeGuideType || '').trim().toLowerCase();
+    if (SIZE_GUIDES[configuredType]) return configuredType;
+
+    const productType = String(product?.type || '').trim().toLowerCase();
+    if (SIZE_GUIDES[productType]) return productType;
+
     const productName = String(product?.name || '').toLowerCase();
-    const productId = String(product?.id || '');
-    return productName.includes('bra') || ['309483674', '309483736'].includes(productId)
-      ? 'bra'
-      : 'leggings';
+    return productName.includes('bra') ? 'bra' : 'leggings';
   }
 
   function renderSizeGuide(product) {
