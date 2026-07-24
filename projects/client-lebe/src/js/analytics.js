@@ -1,6 +1,8 @@
 (function () {
   const BRAND = 'LEBE';
   const CURRENCY = 'USD';
+  const PROD_HOSTS = new Set(['www.lebe.life', 'lebe.life']);
+  const isProdHost = PROD_HOSTS.has(window.location.hostname);
   const onceKeys = new Set();
   const pendingMetaEvents = [];
   const debugPixel = new URLSearchParams(window.location.search).has('debug_pixel')
@@ -36,6 +38,7 @@
   }
 
   function trackGoogle(eventName, params = {}) {
+    if (!isProdHost) return;
     if (typeof window.gtag !== 'function') return;
     window.gtag('event', eventName, googleParams(params));
   }
@@ -58,6 +61,7 @@
   }
 
   async function sendCapi(standardEvent, eventId, email) {
+    if (!isProdHost) return;
     try {
       const emailHash = await hashEmail(email);
       await fetch('/api/capi', {
@@ -121,6 +125,8 @@
   }
 
   function trackMeta(eventName, params = {}, eventId = '') {
+    if (!isProdHost) return;
+
     const metaEventId = eventId || generateEventId();
 
     if (typeof window.fbq !== 'function') {
@@ -232,6 +238,7 @@
     classifyCheckoutError,
     debugState: () => ({
       debugPixel,
+      isProdHost,
       fbqType: typeof window.fbq,
       pendingMetaEvents: pendingMetaEvents.length,
     }),

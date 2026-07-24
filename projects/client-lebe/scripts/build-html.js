@@ -81,8 +81,6 @@ function getMetaPixelCode() {
   if (!pixelId) return '';
 
   const safePixelId = escapeJsString(pixelId);
-  const noscriptUrl = `https://www.facebook.com/tr?id=${encodeURIComponent(pixelId)}&ev=PageView&noscript=1`;
-
   return `
   <!-- Meta Pixel Code — production hosts only, keeps previews/localhost out of Meta data -->
   <script>
@@ -99,7 +97,6 @@ function getMetaPixelCode() {
       fbq('track', 'PageView');
     }
   </script>
-  <noscript><img height="1" width="1" style="display:none" alt="" src="${noscriptUrl}" /></noscript>
   <!-- End Meta Pixel Code -->`;
 }
 
@@ -108,8 +105,6 @@ function getPinterestTagCode() {
   if (!tagId) return '';
 
   const safeTagId = escapeJsString(tagId);
-  const noscriptUrl = `https://ct.pinterest.com/v3/?tid=${encodeURIComponent(tagId)}&event=init&noscript=1`;
-
   return `
   <!-- Pinterest Tag — production hosts only, keeps previews/localhost out of Pinterest data -->
   <script>
@@ -124,7 +119,6 @@ function getPinterestTagCode() {
       pintrk('page');
     }
   </script>
-  <noscript><img height="1" width="1" style="display:none" alt="" src="${noscriptUrl}" /></noscript>
   <!-- End Pinterest Tag -->`;
 }
 
