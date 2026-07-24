@@ -38,6 +38,7 @@ function getPublishedProducts() {
     ...product,
     images: [...(product.images || [])],
     homepageImages: [...(product.homepageImages || [])],
+    variants: [...(product.variants || [])],
     seo: { ...(product.seo || {}) },
     pdp: { ...(product.pdp || {}) },
     feed: { ...(product.feed || {}) },

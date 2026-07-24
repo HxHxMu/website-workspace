@@ -28,6 +28,13 @@
       homepageOrder: 1,
       sizeGuideType: 'leggings',
       careCopy: 'Cold wash only. Hang dry. Gold may soften with wear.',
+      variants: [
+        { syncVariantId: 3784396045, size: 'XS', color: 'White', price: 85 },
+        { syncVariantId: 3784396046, size: 'S', color: 'White', price: 85 },
+        { syncVariantId: 3784396047, size: 'M', color: 'White', price: 85 },
+        { syncVariantId: 3784396048, size: 'L', color: 'White', price: 85 },
+        { syncVariantId: 3784396050, size: 'XL', color: 'White', price: 85 },
+      ],
       images: [
         'assets/images/product-shots/saguanari_leggings/9.0-900.jpg',
         'assets/images/product-shots/saguanari_leggings/9.1-900.jpg',
@@ -42,8 +49,8 @@
       feed: {
         title: 'LEBE Saguanari High-Waist Yoga Leggings - White & Gold Serpent Print',
         titleBase: 'Saguanari Leggings',
-        category: 'Clothing & Accessories > Clothing > Activewear > Leggings',
-        productType: 'Apparel & Accessories > Clothing > Activewear > Leggings',
+        category: 'Apparel & Accessories > Clothing > Activewear',
+        productType: 'Activewear > Leggings',
         description: 'High-waist printed yoga leggings in white with a gold serpent and dot pattern. Four-way stretch fabric in 82% polyester, 18% spandex with a smooth microfiber handfeel and a raised waistband that holds through movement. The print covers the full garment, then each pair is precision-cut and hand-sewn to order. Made after purchase in XS through XL. Ships in approximately 14 days.',
       },
     },
@@ -75,6 +82,13 @@
       homepageOrder: 2,
       sizeGuideType: 'bra',
       careCopy: 'Cold wash only. Hang dry. Gold may soften with wear.',
+      variants: [
+        { syncVariantId: 3910803308, size: 'XS', color: 'White', price: 55 },
+        { syncVariantId: 3910803309, size: 'S', color: 'White', price: 55 },
+        { syncVariantId: 3910803310, size: 'M', color: 'White', price: 55 },
+        { syncVariantId: 3910803311, size: 'L', color: 'White', price: 55 },
+        { syncVariantId: 3910803312, size: 'XL', color: 'White', price: 55 },
+      ],
       images: [
         'assets/images/product-shots/saguanari_bra/11-900.jpg',
         'assets/images/product-shots/saguanari_bra/11.1-900.jpg',
@@ -89,8 +103,8 @@
       feed: {
         title: 'LEBE Saguanari Racerback Sports Bra - White & Gold Serpent Print',
         titleBase: 'Saguanari Sports Bra',
-        category: 'Clothing & Accessories > Clothing > Activewear > Sports Bras',
-        productType: 'Apparel & Accessories > Clothing > Activewear > Sports Bras',
+        category: 'Apparel & Accessories > Clothing > Activewear',
+        productType: 'Activewear > Sports Bras',
         description: 'Printed racerback sports bra in white with a gold serpent and dot pattern. Four-way stretch fabric in 82% polyester, 18% spandex with a moisture-wicking sports mesh lining, removable foam padding, and a wide elastic band under the bust. Scoop neckline, racerback cut, support material through the shoulder straps, flat seams and bias binding to prevent rubbing. Best for A-C cups. Made to order in XS through XL. Ships in approximately 14 days.',
       },
     },
@@ -122,6 +136,13 @@
       homepageOrder: 3,
       sizeGuideType: 'leggings',
       careCopy: 'Cold wash only. Hang dry. Heat will fade the black.',
+      variants: [
+        { syncVariantId: 3762113356, size: 'XS', color: 'Black', price: 85 },
+        { syncVariantId: 3762113357, size: 'S', color: 'Black', price: 85 },
+        { syncVariantId: 3762113358, size: 'M', color: 'Black', price: 85 },
+        { syncVariantId: 3762113359, size: 'L', color: 'Black', price: 85 },
+        { syncVariantId: 3762113360, size: 'XL', color: 'Black', price: 85 },
+      ],
       images: [
         'assets/images/product-shots/saguanari_leggings/15-900.jpg',
         'assets/images/product-shots/saguanari_leggings/15.1-900.jpg',
@@ -136,8 +157,8 @@
       feed: {
         title: 'LEBE Saguanari High-Waist Yoga Leggings - Black & Gold Serpent Print',
         titleBase: 'Saguanari Leggings',
-        category: 'Clothing & Accessories > Clothing > Activewear > Leggings',
-        productType: 'Apparel & Accessories > Clothing > Activewear > Leggings',
+        category: 'Apparel & Accessories > Clothing > Activewear',
+        productType: 'Activewear > Leggings',
         description: 'High-waist printed yoga leggings in black with a gold serpent and dot pattern. Four-way stretch fabric in 82% polyester, 18% spandex with a smooth microfiber handfeel and a raised waistband that stays put through flow, lifting, and everyday wear. The print is applied across the full garment, then precision-cut and hand-sewn to order - no two pairs are identical. Made after purchase in XS through XL. Ships in approximately 14 days.',
       },
     },
@@ -169,6 +190,13 @@
       homepageOrder: 4,
       sizeGuideType: 'bra',
       careCopy: 'Cold wash only. Hang dry. Heat will fade the black.',
+      variants: [
+        { syncVariantId: 3910804393, size: 'XS', color: 'Black', price: 55 },
+        { syncVariantId: 3910804394, size: 'S', color: 'Black', price: 55 },
+        { syncVariantId: 3910804395, size: 'M', color: 'Black', price: 55 },
+        { syncVariantId: 3910804396, size: 'L', color: 'Black', price: 55 },
+        { syncVariantId: 3910804397, size: 'XL', color: 'Black', price: 55 },
+      ],
       images: [
         'assets/images/product-shots/saguanari_bra/17-900.jpg',
         'assets/images/product-shots/saguanari_bra/17.1-900.jpg',
@@ -183,8 +211,8 @@
       feed: {
         title: 'LEBE Saguanari Racerback Sports Bra - Black & Gold Serpent Print',
         titleBase: 'Saguanari Sports Bra',
-        category: 'Clothing & Accessories > Clothing > Activewear > Sports Bras',
-        productType: 'Apparel & Accessories > Clothing > Activewear > Sports Bras',
+        category: 'Apparel & Accessories > Clothing > Activewear',
+        productType: 'Activewear > Sports Bras',
         description: 'Printed racerback sports bra in black with a gold serpent and dot pattern. Four-way stretch fabric in 82% polyester, 18% spandex with a moisture-wicking sports mesh lining, removable foam padding, and a wide elastic band under the bust. Scoop neckline, racerback cut, support material through the shoulder straps, flat seams and bias binding to prevent rubbing. Best for A-C cups. Made to order in XS through XL. Ships in approximately 14 days.',
       },
     },
@@ -213,6 +241,7 @@
         path: `/product/${product.slug}`,
         seo: { ...(product.seo || {}) },
         images: [...product.images],
+        variants: [...(product.variants || [])],
       };
       return acc;
     }, {});

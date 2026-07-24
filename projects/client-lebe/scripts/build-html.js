@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const { fetchFromPrintful } = require('../api/_lib/printful');
 const {
   getColorVariants,
   getProductImages,
@@ -286,7 +285,7 @@ function variantPrices(variants = []) {
 }
 
 function buildProductJsonLd(product, detail = null) {
-  const variants = detail?.variants || [];
+  const variants = detail?.variants?.length ? detail.variants : product.variants || [];
   const prices = variantPrices(variants);
   const lowPrice = prices.length ? Math.min(...prices) : undefined;
   const highPrice = prices.length ? Math.max(...prices) : undefined;
@@ -328,7 +327,8 @@ function renderProductTemplate(product, detail = null) {
   const images = productImages(product, detail);
   const primaryImage = images[0] || '';
   const alt = productAlt(product);
-  const prices = variantPrices(detail?.variants || []);
+  const variants = detail?.variants?.length ? detail.variants : product.variants || [];
+  const prices = variantPrices(variants);
   const displayPrice = prices.length ? formatMoney(Math.min(...prices)) : '';
   const highlights = productHighlights(product);
 
@@ -991,16 +991,16 @@ function productKind(product = {}, productId = '') {
 
   if (haystack.includes('bra')) {
     return {
-      category: 'Clothing & Accessories > Clothing > Activewear > Sports Bras',
-      productType: 'Apparel & Accessories > Clothing > Activewear > Sports Bras',
+      category: 'Apparel & Accessories > Clothing > Activewear',
+      productType: 'Activewear > Sports Bras',
       titleBase: 'Saguanari Sports Bra',
       description: 'Made-to-order LEBE sports bra with premium all-over print artwork.',
     };
   }
 
   return {
-    category: 'Clothing & Accessories > Clothing > Activewear > Leggings',
-    productType: 'Apparel & Accessories > Clothing > Activewear > Leggings',
+    category: 'Apparel & Accessories > Clothing > Activewear',
+    productType: 'Activewear > Leggings',
     titleBase: 'Saguanari Leggings',
     description: 'Made-to-order LEBE leggings with premium all-over print artwork.',
   };
@@ -1031,30 +1031,33 @@ function variantSize(variant = {}) {
 }
 
 function formatFeedPrice(value) {
-  const amount = Number.parseFloat(value);
+  const amount = Number.parseFloat(String(value ?? '').replace(/[^0-9.]/g, ''));
   if (!Number.isFinite(amount) || amount <= 0) return '';
   return `${amount.toFixed(2)} USD`;
 }
 
 function buildFeedItem({ product, variant, image, itemGroupId, kind }) {
   const productId = product.id;
-  const syncVariantId = variant.id || variant.sync_variant_id || `${productId}-${variant.variant_id || variantSize(variant)}`;
+  const syncVariantId = variant.syncVariantId || variant.id || variant.sync_variant_id || `${productId}-${variant.variant_id || variantSize(variant)}`;
   const color = variantColor(product, variant);
   const size = variantSize(variant);
   const title = kind.title || kind.titleBase || product.name;
-  const link = getProductUrl(productId, DOMAIN) || `${DOMAIN}/product?id=${encodeURIComponent(productId)}`;
+  const link = getProductUrl(productId, DOMAIN);
   const price = formatFeedPrice(variant.retail_price || variant.price);
+  const additionalImages = (productImages(product).slice(1, 4))
+    .map((additionalImage) => `      <g:additional_image_link>${escapeXml(normalizeFeedUrl(additionalImage))}</g:additional_image_link>`)
+    .join('\n');
 
-  if (!price || !image) return '';
+  if (!price || !image || !link) return '';
 
   return `    <item>
       <g:id>${escapeXml(syncVariantId)}</g:id>
       <g:item_group_id>${escapeXml(itemGroupId)}</g:item_group_id>
-      <title>${escapeXml(title)}</title>
-      <description>${escapeXml(kind.description)}</description>
-      <link>${escapeXml(link)}</link>
+      <g:title>${escapeXml(title)}</g:title>
+      <g:description>${escapeXml(kind.description)}</g:description>
+      <g:link>${escapeXml(link)}</g:link>
       <g:image_link>${escapeXml(normalizeFeedUrl(image))}</g:image_link>
-      <g:availability>in stock</g:availability>
+${additionalImages ? `${additionalImages}\n` : ''}      <g:availability>in_stock</g:availability>
       <g:inventory>999</g:inventory>
       <g:quantity_to_sell_on_facebook>999</g:quantity_to_sell_on_facebook>
       <g:price>${escapeXml(price)}</g:price>
@@ -1073,30 +1076,22 @@ function buildFeedItem({ product, variant, image, itemGroupId, kind }) {
     </item>`;
 }
 
-async function getFeedProducts(apiKey) {
-  const publishedProductIds = getPublishedProducts().map((product) => product.id);
-
-  return Promise.all(publishedProductIds.map(async (productId) => {
-    const detail = await fetchFromPrintful(`/store/products/${encodeURIComponent(productId)}`, apiKey);
-    const syncProduct = detail?.result?.sync_product;
-    const syncVariants = detail?.result?.sync_variants || [];
-
-    if (!syncProduct || syncVariants.length === 0) return null;
-
-    const fallbackImages = [
-      syncProduct.thumbnail_url,
-      ...syncVariants
-        .flatMap((variant) => variant.files || [])
-        .filter((file) => file.type === 'preview' && file.preview_url)
-        .map((file) => file.preview_url),
-    ].filter(Boolean);
+function buildLocalFeedProducts() {
+  return getPublishedProducts().map((product) => {
+    const variants = (product.variants || []).map((variant) => ({
+      ...variant,
+      color: variant.color || product.color,
+    }));
 
     return {
-      product: syncProduct,
-      variants: syncVariants,
-      images: getProductImages(syncProduct.external_id, fallbackImages),
+      product: {
+        ...product,
+        external_id: product.externalId,
+      },
+      variants,
+      images: productImages(product),
     };
-  }));
+  });
 }
 
 function buildEmptyProductsFeed() {
@@ -1111,16 +1106,8 @@ function buildEmptyProductsFeed() {
 }
 
 async function buildProductsFeed() {
-  const apiKey = process.env.PRINTFUL_API_KEY;
-
-  if (!apiKey) {
-    fs.writeFileSync(getPath('src', 'products-feed.xml'), buildEmptyProductsFeed());
-    console.warn('Built XML: products-feed.xml without products because PRINTFUL_API_KEY is not set.');
-    return;
-  }
-
   try {
-    const feedProducts = (await getFeedProducts(apiKey)).filter(Boolean);
+    const feedProducts = buildLocalFeedProducts().filter(Boolean);
     buildProductPages(feedProducts);
 
     const items = [];

@@ -101,7 +101,6 @@ function updateProductSeoAndStructuredData(product, selectedVariant) {
     "image": product.images ? product.images.map(toAbsoluteAssetUrl) : [],
     "description": seo.schemaDescription || description,
     "sku": String(product.id),
-    "mpn": String(product.externalId || product.id),
     "material": product.material || "82% polyester, 18% spandex",
     "color": product.color || getProductColorLabel(product) || undefined,
     "audience": {
