@@ -20,6 +20,16 @@ function toAbsoluteAssetUrl(url) {
   return `${window.location.origin}${normalizedUrl}`;
 }
 
+function parseProductPrice(value) {
+  if (value === null || value === undefined) return undefined;
+  const price = Number.parseFloat(String(value).replace(/[^0-9.]/g, ''));
+  return Number.isFinite(price) && price > 0 ? price : undefined;
+}
+
+function getVariantPrice(variant) {
+  return parseProductPrice(variant?.retail_price || variant?.price);
+}
+
 function updateProductSeoAndStructuredData(product, selectedVariant) {
   if (!product) return;
 
@@ -75,11 +85,14 @@ function updateProductSeoAndStructuredData(product, selectedVariant) {
   // 2. Inject/Update JSON-LD Structured Data
   const prices = Array.isArray(product.variants)
     ? product.variants
-      .map((variant) => Number(variant.price))
-      .filter((price) => Number.isFinite(price) && price > 0)
+      .map(getVariantPrice)
+      .filter((price) => price !== undefined)
     : [];
-  const lowPrice = prices.length ? Math.min(...prices) : (selectedVariant ? Number(selectedVariant.price) : undefined);
-  const highPrice = prices.length ? Math.max(...prices) : (selectedVariant ? Number(selectedVariant.price) : undefined);
+  const selectedPrice = getVariantPrice(selectedVariant);
+  const fallbackProductPrice = parseProductPrice(product.price || product.retail_price);
+  const fallbackPrice = selectedPrice || fallbackProductPrice;
+  const lowPrice = prices.length ? Math.min(...prices) : fallbackPrice;
+  const highPrice = prices.length ? Math.max(...prices) : fallbackPrice;
 
   const schemaData = {
     "@context": "https://schema.org",
