@@ -30,6 +30,50 @@ function getVariantPrice(variant) {
   return parseProductPrice(variant?.retail_price || variant?.price);
 }
 
+function getProductById(productId) {
+  return window.LebeProductData?.publishedProducts?.[String(productId)] || null;
+}
+
+function getLocalProductList() {
+  return Object.values(window.LebeProductData?.publishedProducts || {}).map(normalizeLocalProduct).filter(Boolean);
+}
+
+function normalizeLocalVariant(variant = {}) {
+  const syncVariantId = variant.syncVariantId || variant.sync_variant_id || '';
+  const variantId = variant.variantId || variant.variant_id || '';
+  return {
+    ...variant,
+    id: variantId,
+    variantId,
+    syncVariantId,
+    size: variant.size || 'One Size',
+    color: variant.color || 'Default',
+    price: getVariantPrice(variant) || 0,
+    options: variant.options || [],
+  };
+}
+
+function normalizeLocalProduct(product) {
+  if (!product) return null;
+
+  const variants = (product.variants || []).map(normalizeLocalVariant);
+  const prices = variants.map((variant) => variant.price).filter((price) => price > 0);
+  const price = prices.length ? Math.min(...prices) : 0;
+  const localColorVariants = window.LebeProductData?.colorVariants?.[String(product.id)] || null;
+
+  return {
+    ...product,
+    externalId: product.externalId,
+    path: product.path || (product.slug ? `/product/${product.slug}` : ''),
+    images: [...(product.images || [])],
+    variants,
+    price,
+    colorVariants: Array.isArray(localColorVariants)
+      ? localColorVariants
+      : localColorVariants?.colors || [],
+  };
+}
+
 function updateProductSeoAndStructuredData(product, selectedVariant) {
   if (!product) return;
 
@@ -348,9 +392,10 @@ window.handleBuyClick = function(e) {
     return false;
   }
 
+  const numericVariantId = Number(currentVariant.variantId || currentVariant.id);
   const cartItem = {
     productId: currentProduct.id,
-    variantId: currentVariant.id,
+    variantId: Number.isFinite(numericVariantId) && numericVariantId > 0 ? numericVariantId : '',
     syncVariantId: currentVariant.syncVariantId,
     name: currentProduct.name,
     size: currentVariant.size,
@@ -383,13 +428,15 @@ const buildColorVariantMap = (product) => {
 
 const updateCareInstructions = () => {
   const careEl = document.getElementById('care-instructions');
-  if (!careEl) return;
 
-  if (currentColor && currentColor.toLowerCase() === 'black') {
-    careEl.textContent = 'Cold wash only. Hang dry. Heat will fade the black.';
-  } else {
-    careEl.textContent = 'Cold wash only. Hang dry. Gold may soften with wear.';
+  if (careEl) {
+    if (currentColor && currentColor.toLowerCase() === 'black') {
+      careEl.textContent = 'Cold wash only. Hang dry. Heat will fade the black.';
+    } else {
+      careEl.textContent = 'Cold wash only. Hang dry. Gold may soften with wear.';
+    }
   }
+
   renderProductDetails();
 };
 
@@ -441,20 +488,8 @@ const populateImageGallery = (images) => {
 };
 
 async function loadCatalogForColorVariants(productId) {
-  const cachedProducts = getCachedProducts();
-  if (cachedProducts.length > 0) {
-    allProducts = cachedProducts;
-    colorVariants = findColorVariants(productId);
-  }
-
-  try {
-    const productsRes = await fetch('/api/products');
-    if (productsRes.ok) {
-      allProducts = await productsRes.json();
-      cacheProducts(allProducts);
-      colorVariants = findColorVariants(productId);
-    }
-  } catch (_) {}
+  allProducts = getLocalProductList();
+  colorVariants = findColorVariants(productId);
 }
 
 const initMobileCarousel = () => {
@@ -485,9 +520,8 @@ const loadProductData = async (productId) => {
   const qtyPlus = document.getElementById('qty-plus');
 
   try {
-    const response = await fetch(`/api/product?id=${productId}`);
-    if (!response.ok) throw new Error('Product not found');
-    currentProduct = await response.json();
+    currentProduct = normalizeLocalProduct(getProductById(productId));
+    if (!currentProduct) throw new Error('Product not found');
     window.LebeSizeGuide.render(currentProduct);
     colorVariants = buildColorVariantMap(currentProduct) || colorVariants || findColorVariants(productId);
 
@@ -606,9 +640,8 @@ const loadProductData = async (productId) => {
     const switchProduct = async (newProductId) => {
       try {
         const selectedSize = currentVariant?.size;
-        const response = await fetch(`/api/product?id=${newProductId}`);
-        if (!response.ok) throw new Error('Product not found');
-        const newProduct = await response.json();
+        const newProduct = normalizeLocalProduct(getProductById(newProductId));
+        if (!newProduct) throw new Error('Product not found');
 
         if (!newProduct.variants || newProduct.variants.length === 0) {
           console.error('Switched product has no variants:', newProduct.id);
@@ -684,9 +717,7 @@ const loadProductData = async (productId) => {
     const renderColorSelectors = () => {
       if (!colorSelector || !colorVariants) return;
 
-      const colorOrder = ['White', 'Black'];
-      colorSelector.innerHTML = colorOrder
-        .filter(color => colorVariants[color])
+      colorSelector.innerHTML = Object.keys(colorVariants)
         .map((color) => {
           const isSelected = String(currentProduct.id) === String(colorVariants[color]);
           const isWhite = color.toLowerCase() === 'white';
@@ -730,7 +761,6 @@ const loadProductData = async (productId) => {
 
   } catch (error) {
     console.error('Error loading product:', error);
-    productName.textContent = 'Failed to load product';
   }
 };
 

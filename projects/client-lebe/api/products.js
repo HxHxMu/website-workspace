@@ -1,5 +1,34 @@
 const { fetchFromPrintful } = require('./_lib/printful');
-const { getColorVariants, getProductImages, getPublishedProductById, getProductPath, isPublishedProduct } = require('./_lib/products-data');
+const { getColorVariants, getProductImages, getPublishedProductById, getProductPath, getPublishedProducts, isPublishedProduct } = require('./_lib/products-data');
+
+function buildLocalProductSummary(product) {
+  const prices = (product.variants || [])
+    .map((variant) => Number.parseFloat(variant.price || variant.retail_price))
+    .filter((price) => Number.isFinite(price) && price > 0);
+
+  return {
+    id: product.id,
+    externalId: product.externalId,
+    name: product.name,
+    displayName: product.displayName || product.name,
+    type: product.type || '',
+    color: product.color || '',
+    slug: product.slug || '',
+    path: getProductPath(product),
+    seo: product.seo || {},
+    pdp: product.pdp || {},
+    price: prices.length ? Math.min(...prices) : null,
+    images: getProductImages(product.externalId, product.images || []),
+    variantCount: (product.variants || []).length,
+    colorVariants: getColorVariants(product.id),
+  };
+}
+
+function sendLocalProducts(res) {
+  const products = getPublishedProducts().map(buildLocalProductSummary);
+  res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
+  return res.status(200).json(products);
+}
 
 module.exports = async (req, res) => {
   if (req.method !== 'GET') {
@@ -8,7 +37,7 @@ module.exports = async (req, res) => {
 
   const PRINTFUL_API_KEY = process.env.PRINTFUL_API_KEY;
   if (!PRINTFUL_API_KEY) {
-    return res.status(500).json({ error: 'PRINTFUL_API_KEY environment variable is not set' });
+    return sendLocalProducts(res);
   }
 
   try {
@@ -55,10 +84,7 @@ module.exports = async (req, res) => {
     res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
     res.status(200).json(products);
   } catch (error) {
-    console.error('Error fetching products:', error);
-    res.status(500).json({
-      error: 'Failed to fetch products',
-      message: error.message
-    });
+    console.warn('Falling back to local products data:', error.message);
+    return sendLocalProducts(res);
   }
 };

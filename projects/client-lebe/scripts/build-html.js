@@ -1158,9 +1158,8 @@ async function buildProductsFeed() {
     console.log(`Built XML: products-feed.xml (${googleItems.length} items)`);
     console.log(`Built XML: products-feed-meta.xml (${metaItems.length} items)`);
   } catch (error) {
-    fs.writeFileSync(getPath('src', 'products-feed.xml'), buildEmptyProductsFeed());
-    fs.writeFileSync(getPath('src', 'products-feed-meta.xml'), buildEmptyProductsFeed());
     console.error('Error building products feed:', error.message);
+    throw error;
   }
 }
 

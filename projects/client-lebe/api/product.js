@@ -1,14 +1,41 @@
 const { fetchFromPrintful } = require('./_lib/printful');
 const { getColorVariants, getProductImages, getPublishedProductById, getProductPath } = require('./_lib/products-data');
 
+function buildLocalProduct(product) {
+  return {
+    id: product.id,
+    externalId: product.externalId,
+    name: product.name,
+    displayName: product.displayName,
+    type: product.type,
+    color: product.color,
+    slug: product.slug,
+    path: getProductPath(product),
+    seo: product.seo || {},
+    pdp: product.pdp || {},
+    material: product.material || '',
+    images: getProductImages(product.externalId, product.images || []),
+    colorVariants: getColorVariants(product.id),
+    variants: (product.variants || []).map((variant) => ({
+      id: variant.variantId || variant.variant_id || '',
+      variantId: variant.variantId || variant.variant_id || '',
+      syncVariantId: variant.syncVariantId || variant.sync_variant_id || '',
+      size: variant.size || 'One Size',
+      color: variant.color || 'Default',
+      price: parseFloat(variant.price || variant.retail_price) || 0,
+      options: variant.options || []
+    }))
+  };
+}
+
+function sendLocalProduct(res, publishedProduct, status = 200) {
+  res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
+  return res.status(status).json(buildLocalProduct(publishedProduct));
+}
+
 module.exports = async (req, res) => {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  const PRINTFUL_API_KEY = process.env.PRINTFUL_API_KEY;
-  if (!PRINTFUL_API_KEY) {
-    return res.status(500).json({ error: 'PRINTFUL_API_KEY environment variable is not set' });
   }
 
   const { id } = req.query;
@@ -19,6 +46,11 @@ module.exports = async (req, res) => {
   const publishedProduct = getPublishedProductById(id);
   if (!publishedProduct) {
     return res.status(404).json({ error: 'Product not found' });
+  }
+
+  const PRINTFUL_API_KEY = process.env.PRINTFUL_API_KEY;
+  if (!PRINTFUL_API_KEY) {
+    return sendLocalProduct(res, publishedProduct);
   }
 
   try {
@@ -64,10 +96,7 @@ module.exports = async (req, res) => {
     res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
     res.status(200).json(product);
   } catch (error) {
-    console.error('Error fetching product:', error);
-    res.status(500).json({
-      error: 'Failed to fetch product',
-      message: error.message
-    });
+    console.warn('Falling back to local product data:', error.message);
+    return sendLocalProduct(res, publishedProduct);
   }
 };
