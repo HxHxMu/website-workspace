@@ -1036,7 +1036,7 @@ function formatFeedPrice(value) {
   return `${amount.toFixed(2)} USD`;
 }
 
-function buildFeedItem({ product, variant, image, itemGroupId, kind }) {
+function buildFeedItem({ product, variant, image, itemGroupId, kind, availability = 'in_stock' }) {
   const productId = product.id;
   const syncVariantId = variant.syncVariantId || variant.id || variant.sync_variant_id || `${productId}-${variant.variant_id || variantSize(variant)}`;
   const color = variantColor(product, variant);
@@ -1057,7 +1057,7 @@ function buildFeedItem({ product, variant, image, itemGroupId, kind }) {
       <g:description>${escapeXml(kind.description)}</g:description>
       <g:link>${escapeXml(link)}</g:link>
       <g:image_link>${escapeXml(normalizeFeedUrl(image))}</g:image_link>
-${additionalImages ? `${additionalImages}\n` : ''}      <g:availability>in_stock</g:availability>
+${additionalImages ? `${additionalImages}\n` : ''}      <g:availability>${escapeXml(availability)}</g:availability>
       <g:inventory>999</g:inventory>
       <g:quantity_to_sell_on_facebook>999</g:quantity_to_sell_on_facebook>
       <g:price>${escapeXml(price)}</g:price>
@@ -1105,31 +1105,8 @@ function buildEmptyProductsFeed() {
 </rss>`;
 }
 
-async function buildProductsFeed() {
-  try {
-    const feedProducts = buildLocalFeedProducts().filter(Boolean);
-    buildProductPages(feedProducts);
-
-    const items = [];
-
-    feedProducts.forEach(({ product, variants, images }) => {
-      const kind = productKind(product, product.id);
-      const itemGroupId = productGroupId(product);
-      const image = images[0] || '';
-
-      variants.forEach((variant) => {
-        const item = buildFeedItem({
-          product,
-          variant,
-          image,
-          itemGroupId,
-          kind,
-        });
-        if (item) items.push(item);
-      });
-    });
-
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+function buildFeedXml(items) {
+  return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
   <channel>
     <title>LEBE — Saguanari Yoga Wear</title>
@@ -1138,11 +1115,51 @@ async function buildProductsFeed() {
 ${items.join('\n')}
   </channel>
 </rss>`;
+}
 
-    fs.writeFileSync(getPath('src', 'products-feed.xml'), xml);
-    console.log(`Built XML: products-feed.xml (${items.length} items)`);
+async function buildProductsFeed() {
+  try {
+    const feedProducts = buildLocalFeedProducts().filter(Boolean);
+    buildProductPages(feedProducts);
+
+    const googleItems = [];
+    const metaItems = [];
+
+    feedProducts.forEach(({ product, variants, images }) => {
+      const kind = productKind(product, product.id);
+      const itemGroupId = productGroupId(product);
+      const image = images[0] || '';
+
+      variants.forEach((variant) => {
+        const googleItem = buildFeedItem({
+          product,
+          variant,
+          image,
+          itemGroupId,
+          kind,
+          availability: 'in_stock',
+        });
+        if (googleItem) googleItems.push(googleItem);
+
+        const metaItem = buildFeedItem({
+          product,
+          variant,
+          image,
+          itemGroupId,
+          kind,
+          availability: 'in stock',
+        });
+        if (metaItem) metaItems.push(metaItem);
+      });
+    });
+
+    fs.writeFileSync(getPath('src', 'products-feed.xml'), buildFeedXml(googleItems));
+    fs.writeFileSync(getPath('src', 'products-feed-meta.xml'), buildFeedXml(metaItems));
+    console.log(`Built XML: products-feed.xml (${googleItems.length} items)`);
+    console.log(`Built XML: products-feed-meta.xml (${metaItems.length} items)`);
   } catch (error) {
     fs.writeFileSync(getPath('src', 'products-feed.xml'), buildEmptyProductsFeed());
+    fs.writeFileSync(getPath('src', 'products-feed-meta.xml'), buildEmptyProductsFeed());
     console.error('Error building products feed:', error.message);
   }
 }
