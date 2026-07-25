@@ -289,11 +289,11 @@ function getHomeMovementBandHtml() {
   if (!heroMovementImage) return '';
 
   return `
-  <section class="w-full overflow-hidden bg-[#050505]" aria-label="Saguanari in movement">
+  <section class="home-movement-band" aria-label="Saguanari in movement">
     <img
       src="${escapeHtml(heroMovementImage)}"
       alt="${escapeHtml(heroMovementImageAlt)}"
-      class="h-[62vh] min-h-[360px] w-full object-cover md:h-[72vh]"
+      class="home-movement-band__image"
       loading="lazy"
       decoding="async"
     />

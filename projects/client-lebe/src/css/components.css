@@ -399,6 +399,26 @@
     color: #285f3a;
   }
 
+  .home-movement-band {
+    overflow: hidden;
+    background: #050505;
+  }
+
+  .home-movement-band__image {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  @media (min-width: 768px) {
+    .home-movement-band__image {
+      height: min(70vh, 760px);
+      min-height: 520px;
+      object-fit: cover;
+      object-position: center 48%;
+    }
+  }
+
   .lebe-newsletter {
     border-top: 1px solid rgba(5, 5, 5, 0.16);
   }
