@@ -60,10 +60,19 @@
     }
   }
 
-  async function sendCapi(standardEvent, eventId, email) {
+  function capiCustomData(params = {}) {
+    const payload = metaParams(params);
+    const allowedKeys = ['currency', 'value', 'content_ids', 'contents', 'content_type', 'content_name'];
+    return allowedKeys.reduce((acc, key) => {
+      if (payload[key] !== undefined) acc[key] = payload[key];
+      return acc;
+    }, {});
+  }
+
+  async function sendCapi(standardEvent, eventId, params = {}) {
     if (!isProdHost) return;
     try {
-      const emailHash = await hashEmail(email);
+      const emailHash = await hashEmail(params.email);
       await fetch('/api/capi', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -72,6 +81,7 @@
           event_id: eventId,
           url: window.location.href,
           emailHash,
+          custom_data: capiCustomData(params),
         }),
         keepalive: true,
       });
@@ -140,7 +150,7 @@
       const payload = metaParams(params);
       window.fbq('track', standardEvent, payload, { eventID: metaEventId });
       debugLog('sent standard event', { eventName, standardEvent, payload, eventId: metaEventId });
-      sendCapi(standardEvent, metaEventId, params.email);
+      sendCapi(standardEvent, metaEventId, params);
       return;
     }
 

@@ -538,6 +538,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (hydratedItems.some((item, index) => (
       Number(item.variantId) !== Number(cartItems[index].variantId) ||
+      String(item.syncVariantId || '') !== String(cartItems[index].syncVariantId || '') ||
       Number(item.price) !== Number(cartItems[index].price)
     ))) {
       Cart.replaceCart(hydratedItems);
