@@ -14,6 +14,10 @@ const {
 const ROOT = path.join(__dirname, '..');
 const DOMAIN = 'https://www.lebe.life';
 
+// Placeholder — swap for teacher UGC photo when available. See LEBE_teacher_seeding_kit.md.
+const heroMovementImage = '/assets/images/product-shots/saguanari_leggings/9.1-900.jpg';
+const heroMovementImageAlt = 'Saguanari white leggings in a raised-knee movement pose, gold dot print visible in motion';
+
 // Helper to resolve absolute path in the workspace
 function getPath(...parts) {
   return path.join(ROOT, ...parts);
@@ -281,6 +285,21 @@ function renderHomeProductGridHtml() {
   }).join('\n');
 }
 
+function getHomeMovementBandHtml() {
+  if (!heroMovementImage) return '';
+
+  return `
+  <section class="w-full overflow-hidden bg-[#050505]" aria-label="Saguanari in movement">
+    <img
+      src="${escapeHtml(heroMovementImage)}"
+      alt="${escapeHtml(heroMovementImageAlt)}"
+      class="h-[62vh] min-h-[360px] w-full object-cover md:h-[72vh]"
+      loading="lazy"
+      decoding="async"
+    />
+  </section>`;
+}
+
 function getHomeItemListJsonLd() {
   const products = getPublishedProducts()
     .filter((product) => product.slug)
@@ -473,6 +492,7 @@ function assemblePage(config) {
   const content = contentSource
     .replaceAll('{{HOME_NEWSLETTER_SIGNUP}}', newsletterHtml)
     .replaceAll('{{HOME_PRODUCT_GRID}}', renderHomeProductGridHtml())
+    .replaceAll('{{HOME_MOVEMENT_BAND}}', config.slug === 'index' ? getHomeMovementBandHtml() : '')
     .replaceAll('{{HOME_ITEM_LIST_JSON_LD}}', config.slug === 'index' ? getHomeItemListJsonLd() : '');
 
   const googleVerification = process.env.GOOGLE_SITE_VERIFICATION
