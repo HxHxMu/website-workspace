@@ -15,8 +15,8 @@ const ROOT = path.join(__dirname, '..');
 const DOMAIN = 'https://www.lebe.life';
 
 // Placeholder — swap for teacher UGC photo when available. See LEBE_teacher_seeding_kit.md.
-const heroMovementImage = '/assets/images/product-shots/saguanari_leggings/9.1-900.jpg';
-const heroMovementImageAlt = 'Saguanari white leggings in a raised-knee movement pose, gold dot print visible in motion';
+const heroMovementImage = '/assets/images/home/bbqFly.jpg';
+const heroMovementImageAlt = 'Saguanari black leggings in an arm-balance yoga pose, gold serpent print visible in motion';
 
 // Helper to resolve absolute path in the workspace
 function getPath(...parts) {
