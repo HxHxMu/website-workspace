@@ -1,11 +1,12 @@
 <main class="bg-[#e9e9e9] text-[#050505]">
   <!-- Hero Section -->
   <section class="relative flex min-h-screen items-end overflow-hidden bg-black text-white">
-    <img src="./assets/images/lebeHero1.jpg" alt="LEBE campaign hero image"
-      class="absolute inset-0 h-full w-full object-cover" />
+    <img src="/assets/images/lebeHero1.jpg" alt="LEBE Saguanari made-to-order yoga wear campaign"
+      class="absolute inset-0 h-full w-full object-cover" fetchpriority="high" decoding="async" />
     <div class="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-black/10"></div>
     <div class="relative w-full pb-12 pt-32 md:pb-14">
       <div class="lebe-main-shell">
+        <p class="lebe-kicker mb-3 text-white/70">made-to-order yoga wear</p>
         <h1 class="font-serif text-[32px] lowercase leading-[0.92] text-[#ffffff] md:text-[64px]">saguanari.</h1>
       </div>
     </div>
@@ -27,37 +28,39 @@
     </div>
   </section>
 
+  <section class="border-y border-[#050505]/20 bg-[#f5f2ea]">
+    <div class="lebe-main-shell grid gap-8 py-12 md:grid-cols-3 md:py-14">
+      <div>
+        <p class="lebe-kicker mb-3">made-to-order</p>
+        <p class="text-[15px] leading-7 text-[#050505]/70">Each piece begins after purchase, reducing excess inventory.</p>
+      </div>
+      <div>
+        <p class="lebe-kicker mb-3">movement fabric</p>
+        <p class="text-[15px] leading-7 text-[#050505]/70">Four-way stretch selected for studio practice, travel, and daily wear.</p>
+      </div>
+      <div>
+        <p class="lebe-kicker mb-3">clear timing</p>
+        <p class="text-[15px] leading-7 text-[#050505]/70">Production takes about 14 days, with tracking after shipment.</p>
+      </div>
+    </div>
+  </section>
+
   {{HOME_NEWSLETTER_SIGNUP}}
 </main>
-
-<script>
-  (() => {
-    const hero = document.querySelector('[data-random-hero]');
-    if (!hero) return;
-
-    const images = [
-      './assets/images/lebeHero1.jpg',
-      './assets/images/lebeHero2.jpg',
-    ];
-    hero.src = images[Math.floor(Math.random() * images.length)];
-  })();
-</script>
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "Store",
+  "@type": "OnlineStore",
   "name": "LEBE",
   "url": "https://www.lebe.life",
   "logo": "https://www.lebe.life/assets/images/favicon.svg",
   "description": "Made-to-order premium yoga wear and activewear capsule.",
   "image": "https://www.lebe.life/assets/images/lebeHero1.jpg",
   "priceRange": "$$",
-  "address": {
-    "@type": "PostalAddress",
-    "addressCountry": "US",
-    "addressRegion": "California"
-  }
+  "sameAs": [
+    "https://www.instagram.com/_lebe._/"
+  ]
 }
 </script>
 <script type="application/ld+json">
@@ -68,3 +71,4 @@
   "url": "https://www.lebe.life"
 }
 </script>
+{{HOME_ITEM_LIST_JSON_LD}}

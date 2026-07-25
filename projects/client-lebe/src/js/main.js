@@ -10,6 +10,56 @@ function productHref(productId) {
   return slug ? `/product/${encodeURIComponent(slug)}` : `/product?id=${encodeURIComponent(productId)}`;
 }
 
+function normalizeAssetPath(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return '';
+  if (/^(https?:)?\/\//i.test(raw) || raw.startsWith('data:')) return raw;
+  return `/${raw.replace(/^\.?\//, '').replace(/^\/+/, '')}`;
+}
+
+function getVariantPrice(variant = {}) {
+  const amount = Number.parseFloat(String(variant.price || variant.retail_price || '').replace(/[^0-9.]/g, ''));
+  return Number.isFinite(amount) && amount > 0 ? amount : 0;
+}
+
+function normalizeLocalVariant(variant = {}) {
+  const variantId = variant.variantId || variant.variant_id || '';
+  return {
+    ...variant,
+    id: variantId,
+    variantId,
+    syncVariantId: variant.syncVariantId || variant.sync_variant_id || '',
+    size: variant.size || 'One Size',
+    color: variant.color || 'Default',
+    price: getVariantPrice(variant),
+    options: variant.options || [],
+  };
+}
+
+function normalizeLocalProduct(product = {}) {
+  const variants = (product.variants || []).map(normalizeLocalVariant);
+  const prices = variants.map((variant) => variant.price).filter((price) => price > 0);
+
+  return {
+    ...product,
+    path: product.path || productHref(product.id),
+    images: (product.images || []).map(normalizeAssetPath).filter(Boolean),
+    variants,
+    price: prices.length ? Math.min(...prices) : 0,
+  };
+}
+
+function getLocalProducts() {
+  return Object.values(window.LebeProductData?.publishedProducts || {})
+    .map(normalizeLocalProduct)
+    .filter((product) => product.id);
+}
+
+function getLocalProductById(productId) {
+  const product = window.LebeProductData?.publishedProducts?.[String(productId)];
+  return product ? normalizeLocalProduct(product) : null;
+}
+
 function parseCheckoutUrlProducts(value) {
   return String(value || '')
     .split(',')
@@ -22,26 +72,16 @@ function parseCheckoutUrlProducts(value) {
     .filter(Boolean);
 }
 
-async function fetchJson(url) {
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Request failed: ${response.status}`);
-  }
-  return response.json();
-}
-
 async function resolveCheckoutUrlCartItems(requestedItems) {
-  const products = await fetchJson('/api/products');
-  const productSummaries = Array.isArray(products) ? products : [];
+  const products = getLocalProducts();
   const requestedBySyncVariantId = new Map(
     requestedItems.map((item) => [String(item.syncVariantId), item])
   );
   const resolvedItems = [];
 
-  for (const productSummary of productSummaries) {
+  for (const product of products) {
     if (requestedBySyncVariantId.size === 0) break;
 
-    const product = await fetchJson(`/api/product?id=${encodeURIComponent(productSummary.id)}`);
     const variants = Array.isArray(product?.variants) ? product.variants : [];
 
     variants.forEach((variant) => {
@@ -50,7 +90,7 @@ async function resolveCheckoutUrlCartItems(requestedItems) {
 
       resolvedItems.push({
         productId: Number(product.id),
-        variantId: Number(variant.id) || 0,
+        variantId: Number(variant.variantId || variant.id) || 0,
         syncVariantId: String(variant.syncVariantId),
         name: product.name,
         size: variant.size || 'One Size',
@@ -242,10 +282,9 @@ async function checkAndShowUpsell(cart) {
 
   // Fetch complementary product details
   try {
-    const response = await fetch(`/api/product?id=${encodeURIComponent(upsellData.productId)}`);
-    const complementProduct = await response.json();
+    const complementProduct = getLocalProductById(upsellData.productId);
 
-    if (!response.ok || !complementProduct || !Array.isArray(complementProduct.variants) || complementProduct.variants.length === 0) {
+    if (!complementProduct || !Array.isArray(complementProduct.variants) || complementProduct.variants.length === 0) {
       upsellModule.classList.add('hidden');
       return;
     }
@@ -268,7 +307,7 @@ async function checkAndShowUpsell(cart) {
     // Store upsell product data for add button
     const addBtn = document.getElementById('upsell-add-btn');
     addBtn.dataset.productId = complementProduct.id;
-    addBtn.dataset.variantId = matchingVariant?.id || '';
+    addBtn.dataset.variantId = matchingVariant?.variantId || matchingVariant?.id || '';
     addBtn.dataset.syncVariantId = matchingVariant?.syncVariantId || '';
     addBtn.dataset.price = matchingVariant?.price || complementProduct.price || 0;
     addBtn.dataset.name = complementProduct.name;

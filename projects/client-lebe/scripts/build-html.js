@@ -216,6 +216,16 @@ function productHighlights(product = {}) {
   return ['Made after purchase', 'Soft stretch handfeel', 'Limited-run piece'];
 }
 
+function productPriceLabel(product = {}) {
+  const prices = variantPrices(product.variants || []);
+  if (prices.length === 0) return '';
+  const lowPrice = Math.min(...prices);
+  const highPrice = Math.max(...prices);
+  return lowPrice === highPrice
+    ? formatMoney(lowPrice)
+    : `From ${formatMoney(lowPrice)}`;
+}
+
 function renderParagraphs(value) {
   return String(value || '')
     .split(/\n{2,}/)
@@ -235,6 +245,7 @@ function renderHomeProductGridHtml() {
     const href = getProductPath(product);
     const isWhite = String(product.swatch || product.color || '').toLowerCase() === 'white';
     const displayName = productDisplayName(product);
+    const priceLabel = productPriceLabel(product);
 
     return `
       <article class="group flex h-full flex-col">
@@ -252,10 +263,11 @@ function renderHomeProductGridHtml() {
             <h3 class="min-h-[3.25rem] text-base font-semibold leading-tight tracking-[-0.03em] text-[#050505] md:text-lg">
               ${escapeHtml(displayName)}
             </h3>
-            <div class="mt-2 flex items-center gap-3">
+            <div class="mt-2 flex items-center gap-3 text-sm font-semibold text-[#050505]/70">
               <span
                 style="width: 24px; height: 24px; background-color: ${isWhite ? '#ffffff' : '#050505'}; border: 1px solid rgba(5, 5, 5, 0.3); border-radius: 50%; display: inline-block;"
               ></span>
+              ${priceLabel ? `<span>${escapeHtml(priceLabel)}</span>` : ''}
             </div>
           </div>
           <a
@@ -267,6 +279,27 @@ function renderHomeProductGridHtml() {
         </div>
       </article>`;
   }).join('\n');
+}
+
+function getHomeItemListJsonLd() {
+  const products = getPublishedProducts()
+    .filter((product) => product.slug)
+    .sort((a, b) => Number(a.homepageOrder || 0) - Number(b.homepageOrder || 0));
+
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'LEBE Saguanari capsule',
+    itemListElement: products.map((product, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      url: getProductUrl(product, DOMAIN),
+      name: productDisplayName(product),
+      image: absoluteAssetUrl(product.images?.[0] || product.homepageImages?.[0] || ''),
+    })),
+  };
+
+  return `<script type="application/ld+json">${escapeScriptJson(schema)}</script>`;
 }
 
 function escapeScriptJson(value) {
@@ -439,7 +472,8 @@ function assemblePage(config) {
   const contentSource = config.contentHtml ?? fs.readFileSync(getPath(config.contentFile), 'utf8');
   const content = contentSource
     .replaceAll('{{HOME_NEWSLETTER_SIGNUP}}', newsletterHtml)
-    .replaceAll('{{HOME_PRODUCT_GRID}}', renderHomeProductGridHtml());
+    .replaceAll('{{HOME_PRODUCT_GRID}}', renderHomeProductGridHtml())
+    .replaceAll('{{HOME_ITEM_LIST_JSON_LD}}', config.slug === 'index' ? getHomeItemListJsonLd() : '');
 
   const googleVerification = process.env.GOOGLE_SITE_VERIFICATION
     ? `<meta name="google-site-verification" content="${process.env.GOOGLE_SITE_VERIFICATION}" />`
@@ -481,17 +515,16 @@ const corePages = [
   {
     slug: 'index',
     title: 'LEBE — Saguanari Yoga Wear',
-    description: 'Made-to-order yoga wear. Ships in ~14 days.',
+    description: 'Discover LEBE Saguanari made-to-order yoga wear: high-waist leggings and racerback sports bras. Production takes about 14 days.',
     bodyClass: 'bg-white text-[#050505]',
     headerClass: 'lebe-header--hero',
-    extraHead: '',
+    extraHead: '<link rel="preload" as="image" href="/assets/images/lebeHero1.jpg" fetchpriority="high" />',
     homeNewsletter: true,
     scripts: `
 <script src="/js/product-data.js" defer></script>
 <script src="/js/product-model.js" defer></script>
 <script src="/js/html-utils.js" defer></script>
-<script src="/js/main.js" defer></script>
-<script src="/js/printful.js" defer></script>`,
+<script src="/js/main.js" defer></script>`,
     contentFile: 'src/partials/home/_hero.html'
   },
   {
