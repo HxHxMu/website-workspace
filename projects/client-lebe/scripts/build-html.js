@@ -594,6 +594,18 @@ const corePages = [
     contentFile: 'src/partials/order-issue/_order-issue.html'
   },
   {
+    slug: 'teachers',
+    title: 'Teacher Program — LEBE',
+    description: 'Private LEBE teacher program instructions.',
+    bodyClass: 'bg-[#e9e9e9] text-[#050505]',
+    headerClass: 'lebe-header--hero',
+    extraHead: `
+<meta name="robots" content="noindex, nofollow" />
+<link rel="preload" as="image" href="/assets/images/campaign/teacher-arm-balance-black.jpg" fetchpriority="high" />`,
+    scripts: `<script src="/js/teachers.js" defer></script>`,
+    contentFile: 'src/partials/teachers/_teachers.html'
+  },
+  {
     slug: '404',
     title: 'Page Not Found — LEBE',
     description: 'The requested LEBE page could not be found.',
