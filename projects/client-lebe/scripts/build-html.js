@@ -309,13 +309,17 @@ function getHomeItemListJsonLd() {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
     name: 'LEBE Saguanari capsule',
-    itemListElement: products.map((product, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      url: getProductUrl(product, DOMAIN),
-      name: productDisplayName(product),
-      image: absoluteAssetUrl(product.images?.[0] || product.homepageImages?.[0] || ''),
-    })),
+    itemListElement: products.map((product, index) => {
+      const productSchema = buildProductJsonLd(product);
+      delete productSchema['@context'];
+
+      return {
+        '@type': 'ListItem',
+        position: index + 1,
+        url: getProductUrl(product, DOMAIN),
+        item: productSchema,
+      };
+    }),
   };
 
   return `<script type="application/ld+json">${escapeScriptJson(schema)}</script>`;
