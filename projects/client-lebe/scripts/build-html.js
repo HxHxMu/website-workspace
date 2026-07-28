@@ -723,7 +723,7 @@ const policies = [
       {
         heading: 'Contact.',
         body: [
-          'For privacy-related questions, use the <a href="/contact">contact form</a>.',
+          'For privacy-related questions, email <a href="mailto:shop@lebe.life">shop@lebe.life</a> or use the <a href="/contact">contact form</a>.',
         ],
       },
     ],
@@ -790,7 +790,7 @@ const policies = [
       {
         heading: 'Questions.',
         body: [
-          'For general shipping questions, use the <a href="/contact">contact form</a>.',
+          'For general shipping questions, email <a href="mailto:shop@lebe.life">shop@lebe.life</a> or use the <a href="/contact">contact form</a>.',
         ],
       },
     ],
@@ -839,7 +839,7 @@ const policies = [
       {
         heading: 'Contact.',
         body: [
-          'For damaged, defective, incorrect, or missing orders, use the <a href="/order-issue">order issue form</a>. For general questions, use the <a href="/contact">contact form</a>.',
+          'For damaged, defective, incorrect, or missing orders, use the <a href="/order-issue">order issue form</a>. For general questions, email <a href="mailto:shop@lebe.life">shop@lebe.life</a> or use the <a href="/contact">contact form</a>.',
         ],
       },
     ],
@@ -936,7 +936,7 @@ const policies = [
       {
         heading: 'Contact.',
         body: [
-          'Questions regarding these terms may be sent through the <a href="/contact">contact form</a>.',
+          'Questions regarding these terms may be sent to <a href="mailto:shop@lebe.life">shop@lebe.life</a> or through the <a href="/contact">contact form</a>.',
         ],
       },
     ],
